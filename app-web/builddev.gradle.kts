@@ -44,7 +44,7 @@ val createIndexHtmlTask = task("_createIndexHtml") {
 
         var text = indexHtmlTemplate.readText()
         text = text.replace("<!--%SCRIPTS%-->",
-            depsOrdered.joinToString("\n    ") {
+            depsOrdered.joinToString("\n") {
                 val n = it.relativeTo(project.projectDir).toString().replace("\\", "/")
                 "<script src=\"$n\"></script>"
             }
