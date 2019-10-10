@@ -1,3 +1,4 @@
 .gradle/
 .idea/
 build/
+app-web/index.html
