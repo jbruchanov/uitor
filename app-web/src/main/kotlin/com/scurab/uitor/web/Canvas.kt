@@ -1,6 +1,9 @@
 package com.scurab.uitor.web
 
-import com.scurab.uitor.common.render.*
+import com.scurab.uitor.common.render.IRectangleRenderContext
+import com.scurab.uitor.common.render.Rect
+import com.scurab.uitor.common.render.StrokeRenderContext
+import com.scurab.uitor.common.render.d
 import org.w3c.dom.CanvasRenderingContext2D
 
 fun CanvasRenderingContext2D.clear() {
