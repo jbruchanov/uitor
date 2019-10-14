@@ -12,6 +12,7 @@ function initUI() {
     reloadButton.innerHTML = "Reload";
     document.body.appendChild(reloadButton);
     reloadButton.style.display = "none";
+    reloadButton.style.zIndex = 9999999;
     document.body.append(reloadButton);
     reloadButton.onclick = function (ev) {
         reloadButton.innerHTML = "Rebuilding...";
