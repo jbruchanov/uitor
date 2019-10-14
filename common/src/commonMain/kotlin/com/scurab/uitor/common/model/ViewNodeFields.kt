@@ -13,4 +13,5 @@ object ViewNodeFields {
     const val LocationScreenX = "LocationScreenX"
     const val LocationScreenY = "LocationScreenY"
     const val InternalVisibility = "_Visibility"
+    const val Type = "Type"
 }

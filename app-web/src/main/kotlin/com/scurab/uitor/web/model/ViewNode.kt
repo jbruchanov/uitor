@@ -40,6 +40,7 @@ class ViewNode(json: Json) : IViewNode {
     }
     val locationScreenX: Int get() = data.int(ViewNodeFields.LocationScreenX)
     val locationScreenY: Int get() = data.int(ViewNodeFields.LocationScreenY)
+    val typeSimple: String by lazy { data.string(ViewNodeFields.Type).substringAfterLast(".") }
 
     override fun findFrontVisibleView(x: Int, y: Int, ignore: Set<IViewNode>): ViewNode? {
         //disabled for now, this makes views inactive actitivies "invisible" for search
@@ -63,11 +64,25 @@ class ViewNode(json: Json) : IViewNode {
         return null
     }
 
+    fun forEachIndexed(block: (ViewNode, Int) -> Unit) {
+        block(this, position)
+        nodes.forEach { it.forEachIndexed(block) }
+    }
+
     private fun Map<String, Any?>.int(key: String): Int {
         try {
             return this[key] as Int
         } catch (e: Exception) {
             println("Unable to get Int of key:$key in $this")
+            throw e
+        }
+    }
+
+    private fun Map<String, Any?>.string(key: String): String {
+        try {
+            return this[key] as String
+        } catch (e: Exception) {
+            println("Unable to get String of key:$key in $this")
             throw e
         }
     }
