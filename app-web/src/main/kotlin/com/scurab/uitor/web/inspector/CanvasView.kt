@@ -5,7 +5,6 @@ import com.scurab.uitor.common.render.RectangleRenderContext
 import com.scurab.uitor.common.render.StrokeRenderContext
 import com.scurab.uitor.common.render.relativeToScale
 import com.scurab.uitor.common.render.toColor
-import com.scurab.uitor.common.util.arrayOf
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.*
 import com.scurab.uitor.web.util.LoadImageHandler
@@ -34,7 +33,7 @@ class CanvasView(
     private val rootElement: Element
 ) {
     private val TAG = "CanvasView"
-    private var layers: Array<HTMLCanvasElement> = arrayOf(2) { document.create.canvas(null, "") as HTMLCanvasElement }
+    private var layers: Array<HTMLCanvasElement> = Array(2) { document.create.canvas(null, "") as HTMLCanvasElement }
     private val image = Image()
     private val imageContext get() = layers[LAYER_IMAGE].context
     private val drawingContext get() = layers[LAYER_DRAWING].context
