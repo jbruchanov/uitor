@@ -6,6 +6,7 @@ import com.scurab.uitor.common.model.IViewNode
 import com.scurab.uitor.common.model.ViewNodeFields
 import com.scurab.uitor.common.render.Rect
 import com.scurab.uitor.common.util.dlog
+import com.scurab.uitor.common.util.forEachReversed
 import com.scurab.uitor.web.util.getMap
 import com.scurab.uitor.web.util.getTypedListOf
 import com.scurab.uitor.web.util.jsonField
@@ -50,8 +51,8 @@ class ViewNode(json: Json) : IViewNode {
 
         if (rect.contains(x, y)) {
             //post-order
-            (nodes.size - 1 downTo 0).forEach { i ->
-                val candidate = nodes[i].findFrontVisibleView(x, y, ignore)
+            nodes.forEachReversed { node ->
+                val candidate = node.findFrontVisibleView(x, y, ignore)
                 if (candidate != null) {
                     return candidate
                 }
@@ -64,8 +65,8 @@ class ViewNode(json: Json) : IViewNode {
         return null
     }
 
-    fun forEachIndexed(block: (ViewNode, Int) -> Unit) {
-        block(this, position)
+    fun forEachIndexed(block: (Int, ViewNode) -> Unit) {
+        block(position, this)
         nodes.forEach { it.forEachIndexed(block) }
     }
 

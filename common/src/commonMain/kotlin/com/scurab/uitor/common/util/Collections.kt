@@ -7,3 +7,7 @@ inline fun <reified T> arrayOf(size: Int, provider: (Int) -> T): Array<T> {
     }
     return list.toTypedArray()
 }
+
+inline fun <T> Collection<T>.forEachReversed(action: (T) -> Unit): Unit {
+    for (i in size - 1 downTo 0) action(this.elementAt(i))
+}
