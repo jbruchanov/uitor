@@ -10,6 +10,7 @@ enum class Events {
     mousedown,
     mousemove,
     mouseout,
+    mouseleave,
     mouseover,
     mouseup,
     mousewheel,
@@ -20,6 +21,12 @@ enum class Events {
 fun EventTarget.addMouseClickListener(callback: (MouseEvent) -> Unit) =
     addEventListener(Events.click.name, { event -> callback(event as MouseEvent) })
 
+fun EventTarget.addMouseDownListener(callback: (MouseEvent) -> Unit) =
+    addEventListener(Events.mousedown.name, { event -> callback(event as MouseEvent) })
+
+fun EventTarget.addMouseUpListener(callback: (MouseEvent) -> Unit) =
+    addEventListener(Events.mouseup.name, { event -> callback(event as MouseEvent) })
+
 fun EventTarget.addMouseMoveListener(callback: (MouseEvent) -> Unit) =
     addEventListener(Events.mousemove.name, { event -> callback(event as MouseEvent) })
 
@@ -29,5 +36,6 @@ fun EventTarget.addMouseWheelListener(callback: (WheelEvent) -> Unit) =
 fun EventTarget.addMouseOutListener(callback: (MouseEvent) -> Unit) =
     addEventListener(Events.mouseout.name, { event -> callback(event as MouseEvent) })
 
-fun EventTarget.addClickListener(callback: (MouseEvent) -> Unit) =
-    addEventListener(Events.click.name, { event -> callback(event as MouseEvent) })
+fun EventTarget.addMouseLeaveListener(callback: (MouseEvent) -> Unit) =
+    addEventListener(Events.mouseleave.name, { event -> callback(event as MouseEvent) })
+
