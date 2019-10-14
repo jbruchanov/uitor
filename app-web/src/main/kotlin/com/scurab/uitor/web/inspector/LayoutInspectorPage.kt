@@ -1,15 +1,12 @@
 package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.util.requireElementById
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.html.div
-import kotlinx.html.dom.create
-import kotlinx.html.id
-import kotlinx.html.js.div
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.clear
@@ -21,16 +18,15 @@ private const val ID_RIGHT = "split-table-right"
 
 class LayoutInspectorPage {
     private val root = document.requireElementById("root")
-    private val left by lazy { document.requireElementById(ID_LEFT) }
-    private val middle by lazy { document.requireElementById(ID_MID) }
+    private lateinit var columnsLayout: ColumnsLayout
     private lateinit var canvasView: CanvasView
     private lateinit var treeView: TreeView
 
     fun onStart() {
         root.clear()
-        buildHtml()
-        canvasView = CanvasView(left)
-        treeView = TreeView(middle)
+        columnsLayout = ColumnsLayout(root).attach()
+        canvasView = CanvasView(columnsLayout.left)
+        treeView = TreeView(columnsLayout.middle.first())
 
         GlobalScope.launch {
             async {
@@ -56,17 +52,5 @@ class LayoutInspectorPage {
 
         println(text)
         return JSON.parse(text)
-    }
-
-    private fun buildHtml() {
-        document.create.div("split-table") {
-            div("split-table-column left") { id = ID_LEFT }
-            div("split-table-separator")
-            div("split-table-column middle") { id = ID_MID }
-            div("split-table-separator")
-            div("split-table-column right") { id = ID_RIGHT }
-        }.apply {
-            root.append(this)
-        }
     }
 }
