@@ -5,7 +5,6 @@ import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.features.DefaultHeaders
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.readText
 import io.ktor.http.content.files
@@ -21,6 +20,7 @@ import io.ktor.websocket.webSocket
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.slf4j.event.Level
 import java.io.File
 import java.nio.charset.Charset
 
@@ -46,8 +46,10 @@ class DevServer(
 
         val port = 8080
         embeddedServer(Netty, port) {
+            install(CallLogging) {
+                level = Level.INFO
+            }
             install(WebSockets)
-            install(CallLogging)
             install(DefaultHeaders) {
                 header("Access-Control-Allow-Origin", "*")
             }
@@ -60,6 +62,10 @@ class DevServer(
                         .replace("%PORT%", port.toString())
                     file += "\n<script>$reloadScript</script>"
                     call.respondText(file, ContentType.parse("text/html"))
+                }
+
+                static("/common/src/commonMain/kotlin") {
+                    files(File("common/src/commonMain/kotlin"))
                 }
 
                 static("build") {
