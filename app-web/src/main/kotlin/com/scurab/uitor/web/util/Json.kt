@@ -52,17 +52,16 @@ fun <T> Json.requireTypedListOf(key: String, creator: (Json) -> T): List<T> {
     return array.map { creator(it) }
 }
 
-fun Json.getMap(key: String): Map<String, Any?> {
+fun Json.getMap(key: String, to: MutableMap<String, Any?> = linkedMapOf()): MutableMap<String, Any?> {
     try {
-        val result = mutableMapOf<String, Any?>()
         val obj = get(key) as? Json
         if (obj != null) {
-            for (k in obj.keys()) {
+            for (k in obj.keys().sorted()) {
                 val value = obj[k]
-                result[k] = value
+                to[k] = value
             }
         }
-        return result
+        return to
     } catch (e: Exception) {
         elog { "Exception '${e.message}' key:$key, object:$this" }
         throw e
