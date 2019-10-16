@@ -21,7 +21,11 @@ class ViewNode(json: Json) : IViewNode {
     override val position: Int by jsonField(json, ViewNodeFields.Position)
     override val owner: String by jsonField(json, ViewNodeFields.Owner)
 
-    override val data: Map<String, Any?> = json.getMap(ViewNodeFields.Data)
+    val rawdata: Map<String, Any?> = json.getMap(ViewNodeFields.Data)
+    override val data: Map<String, Any?> = rawdata
+        .toMutableMap()
+        .filter { !it.key.startsWith("_") }
+
     override val nodes: List<ViewNode> = json.getTypedListOf(ViewNodeFields.Nodes) {
         try {
             ViewNode(it)
@@ -68,6 +72,10 @@ class ViewNode(json: Json) : IViewNode {
     fun forEachIndexed(block: (Int, ViewNode) -> Unit) {
         block(position, this)
         nodes.forEach { it.forEachIndexed(block) }
+    }
+
+    fun viewNodeOfPosition(position: Int) {
+
     }
 
     private fun Map<String, Any?>.int(key: String): Int {

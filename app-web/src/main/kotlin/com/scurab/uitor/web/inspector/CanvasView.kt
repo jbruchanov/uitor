@@ -1,12 +1,12 @@
 package com.scurab.uitor.web.inspector
 
-import com.scurab.uitor.common.model.IViewNode
 import com.scurab.uitor.common.render.RectangleRenderContext
 import com.scurab.uitor.common.render.StrokeRenderContext
 import com.scurab.uitor.common.render.relativeToScale
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.*
+import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.util.LoadImageHandler
 import kotlinx.html.canvas
 import kotlinx.html.dom.create
@@ -30,7 +30,8 @@ private const val SCALE_MAX = 3.0
 private const val SCALE_MIN = 0.5
 
 class CanvasView(
-    private val rootElement: Element
+    private val rootElement: Element,
+    private val inspectorViewModel: InspectorViewModel
 ) {
     private val TAG = "CanvasView"
     private var layers: Array<HTMLCanvasElement> = Array(2) { document.create.canvas(null, "") as HTMLCanvasElement }
@@ -40,11 +41,7 @@ class CanvasView(
     private val mouseCrossRender = StrokeRenderContext("#8F00".toColor())
     private val nodeRender = RectangleRenderContext("#F00".toColor(), "#3F00".toColor())
 
-
     var renderMouseCross: Boolean = false
-    var root: IViewNode? = null
-    var selectedNode: IViewNode? = null
-
     private var scale: Double = 1.0
 
     init {
@@ -73,6 +70,13 @@ class CanvasView(
             addMouseWheelListener { onScaleChange(sign(-it.deltaY).toInt()) }
             addMouseClickListener { onMouseClick(it.offsetX, it.offsetY) }
         }
+
+        inspectorViewModel.selectedNode.observe {
+            renderScene(-1.0, -1.0)
+        }
+        inspectorViewModel.hoveredNode.observe {
+            renderScene(inspectorViewModel.selectedNode.item ?: it)
+        }
     }
 
     private fun scaleToFit(): Double {
@@ -85,17 +89,20 @@ class CanvasView(
     }
 
     private fun onMouseClick(x: Double, y: Double) {
+        val root = inspectorViewModel.rootNode.item
         val found = root?.findFrontVisibleView(
             x.relativeToScale(this.scale).roundToInt(),
             y.relativeToScale(this.scale).roundToInt()
         )
-        selectedNode = when {
+        val selectedNode = inspectorViewModel.selectedNode.item
+        val selected = when {
             selectedNode != null && found == selectedNode -> null
             else -> found
         }
         dlog(TAG) {
-            "mouseClick: X:${x.roundToInt()}, Y:${y.roundToInt()} selectedNode:${selectedNode?.position ?: "null"}"
+            "mouseClick: X:${x.roundToInt()}, Y:${y.roundToInt()} selectedNode:${selected?.position ?: "null"}"
         }
+        inspectorViewModel.selectedNode.post(selected)
         renderScene(x, y)
     }
 
@@ -136,9 +143,16 @@ class CanvasView(
         renderMouseCross(x, y)
     }
 
+    private fun renderScene(viewNode: ViewNode?) {
+        drawingContext.clear()
+        renderViewRectangle(viewNode)
+    }
+
     private fun renderViewRectangle(x: Double, y: Double) {
+        val rootNode = inspectorViewModel.rootNode.item
+        val selectedNode = inspectorViewModel.selectedNode.item
         //take the selected or find by mouse
-        val view = selectedNode ?: root?.findFrontVisibleView(
+        val view = selectedNode ?: rootNode?.findFrontVisibleView(
             x.relativeToScale(this.scale).roundToInt(),
             y.relativeToScale(this.scale).roundToInt()
         )
@@ -147,7 +161,11 @@ class CanvasView(
                     " ViewPosition:${view?.position ?: ""}" +
                     " ViewId:${view?.ids}"
         }
-        view?.let {
+        renderViewRectangle(view)
+    }
+
+    private fun renderViewRectangle(viewNode: ViewNode?) {
+        viewNode?.let {
             drawingContext.drawRectangle(it.rect.scale(this.scale), nodeRender)
         }
     }
