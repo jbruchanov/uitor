@@ -21,22 +21,24 @@ class LayoutInspectorPage {
     private lateinit var columnsLayout: ColumnsLayout
     private lateinit var canvasView: CanvasView
     private lateinit var treeView: TreeView
+    private lateinit var propertiesView: PropertiesView
+    private val inspectorViewModel = InspectorViewModel()
 
     fun onStart() {
         root.clear()
         columnsLayout = ColumnsLayout(root).attach()
-        canvasView = CanvasView(columnsLayout.left)
-        treeView = TreeView(columnsLayout.middle.first())
+        canvasView = CanvasView(columnsLayout.left, inspectorViewModel)
+        treeView = TreeView(columnsLayout.middle.first(), inspectorViewModel)
+        propertiesView = PropertiesView(columnsLayout.right, inspectorViewModel)
 
         GlobalScope.launch {
             async {
                 val item = ViewNode(load())
                 canvasView.renderMouseCross = true
-                canvasView.root = item
-                treeView.root = item
+                inspectorViewModel.rootNode.post(item)
             }
             async {
-                canvasView.loadImage("http://anuitor.scurab.com/demo/sampledata/screen.png?time=1570823462")
+                canvasView.loadImage("/device.png")
             }
         }
     }
