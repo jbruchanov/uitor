@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    val ktor_version = "1.2.4"
+    val ktor_version = "1.2.5"
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-websockets:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
