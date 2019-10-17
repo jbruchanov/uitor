@@ -1,0 +1,182 @@
+/*region Scrollbar*/
+::-webkit-scrollbar {
+    width: 0.5em;
+    height: 0.5em
+}
+
+::-webkit-scrollbar-track-piece {
+    background: #F1F1F1
+}
+
+::-webkit-scrollbar-thumb {
+    background: #C1C1C1
+}
+
+/*endregion Scrollbar*/
+
+.split-table {
+    display: grid;
+    grid-template-columns: 1fr 5px 1fr 5px 1fr;
+    height: calc(100vh - 20px);
+    bottom: 0;
+    align-items: stretch;
+}
+
+.split-table-separator {
+    cursor: ew-resize;
+    background: #EEE;
+}
+
+.split-table-column {
+    overflow-y: auto;
+    background: #FFF;
+}
+
+.left {
+    z-index: 1000;
+}
+
+.middle {
+    z-index: 1001;
+}
+
+.right {
+    z-index: 1002;
+}
+
+.render-container {
+    position: relative;
+}
+
+.render {
+    background: orange;
+    position: relative;
+    width: 100%;
+}
+
+#canvas-rendering {
+    background: lightskyblue;
+    height: 500px;
+    width: 1000px;
+    /*width: 100px;*/
+    left: 0;
+    top: 0;
+    opacity: 0.3;
+    position: absolute;
+}
+
+/*region Tree*/
+:root {
+    --tree-offset-left: 15pt;
+}
+
+table.tree {
+    text-align: left;
+    font-family: monospace;
+    font-size: 10pt;
+    border-spacing: 0px;
+    cursor: pointer;
+    height: calc(100vh - 20px);
+    overflow-y: scroll;
+    display: block;
+}
+
+table.tree th {
+    padding: 3px 10px;
+}
+
+table.tree tr {
+    width: 100%;
+}
+
+tr.tree-even {
+    background-color: antiquewhite;
+}
+
+tr.tree-odd {
+    background-color: bisque;
+}
+
+.tree-selected {
+    background-color: aquamarine;
+}
+
+/*.tree-even:hover, .tree-odd:hover {*/
+/*    background-color: aquamarine;*/
+/*}*/
+
+.tree-class-name {
+
+}
+
+.tree-res-id {
+    color: #000;
+    opacity: 0.5;
+    margin-left: 5pt;
+    font-size: 0.8em;
+}
+
+/*endregion*/
+
+/*region Props*/
+.properties {
+    text-align: left;
+    font-family: monospace;
+    font-size: 9pt;
+    border-spacing: 0;
+    height: calc(100vh - 60px);
+    overflow-y: scroll;
+    display: block;
+}
+
+.properties-header, .properties-header-title {
+    border-bottom: 2px solid #6f7277;
+    padding: 3px 1px;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: left;
+    color: #4b4a4a;
+    text-shadow: #ddf 1px 1px 0;
+    overflow: hidden;
+}
+
+.properties-header-title {
+    width: calc(100% - 5px);
+}
+
+tr.properties-even {
+    background-color: #FFFFFF;
+}
+
+tr.properties-odd {
+    background-color: #e5f8ff;
+}
+
+.properties-even:hover, .properties-odd:hover {
+    background-color: lightsalmon;
+}
+
+.properties-color {
+    display: block;
+    position: relative;
+    height: 8px;
+    width: 8px;
+    border: 1px black solid;
+    vertical-align: center;
+    margin: 0px 3px;
+    background: rgba(255, 0, 255, 1);
+}
+
+.properties-filter {
+    font-family: monospace;
+    font-size: 9pt;
+    width: calc(100% - 1px);
+}
+
+table.properties b {
+    color: red;
+    font-weight: bolder;
+}
+
+
+/*endregion Props*/
