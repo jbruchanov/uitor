@@ -18,14 +18,14 @@ import org.w3c.dom.HTMLInputElement
 import kotlin.browser.document
 import kotlin.dom.clear
 
-private val CSS_PROPERTIES_TABLE = "properties"
-private val CSS_PROPERTIES_HEADER = "properties-header"
-private val CSS_PROPERTIES_HEADER_TITLE = "properties-header-title"
-private val CSS_PROPERTIES_COLOR = "properties-color"
-private val CSS_PROPERTIES_EVEN = "properties-even"
-private val CSS_PROPERTIES_ODD = "properties-odd"
-private val HTML_BOLD_START = "<b>"
-private val HTML_BOLD_END = "</b>"
+private const val CSS_PROPERTIES_TABLE = "properties"
+private const val CSS_PROPERTIES_HEADER = "properties-header"
+private const val CSS_PROPERTIES_HEADER_TITLE = "properties-header-title"
+private const val CSS_PROPERTIES_COLOR = "properties-color"
+private const val CSS_PROPERTIES_EVEN = "properties-even"
+private const val CSS_PROPERTIES_ODD = "properties-odd"
+private const val HTML_BOLD_START = "<b>"
+private const val HTML_BOLD_END = "</b>"
 
 class PropertiesView(
     private val rootElement: Element,
