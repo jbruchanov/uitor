@@ -53,3 +53,27 @@ fun String.matchingIndexes(expr: String, ignoreCase: Boolean = true): IntArray {
             result
         } ?: EMPTY
 }
+
+fun String.highlightAt(array: IntArray, hStart: String, hEnd: String = hStart): String {
+    if (array.isEmpty()) {
+        return this
+    }
+    val sb = StringBuilder()
+    var hIndex = 0
+    forEachIndexed { index, c ->
+        if (hIndex < array.size && index == array[hIndex]) {
+            sb.append(hStart).append(c).append(hEnd)
+            hIndex++
+        } else {
+            sb.append(c)
+        }
+    }
+    return sb.toString()
+}
+
+fun String.highlightAt(substring: String, hStart: String, hEnd: String = hStart): String {
+    if (substring.isEmpty()) {
+        return this
+    }
+    return this.replace(substring, "$hStart$substring$hEnd", true)
+}

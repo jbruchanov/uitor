@@ -1,12 +1,13 @@
 package com.scurab.uitor.web.inspector
 
-import com.scurab.uitor.web.coroutine.RememberLastItemChannel
-import com.scurab.uitor.common.util.isMatchingIndexes
+import com.scurab.uitor.common.util.highlightAt
 import com.scurab.uitor.common.util.matchingIndexes
+import com.scurab.uitor.web.coroutine.RememberLastItemChannel
 import com.scurab.uitor.web.ui.HtmlView
-import com.scurab.uitor.web.util.highlightAt
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.dom.create
@@ -16,9 +17,6 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import kotlin.browser.document
 import kotlin.dom.clear
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.html.stream.createHTML
 
 private val CSS_PROPERTIES_TABLE = "properties"
 private val CSS_PROPERTIES_HEADER = "properties-header"
@@ -26,6 +24,8 @@ private val CSS_PROPERTIES_HEADER_TITLE = "properties-header-title"
 private val CSS_PROPERTIES_COLOR = "properties-color"
 private val CSS_PROPERTIES_EVEN = "properties-even"
 private val CSS_PROPERTIES_ODD = "properties-odd"
+private val HTML_BOLD_START = "<b>"
+private val HTML_BOLD_END = "</b>"
 
 class PropertiesView(
     private val rootElement: Element,
@@ -49,7 +49,7 @@ class PropertiesView(
                             textInput(classes = "properties-filter") {
                                 id = "properties-filter"
                                 onKeyUpFunction = {
-                                    val filterValue = (it.currentTarget as HTMLInputElement).value.toLowerCase()
+                                    val filterValue = (it.currentTarget as HTMLInputElement).value.trim()
                                     filterChannel.offer(filterValue)
                                 }
                             }
@@ -68,7 +68,6 @@ class PropertiesView(
         }
 
         GlobalScope.launch {
-
             filterChannel.consumeAsFlow().debounce(100).collect {
                 rebuildHtml(it)
             }
@@ -103,7 +102,7 @@ class PropertiesView(
 
                     val matchingIndexes = key.matchingIndexes(filter)
                     val matchingFilter = filter.isEmpty()
-                            || matchingIndexes.isNotEmpty() || value?.contains(filter) == true
+                            || matchingIndexes.isNotEmpty() || value?.contains(filter, true) == true
 
                     if (!matchingFilter) {
                         return@forEach
@@ -120,13 +119,17 @@ class PropertiesView(
                                 val url =
                                     "#ViewProperty?screenIndex=${inspectorViewModel.screenIndex}&position=${root.position}&property=$key"
                                 a(href = url, target = "_blank") {
-                                    span { unsafe { raw(key.highlightAt(matchingIndexes, "<b>", "</b>")) } }
+                                    span { unsafe { raw(key.highlightAt(matchingIndexes, HTML_BOLD_START, HTML_BOLD_END)) } }
                                 }
                             } else {
-                                span { unsafe { raw(key.highlightAt(matchingIndexes, "<b>", "</b>")) } }
+                                span { unsafe { raw(key.highlightAt(matchingIndexes, HTML_BOLD_START, HTML_BOLD_END)) } }
                             }
                         }
-                        td { span { text(v?.toString() ?: "") } }
+                        td {
+                            span {
+                                unsafe { raw(value?.highlightAt(filter, HTML_BOLD_START, HTML_BOLD_END) ?: "") }
+                            }
+                        }
                     }
                     i++
                 }
