@@ -29,7 +29,7 @@ private const val CURSOR_CROSS_HAIR = "crosshair"
 private const val INNER_HEIGHT_OFFSET = 50
 private const val SCALE_STEP = 0.05
 private const val SCALE_MAX = 3.0
-private const val SCALE_MIN = 0.5
+private const val SCALE_MIN = 0.1
 
 private typealias Point = Pair<Double, Double>
 
