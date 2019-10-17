@@ -21,3 +21,20 @@ fun HTMLCollection.forEach(block: (Element) -> Unit) {
 fun HTMLCollection.forEachIndexed(block: (Element, Int) -> Unit) {
     for (i in (0 until this.length)) block(this[i] ?: npe("Null element at index:$i"), i)
 }
+
+fun String.highlightAt(array: IntArray, hStart: String, hEnd: String = hStart): String {
+    if (array.isEmpty()) {
+        return this
+    }
+    val sb = StringBuilder()
+    var hIndex = 0
+    forEachIndexed { index, c ->
+        if (hIndex < array.size && index == array[hIndex]) {
+            sb.append(hStart).append(c).append(hEnd)
+            hIndex++
+        } else {
+            sb.append(c)
+        }
+    }
+    return sb.toString()
+}
