@@ -2,11 +2,12 @@ package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.common.util.highlightAt
 import com.scurab.uitor.common.util.matchingIndexes
-import com.scurab.uitor.web.coroutine.RememberLastItemChannel
 import com.scurab.uitor.web.ui.HtmlView
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import kotlinx.html.*
@@ -38,7 +39,8 @@ class PropertiesView(
 
     private val contentRoot: HTMLElement
     private val tableRootElement: HTMLElement
-    private val filterChannel = RememberLastItemChannel<String>()
+    @ExperimentalCoroutinesApi
+    private val filterChannel = ConflatedBroadcastChannel("")
 
     init {
         contentRoot = document.create.div {
@@ -64,11 +66,11 @@ class PropertiesView(
 
         tableRootElement = document.getElementById("properties-table") as HTMLElement
         inspectorViewModel.selectedNode.observe {
-            rebuildHtml(filterChannel.lastItem ?: "")
+            rebuildHtml(filterChannel.value ?: "")
         }
 
         GlobalScope.launch {
-            filterChannel.consumeAsFlow().debounce(100).collect {
+            filterChannel.asFlow().debounce(100).collect {
                 rebuildHtml(it)
             }
         }

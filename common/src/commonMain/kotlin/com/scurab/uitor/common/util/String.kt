@@ -72,8 +72,26 @@ fun String.highlightAt(array: IntArray, hStart: String, hEnd: String = hStart): 
 }
 
 fun String.highlightAt(substring: String, hStart: String, hEnd: String = hStart): String {
-    if (substring.isEmpty()) {
+    if (substring.isEmpty() || substring.length > this.length) {
         return this
     }
-    return this.replace(substring, "$hStart$substring$hEnd", true)
+
+    val sb = StringBuilder()
+    var startIndex = this.indexOf(substring, 0, true)
+    var i = 0
+    while (i < length) {
+        if (startIndex == i) {
+            sb.append(hStart)
+            //add rest of substring matching same case as original
+            (substring.indices).forEach { _ ->
+                sb.append(this[i++])
+            }
+            sb.append(hEnd)
+            startIndex = this.indexOf(substring, i, true)
+        } else {
+            sb.append(this[i])
+        }
+        i++
+    }
+    return sb.toString()
 }
