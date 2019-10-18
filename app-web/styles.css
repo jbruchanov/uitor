@@ -127,11 +127,11 @@ tr.tree-odd {
     height: calc(100vh - 60px);
     overflow-y: scroll;
     display: block;
+    column-gap: 40px;
 }
 
 .properties-header, .properties-header-title {
     border-bottom: 2px solid #6f7277;
-    padding: 3px 1px;
     font-size: 1.2em;
     font-weight: bold;
     text-align: left;
@@ -145,11 +145,16 @@ tr.tree-odd {
 }
 
 tr.properties-even {
+    padding: 2px 15px;
     background-color: #FFFFFF;
 }
 
 tr.properties-odd {
     background-color: #e5f8ff;
+}
+
+td {
+    padding: 2px 0px 2px 5px;
 }
 
 .properties-even:hover, .properties-odd:hover {

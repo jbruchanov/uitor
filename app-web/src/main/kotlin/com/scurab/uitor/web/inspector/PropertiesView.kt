@@ -90,6 +90,7 @@ class PropertiesView(
                             span { text("Property") }
                         }
                         td(classes = CSS_PROPERTIES_HEADER_TITLE) {
+                            attributes["style"] = "width:100%"
                             span { text("Value") }
                         }
                     }
