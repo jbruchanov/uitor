@@ -42,7 +42,7 @@ class CanvasView(
     private val image = Image()
     private val imageContext get() = layers[LAYER_IMAGE].context
     private val drawingContext get() = layers[LAYER_DRAWING].context
-    private val mouseCrossRender = StrokeRenderContext("#8F00".toColor())
+    private val mouseCrossRender = StrokeRenderContext(inspectorViewModel.clientConfig.selectionColor.toColor())
     private val nodeRender =
         RectangleRenderContext(
             inspectorViewModel.clientConfig.selectionColor.toColor(),
