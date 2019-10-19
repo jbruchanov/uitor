@@ -46,6 +46,7 @@ class ViewNode(json: Json) : IViewNode {
     val locationScreenX: Int get() = data.int(ViewNodeFields.LocationScreenX)
     val locationScreenY: Int get() = data.int(ViewNodeFields.LocationScreenY)
     val typeSimple: String by lazy { data.string(ViewNodeFields.Type).substringAfterLast(".") }
+    val type: String get() = data.string(ViewNodeFields.Type)
 
     override fun findFrontVisibleView(x: Int, y: Int, ignore: Set<IViewNode>): ViewNode? {
         //disabled for now, this makes views inactive actitivies "invisible" for search

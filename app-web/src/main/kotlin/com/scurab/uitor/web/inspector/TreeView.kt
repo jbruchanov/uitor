@@ -1,5 +1,6 @@
 package com.scurab.uitor.web.inspector
 
+import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView
@@ -115,7 +116,12 @@ class TreeView(
                         span {
                             attributes["style"] = styleTemplate(vn.level)
                         }
-                        span(classes = CSS_TREE_CLASS_NAME) { text(vn.typeSimple) }
+                        span(classes = CSS_TREE_CLASS_NAME) {
+                            vn.typeHighlightColor()?.let {
+                                attributes["style"] = "background-color:${it.htmlRGBA}"
+                            }
+                            text(vn.typeSimple)
+                        }
                         span(classes = "tree-res-id") {
                             text(vn.ids?.takeIf { it != "undefined" }?.let { " [${it}]" } ?: "")
                         }
@@ -135,5 +141,8 @@ class TreeView(
         val element = document.getElementById(position.htmlViewNodeId)
         (element as? HTMLElement)?.let { block(element, this) }
         return this
+    }
+    private fun ViewNode.typeHighlightColor(): Color? {
+        return inspectorViewModel.clientConfig.typeHighlights[type]
     }
 }
