@@ -4,7 +4,10 @@ import java.io.File
 
 fun main() {
     DevServer(
-        File("app-web/src/main"),
+        arrayOf(
+            File("app-web/src"),
+            File("common/src/commonMain")
+        ),
         "gradlew.bat app-web:_createIndexHtml"
     ).start()
 }

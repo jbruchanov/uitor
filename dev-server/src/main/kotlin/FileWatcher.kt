@@ -8,33 +8,35 @@ import java.nio.file.*
 class FileWatcher {
     private var isRunning = true
 
-    fun start(folder: File, callback: (Path) -> Unit) {
-        Thread { startChecking(folder, callback) }.start()
+    fun start(folders: Array<File>, callback: (Path) -> Unit) {
+        Thread { startChecking(folders, callback) }.start()
     }
 
     fun stop() {
         isRunning = false
     }
 
-    private fun startChecking(folder: File, callback: (Path) -> Unit) {
+    private fun startChecking(folders: Array<File>, callback: (Path) -> Unit) {
         val watcher = FileSystems.getDefault().newWatchService()
-        val path = folder.toPath()
-        path.register(
-            watcher,
-            StandardWatchEventKinds.ENTRY_MODIFY,
-            StandardWatchEventKinds.ENTRY_CREATE,
-            StandardWatchEventKinds.ENTRY_DELETE
-        )
-        Files.walk(path)
-            .filter { Files.isDirectory(it) }
-            .forEach {
-                it.register(
-                    watcher,
-                    StandardWatchEventKinds.ENTRY_MODIFY,
-                    StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_DELETE
-                )
-            }
+        folders.forEach { folder ->
+            val path = folder.toPath()
+            path.register(
+                watcher,
+                StandardWatchEventKinds.ENTRY_MODIFY,
+                StandardWatchEventKinds.ENTRY_CREATE,
+                StandardWatchEventKinds.ENTRY_DELETE
+            )
+            Files.walk(path)
+                .filter { Files.isDirectory(it) }
+                .forEach {
+                    it.register(
+                        watcher,
+                        StandardWatchEventKinds.ENTRY_MODIFY,
+                        StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_DELETE
+                    )
+                }
+        }
 
         while (isRunning) {
             val key: WatchKey?

@@ -26,12 +26,12 @@ import java.nio.charset.Charset
 
 
 class DevServer(
-    private val watchingDirectory: File,
+    private val watchingDirectories: Array<File>,
     private val rebuildCommand: String
 ) {
     fun start() {
         val sockets = mutableSetOf<WebSocketServerSession>()
-        FileWatcher().start(watchingDirectory) { path ->
+        FileWatcher().start(watchingDirectories) { path ->
             GlobalScope.launch {
                 sockets.forEach {
                     println("Notify socket:${it.isActive}")
@@ -73,6 +73,7 @@ class DevServer(
                 }
 
                 static {
+                    files(File("app-web/src/test/resources/v1"))
                     files(File("app-web"))
                 }
 
