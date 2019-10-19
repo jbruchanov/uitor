@@ -10,21 +10,15 @@ import kotlin.js.Json
 
 class ClientConfig(private val json: Json) {
     val selectionColor by jsonField<String>(json, ConfigFields.SelectionColor)
-    val propertyHighlights =
-        json.getMap(ConfigFields.PropertyHighlights)
-            .map({ it.toRegex() }, { it.toString().toColor() })
     val serverVersion by jsonField<Int>(json, ConfigFields.ServerVersion)
     val device = json.getMap(ConfigFields.Device)
-    val typeHighlights = json.getMap(ConfigFields.TypeHighlights)
-        .map({ it }, { it.toString().toColor() })
     val groovy by jsonField<Boolean>(json, ConfigFields.Groovy)
     val pointerIgnoreIds by jsonField<IntArray>(json, ConfigFields.PointerIgnoreIds)
 
-    private fun convertPropertyHighlights(propertyHighlights: Map<String, *>): Map<Regex, Color> {
-        val result = mutableMapOf<Regex, Color>()
-        propertyHighlights.forEach { (regex, color) ->
-            result[regex.toRegex()] = color.toString().toColor()
-        }
-        return result
-    }
+    val propertyHighlights =
+        json.getMap(ConfigFields.PropertyHighlights)
+            .map({ it.toRegex() }, { it.toString().toColor() })
+
+    val typeHighlights = json.getMap(ConfigFields.TypeHighlights)
+        .map({ it }, { it.toString().toColor() })
 }

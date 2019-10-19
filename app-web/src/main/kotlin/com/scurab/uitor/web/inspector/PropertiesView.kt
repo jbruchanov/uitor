@@ -3,7 +3,6 @@
 package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.common.render.Color
-import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.highlightAt
 import com.scurab.uitor.common.util.matchingIndexes
 import com.scurab.uitor.web.ui.HtmlView
@@ -21,7 +20,6 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import kotlin.browser.document
 import kotlin.dom.clear
-import kotlin.random.Random
 
 private const val CSS_PROPERTIES_TABLE = "properties"
 private const val CSS_PROPERTIES_HEADER = "properties-header"
