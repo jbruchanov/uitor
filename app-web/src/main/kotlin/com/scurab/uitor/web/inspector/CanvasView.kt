@@ -51,6 +51,7 @@ class CanvasView(
     private var scale: Double = 1.0
 
     var renderMouseCross: Boolean = false
+    var useWheelToScale: Boolean = false
 
     init {
         document.addEventListener(Events.keydown.name, EventListener {
@@ -79,7 +80,11 @@ class CanvasView(
                 renderMouseCross { it.offsetPoint }
             }
             addMouseOutListener { inspectorViewModel.hoveredNode.post(null) }
-            addMouseWheelListener { onScaleChange(sign(-it.deltaY).toInt()) }
+            addMouseWheelListener {
+                if (useWheelToScale) {
+                    onScaleChange(sign(-it.deltaY).toInt())
+                }
+            }
             addMouseClickListener {
                 inspectorViewModel.selectedNode.apply {
                     val node = pickNodeForNotification(item, it.offsetPoint.viewNode())
