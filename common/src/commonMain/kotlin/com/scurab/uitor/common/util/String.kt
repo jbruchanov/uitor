@@ -88,7 +88,9 @@ fun String.highlightAt(substring: String, hStart: String, hEnd: String = hStart)
             }
             sb.append(hEnd)
             startIndex = this.indexOf(substring, i, true)
-        } else {
+        }
+        //additional check if internal loops add i++, so it might be already last item
+        if (i < length) {
             sb.append(this[i])
         }
         i++
