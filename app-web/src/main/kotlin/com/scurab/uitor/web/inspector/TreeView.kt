@@ -4,6 +4,7 @@ import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.pickNodeForNotification
+import com.scurab.uitor.web.util.scrollIntoViewArgs
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
@@ -72,6 +73,7 @@ class TreeView(
             selectedNode?.element { vn ->
                 removeClass(vn.position.evenOddStyle)
                 addClass(CSS_TREE_SELECTED)
+                scrollIntoView(scrollIntoViewArgs())
             }
             lastHighlightedItem = selectedNode
             dlog(TAG) { "New LastSelectedItem:${lastHighlightedItem?.position}" }
