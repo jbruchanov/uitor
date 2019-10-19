@@ -1,3 +1,5 @@
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.common.util.highlightAt
@@ -28,6 +30,7 @@ private const val CSS_PROPERTIES_ODD = "properties-odd"
 private const val HTML_BOLD_START = "<b>"
 private const val HTML_BOLD_END = "</b>"
 
+
 class PropertiesView(
     private val rootElement: Element,
     private val inspectorViewModel: InspectorViewModel
@@ -39,7 +42,6 @@ class PropertiesView(
 
     private val contentRoot: HTMLElement
     private val tableRootElement: HTMLElement
-    @ExperimentalCoroutinesApi
     private val filterChannel = ConflatedBroadcastChannel("")
 
     init {
