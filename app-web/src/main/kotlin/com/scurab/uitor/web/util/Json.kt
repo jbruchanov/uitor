@@ -68,10 +68,10 @@ fun Json.getMap(key: String, to: MutableMap<String, Any?> = linkedMapOf()): Muta
     }
 }
 
-fun <T> jsonField(json: Json, name: String? = null): ReadOnlyProperty<ViewNode, T> = JsonDelegate(json, name)
+fun <T> jsonField(json: Json, name: String? = null): ReadOnlyProperty<Any, T> = JsonDelegate(json, name)
 
-private class JsonDelegate<T>(private val json: Json, private val name: String?) : ReadOnlyProperty<ViewNode, T> {
-    override fun getValue(thisRef: ViewNode, property: KProperty<*>): T {
+private class JsonDelegate<T>(private val json: Json, private val name: String?) : ReadOnlyProperty<Any, T> {
+    override fun getValue(thisRef: Any, property: KProperty<*>): T {
         val propertyName = name ?: property.name
         return try {
             val v = json[propertyName]
@@ -84,10 +84,10 @@ private class JsonDelegate<T>(private val json: Json, private val name: String?)
     }
 }
 
-fun <T> optJsonField(json: Json, name: String? = null): ReadOnlyProperty<ViewNode, T?> = OptJsonDelegate(json, name)
+fun <T> optJsonField(json: Json, name: String? = null): ReadOnlyProperty<Any, T?> = OptJsonDelegate(json, name)
 
-private class OptJsonDelegate<T>(private val json: Json, private val name: String?) : ReadOnlyProperty<ViewNode, T?> {
-    override fun getValue(thisRef: ViewNode, property: KProperty<*>): T? {
+private class OptJsonDelegate<T>(private val json: Json, private val name: String?) : ReadOnlyProperty<Any, T?> {
+    override fun getValue(thisRef: Any, property: KProperty<*>): T? {
         val propertyName = name ?: property.name
         return try {
             json[propertyName] as? T
