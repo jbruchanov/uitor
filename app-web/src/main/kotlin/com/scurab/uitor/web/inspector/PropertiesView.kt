@@ -2,6 +2,8 @@
 
 package com.scurab.uitor.web.inspector
 
+import com.scurab.uitor.common.render.Color
+import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.highlightAt
 import com.scurab.uitor.common.util.matchingIndexes
 import com.scurab.uitor.web.ui.HtmlView
@@ -19,6 +21,7 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import kotlin.browser.document
 import kotlin.dom.clear
+import kotlin.random.Random
 
 private const val CSS_PROPERTIES_TABLE = "properties"
 private const val CSS_PROPERTIES_HEADER = "properties-header"
@@ -42,6 +45,7 @@ class PropertiesView(
     private val contentRoot: HTMLElement
     private val tableRootElement: HTMLElement
     private val filterChannel = ConflatedBroadcastChannel("")
+    private val propertyHighlights = inspectorViewModel.clientConfig.propertyHighlights
 
     init {
         contentRoot = document.create.div {
@@ -114,8 +118,10 @@ class PropertiesView(
 
                     tr(classes = if (i % 2 == 0) CSS_PROPERTIES_EVEN else CSS_PROPERTIES_ODD) {
                         td {
-                            span(classes = CSS_PROPERTIES_COLOR) {
-                                text(" ")
+                            key.toPropertyHighlightColor()?.let {
+                                span(classes = CSS_PROPERTIES_COLOR) {
+                                    attributes["style"] = "background-color:${it.htmlRGBA}"
+                                }
                             }
                         }
                         td {
@@ -141,6 +147,16 @@ class PropertiesView(
         }.apply {
             tableRootElement.append(this)
         }
+    }
+
+    private fun String.toPropertyHighlightColor(): Color? {
+        val v = this.toLowerCase()
+        propertyHighlights.forEach { (r, c) ->
+            if (r.matches(v)) {
+                return c
+            }
+        }
+        return null
     }
 }
 

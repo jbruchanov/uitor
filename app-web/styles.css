@@ -164,12 +164,11 @@ td {
 .properties-color {
     display: block;
     position: relative;
-    height: 8px;
-    width: 8px;
-    border: 1px black solid;
+    height: 12px;
+    width: 12px;
+    border: 1px gray solid;
     vertical-align: center;
     margin: 0 3px;
-    background: rgba(255, 0, 255, 1);
 }
 
 .properties-filter {
