@@ -1,0 +1,55 @@
+{
+  "SelectionColor": "#FF00F0",
+  "PropertyHighlights": {
+    "text.*|.*TextColor.*|CanResolveText.*": "#FF00FF",
+    "[x|y|z]|measure.*|width|height|.*padding.*|translation.*|scale.*|scroll.|top|left|right|bottom|rotation.?": "#2C6B00",
+    ".*visibility|isshown|willnotdraw": "#C61515",
+    "layout.*": "#4C992C"
+  },
+  "ServerVersion": 1,
+  "Device": {
+    "BOARD": "goldfish_x86_64",
+    "CPU_ABI2": "",
+    "HOST": "abfarm730",
+    "SUPPORTED_64_BIT_ABIS": [
+      "x86_64"
+    ],
+    "CPU_ABI": "x86_64",
+    "PERMISSIONS_REVIEW_REQUIRED": false,
+    "DISPLAY": "PSR1.180720.075",
+    "SUPPORTED_ABIS": [
+      "x86_64",
+      "x86"
+    ],
+    "FINGERPRINT": "google/sdk_gphone_x86_64/generic_x86_64:9/PSR1.180720.075/5124027:user/release-keys",
+    "PRODUCT": "sdk_gphone_x86_64",
+    "ID": "PSR1.180720.075",
+    "TYPE": "user",
+    "SERIAL": "unknown",
+    "DEVICE": "generic_x86_64",
+    "TIME": 1541887072000,
+    "MODEL": "Android SDK built for x86_64",
+    "MANUFACTURER": "Google",
+    "USER": "android-build",
+    "BRAND": "google",
+    "SUPPORTED_32_BIT_ABIS": [
+      "x86"
+    ],
+    "HARDWARE": "ranchu",
+    "IS_DEBUGGABLE": false,
+    "BOOTLOADER": "unknown",
+    "RADIO": "1.0.0.0",
+    "DisplayDensity": "2.63",
+    "API": 28,
+    "UNKNOWN": "unknown",
+    "IS_EMULATOR": true,
+    "TAGS": "release-keys"
+  },
+  "TypeHighlights": {
+    "android.widget.Button": "#26FF00FF"
+  },
+  "Groovy": false,
+  "PointerIgnoreIds": [
+    2131362029
+  ]
+}
