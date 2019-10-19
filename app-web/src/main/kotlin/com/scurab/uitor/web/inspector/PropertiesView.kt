@@ -101,9 +101,9 @@ class PropertiesView(
                     }
                 }
                 var i = 0
-                root.data.forEach { (keyRaw, v) ->
+                root.dataSortedKeys.forEach { keyRaw ->
                     val key = keyRaw.substringBefore(":")
-                    val value = v?.toString()
+                    val value = root.data[keyRaw]?.toString()
                     val link = keyRaw.endsWith(":")
 
                     val matchingIndexes = key.matchingIndexes(filter)

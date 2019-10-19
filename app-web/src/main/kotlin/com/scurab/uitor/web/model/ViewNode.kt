@@ -26,6 +26,8 @@ class ViewNode(json: Json) : IViewNode {
         .toMutableMap()
         .filter { !it.key.startsWith("_") }
 
+    val dataSortedKeys = data.keys.sortedWith(COMPARATOR)
+
     override val nodes: List<ViewNode> = json.getTypedListOf(ViewNodeFields.Nodes) {
         try {
             ViewNode(it)
@@ -75,10 +77,6 @@ class ViewNode(json: Json) : IViewNode {
         nodes.forEach { it.forEachIndexed(block) }
     }
 
-    fun viewNodeOfPosition(position: Int) {
-
-    }
-
     private fun Map<String, Any?>.int(key: String): Int {
         try {
             return this[key] as Int
@@ -96,4 +94,31 @@ class ViewNode(json: Json) : IViewNode {
             throw e
         }
     }
+
+    companion object {
+        val COMPARATOR: Comparator<String> = object : Comparator<String> {
+            private val orderMap = mapOf(
+                // @formatter:off
+                Pair(ViewNodeFields.Type,       "001"),
+                Pair(ViewNodeFields.IDi,        "002"),
+                Pair(ViewNodeFields.IDs,        "003"),
+                Pair(ViewNodeFields.Level,      "004"),
+                Pair(ViewNodeFields.Position,   "005"),
+                Pair("Groovy Console",          "006"),
+                Pair(ViewNodeFields.Owner,      "007"),
+                Pair("Inheritance",             "008"),
+                Pair("Context:",                "009"),
+                Pair("StringValue:",            "010")
+                // @formatter:on
+            )
+            override fun compare(a: String, b: String): Int {
+                val a = (orderMap[a] ?: "999") + a
+                val b = (orderMap[b] ?: "999") + b
+                return a.compareTo(b)
+            }
+        }
+    }
 }
+
+
+
