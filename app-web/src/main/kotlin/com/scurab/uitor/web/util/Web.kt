@@ -1,7 +1,10 @@
 package com.scurab.uitor.web.util
 
 import com.scurab.uitor.common.util.npe
-import org.w3c.dom.*
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.w3c.dom.HTMLCollection
+import org.w3c.dom.get
 
 fun Document.requireElementById(id: String) = getElementById(id) ?: npe(id)
 fun Document.requireElementsByClass(clazz: String) = getElementsByClassName(clazz).toArray()

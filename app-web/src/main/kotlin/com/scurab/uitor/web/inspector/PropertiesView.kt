@@ -5,7 +5,6 @@ package com.scurab.uitor.web.inspector
 import com.scurab.uitor.common.util.highlightAt
 import com.scurab.uitor.common.util.matchingIndexes
 import com.scurab.uitor.web.ui.HtmlView
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.asFlow

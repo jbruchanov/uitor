@@ -3,7 +3,6 @@
 package com.scurab.uitor.web.util
 
 import com.scurab.uitor.common.util.elog
-import com.scurab.uitor.web.model.ViewNode
 import kotlin.js.Json
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
