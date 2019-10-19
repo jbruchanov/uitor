@@ -1,4 +1,12 @@
+:root {
+    --tree-offset-left: 15pt;
+    --even-background: #f3f7fb;
+    --odd-background: #ffffff;
+    --selected-background: #a3d7fb;
+}
+
 /*region Scrollbar*/
+
 ::-webkit-scrollbar {
     width: 0.5em;
     height: 0.5em
@@ -66,9 +74,6 @@
 }
 
 /*region Tree*/
-:root {
-    --tree-offset-left: 15pt;
-}
 
 table.tree {
     text-align: left;
@@ -90,20 +95,16 @@ table.tree tr {
 }
 
 tr.tree-even {
-    background-color: antiquewhite;
+    background-color: var(--even-background);
 }
 
 tr.tree-odd {
-    background-color: bisque;
+    background-color: var(--odd-background);
 }
 
 .tree-selected {
-    background-color: aquamarine;
+    background-color: var(--selected-background);
 }
-
-/*.tree-even:hover, .tree-odd:hover {*/
-/*    background-color: aquamarine;*/
-/*}*/
 
 .tree-class-name {
 
@@ -145,20 +146,19 @@ tr.tree-odd {
 }
 
 tr.properties-even {
-    padding: 2px 15px;
-    background-color: #FFFFFF;
+    background-color: var(--even-background);
 }
 
 tr.properties-odd {
-    background-color: #e5f8ff;
+    background-color: var(--odd-background);
 }
 
 td {
-    padding: 2px 0px 2px 5px;
+    padding: 2px 0 2px 5px;
 }
 
 .properties-even:hover, .properties-odd:hover {
-    background-color: lightsalmon;
+    background-color: var(--selected-background);
 }
 
 .properties-color {
@@ -168,7 +168,7 @@ td {
     width: 8px;
     border: 1px black solid;
     vertical-align: center;
-    margin: 0px 3px;
+    margin: 0 3px;
     background: rgba(255, 0, 255, 1);
 }
 
@@ -179,7 +179,7 @@ td {
 }
 
 table.properties b {
-    color: red;
+    color: #ff0077;
     font-weight: bolder;
 }
 
