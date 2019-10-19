@@ -1,9 +1,10 @@
 package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.common.util.Observable
+import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.ViewNode
 
-class InspectorViewModel {
+class InspectorViewModel(val clientConfig: ClientConfig) {
 
     val rootNode = Observable<ViewNode?>()
     val hoveredNode = Observable<ViewNode?>()

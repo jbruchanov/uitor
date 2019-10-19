@@ -1,7 +1,11 @@
+import com.scurab.uitor.web.ServerApi
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
-import sample.hello
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 fun main() {
-    println(hello())
-    LayoutInspectorPage().onStart()
+    GlobalScope.launch {
+        val config = ServerApi().loadClientConfiguration()
+        LayoutInspectorPage(config).onStart()
+    }
 }

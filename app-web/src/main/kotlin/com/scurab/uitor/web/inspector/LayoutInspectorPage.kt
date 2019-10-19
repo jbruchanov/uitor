@@ -1,11 +1,11 @@
 package com.scurab.uitor.web.inspector
 
-import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.ServerApi
+import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
 import com.scurab.uitor.web.util.requireElementById
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.asDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLTableElement
@@ -13,7 +13,6 @@ import org.w3c.dom.get
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.clear
-import kotlin.js.Json
 import kotlin.math.max
 import kotlin.math.min
 
@@ -21,13 +20,16 @@ private const val ID_LEFT = "split-table-left"
 private const val ID_MID = "split-table-mid"
 private const val ID_RIGHT = "split-table-right"
 
-class LayoutInspectorPage {
+class LayoutInspectorPage(
+    clientConfig: ClientConfig
+) {
     private val root = document.requireElementById("root")
     private lateinit var columnsLayout: ColumnsLayout
     private lateinit var canvasView: CanvasView
     private lateinit var treeView: TreeView
     private lateinit var propertiesView: PropertiesView
-    private val inspectorViewModel = InspectorViewModel()
+    private val inspectorViewModel = InspectorViewModel(clientConfig)
+    private val serverApi = ServerApi()
 
     fun onStart() {
         root.clear()
@@ -38,7 +40,7 @@ class LayoutInspectorPage {
 
         GlobalScope.launch {
             async {
-                val item = ViewNode(load())
+                val item = serverApi.loadViewHierarchy(0)
                 canvasView.renderMouseCross = true
                 inspectorViewModel.rootNode.post(item)
                 columnsLayout.initColumnSizes()
@@ -47,19 +49,6 @@ class LayoutInspectorPage {
                 canvasView.loadImage("/device.png")
             }
         }
-    }
-
-    private suspend fun load(): Json {
-        val text = window
-            .fetch("viewhierarchy.json")
-            .asDeferred()
-            .await()
-            .text()
-            .asDeferred()
-            .await()
-
-        println(text)
-        return JSON.parse(text)
     }
 
     class ColumnsLayoutDelegate(val page: LayoutInspectorPage) : IColumnsLayoutDelegate {
