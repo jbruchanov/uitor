@@ -21,6 +21,9 @@ enum class Events {
 fun EventTarget.addMouseClickListener(callback: (MouseEvent) -> Unit) =
     addEventListener(Events.click.name, { event -> callback(event as MouseEvent) })
 
+fun EventTarget.addMouseDoubleClickListener(callback: (MouseEvent) -> Unit) =
+    addEventListener(Events.dblclick.name, { event -> callback(event as MouseEvent) })
+
 fun EventTarget.addMouseDownListener(callback: (MouseEvent) -> Unit) =
     addEventListener(Events.mousedown.name, { event -> callback(event as MouseEvent) })
 

@@ -2,6 +2,7 @@ package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.pickNodeForNotification
 import kotlinx.html.*
 import kotlinx.html.dom.create
@@ -26,7 +27,7 @@ const val CSS_TREE_SELECTED = "tree-selected"
 class TreeView(
     private val rootElement: Element,
     private val inspectorViewModel: InspectorViewModel
-) {
+) : HtmlView {
     private val TAG = "TreeView"
     private val tableRowToViewNodeMap = mutableListOf<ViewNode?>()
     private val styleTemplate: (Int) -> String = { "padding-left: calc(var( --tree-offset-left) * $it);" }
@@ -55,7 +56,10 @@ class TreeView(
         }
     }
 
-    init {
+    override lateinit var element: HTMLElement
+        private set
+
+    override fun attach(): TreeView {
         inspectorViewModel.rootNode.observe {
             rebuildHtml()
         }
@@ -84,6 +88,7 @@ class TreeView(
                 }
             }
         }
+        return this
     }
 
     private fun rebuildHtml() {
@@ -91,7 +96,7 @@ class TreeView(
         rootElement.clear()
         val viewNode = inspectorViewModel.rootNode.item ?: return
 
-        document.create.table {
+        element = document.create.table {
             classes = setOf(CSS_TREE)
             viewNode.forEachIndexed { _, vn ->
                 tr(classes = vn.position.evenOddStyle) {
