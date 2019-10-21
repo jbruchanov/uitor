@@ -24,6 +24,14 @@ class ViewNode(json: Json) : IViewNode {
     val rawdata: Map<String, Any?> = json.getMap(ViewNodeFields.Data)
     override val data: Map<String, Any?> = rawdata
         .toMutableMap()
+        .apply {
+            //TODO do this on server
+            this[ViewNodeFields.IDi] = idi
+            this[ViewNodeFields.IDs] = ids
+            this[ViewNodeFields.Level] = level
+            this[ViewNodeFields.Position] = position
+            this[ViewNodeFields.Owner] = owner
+        }
         .filter { !it.key.startsWith("_") }
 
     val dataSortedKeys = data.keys.sortedWith(COMPARATOR)
@@ -108,7 +116,7 @@ class ViewNode(json: Json) : IViewNode {
                 Pair(ViewNodeFields.Owner,      "007"),
                 Pair("Inheritance",             "008"),
                 Pair("Context:",                "009"),
-                Pair("StringValue:",            "010")
+                Pair("StringValue",             "010")
                 // @formatter:on
             )
             override fun compare(a: String, b: String): Int {

@@ -100,8 +100,7 @@ class PropertiesView(
                         }
                     }
                 }
-                var i = 0
-                root.dataSortedKeys.forEach { keyRaw ->
+                root.dataSortedKeys.forEachIndexed { i, keyRaw ->
                     val key = keyRaw.substringBefore(":")
                     val value = root.data[keyRaw]?.toString()
                     val link = keyRaw.endsWith(":")
@@ -111,7 +110,7 @@ class PropertiesView(
                             || matchingIndexes.isNotEmpty() || value?.contains(filter, true) == true
 
                     if (!matchingFilter) {
-                        return@forEach
+                        return@forEachIndexed
                     }
 
                     tr(classes = if (i % 2 == 0) CSS_PROPERTIES_EVEN else CSS_PROPERTIES_ODD) {
@@ -139,7 +138,6 @@ class PropertiesView(
                             }
                         }
                     }
-                    i++
                 }
             }
         }.apply {
