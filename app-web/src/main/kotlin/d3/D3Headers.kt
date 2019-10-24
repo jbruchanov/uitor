@@ -74,6 +74,7 @@ external interface Tree {
 }
 
 external fun linkHorizontal() : Link
+external fun linkVertical() : Link
 
 external interface Link {
     fun x(block: (Node<*>) -> Double): Link
