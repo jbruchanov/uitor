@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.tree
 
 import com.scurab.uitor.common.render.toColor
+import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.model.ViewNode
 import d3.*
 import org.w3c.dom.get
@@ -19,6 +20,8 @@ private const val CSS_NODE_TYPE = "ui-tree-node-type"
 private const val CSS_NODE_ID = "ui-tree-node-id"
 
 class TidyTree {
+
+    private val TAG = "TidyTree"
 
     fun generateSvg(data: ViewNode, config: TreeConfig = TreeConfig.shortTypesTidyTree()): SVGElement {
         val (root, width, height, x0) = layout(data, config)
@@ -73,6 +76,8 @@ class TidyTree {
 
         node.append("text")
             .classes(CSS_NODE_TYPE)
+            .onMouseOver { dlog(TAG) { it.item.type } }
+            .onMouseLeave {  }
             .dy { d -> if (!config.showViewIds || d.item.ids == null) "0.31em" else "-.2em" }
             .x { d: Node<*> -> d.textAnchorX(config) }
             .textAnchor { d: Node<*> -> d.textAnchor(config) }
@@ -150,6 +155,7 @@ private val Node<*>.circle: SVGCircleElement
         return document.getElementById(groupId)?.getElementsByTagName("circle")?.get(0) as? SVGCircleElement
             ?: throw IllegalStateException("Unable to find 'circle' in node:'$item'")
     }
+
 private fun Node<*>.textAnchor(config: TreeConfig) =
     if (config.viewGroupAnchorEnd && children?.isNotEmpty() == true) "end" else "start"
 

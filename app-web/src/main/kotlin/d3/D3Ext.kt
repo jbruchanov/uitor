@@ -30,6 +30,8 @@ fun Selection.style(style: String): Selection = attr("style", style)
 fun Selection.width(width: Double): Selection = attr("width", "${width}px")
 fun Selection.height(height: Double): Selection = attr("height", "${height}px")
 fun Selection.onClick(block: (Node<*>) -> Unit): Selection = on("click", block)
+fun Selection.onMouseOver(block: (Node<*>) -> Unit): Selection = on("mouseover", block)
+fun Selection.onMouseLeave(block: (Node<*>) -> Unit): Selection = on("mouseleave", block)
 fun Selection.classes(classes: Set<String>): Selection = attr("class", (classes.joinToString(" ")))
 fun Selection.classes(classes: String): Selection = attr("class", classes)
 
