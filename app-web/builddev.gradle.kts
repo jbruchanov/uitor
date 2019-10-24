@@ -42,13 +42,26 @@ val createIndexHtmlTask = task("_createIndexHtml") {
             deps.forEach { (_, d) -> d.remove(moduleName) }
         }
 
+        val exclude = "uitor-app-web.js"
         var text = indexHtmlTemplate.readText()
         text = text.replace("<!--%SCRIPTS%-->",
-            depsOrdered.joinToString("\n") {
+            depsOrdered
+                .filter { it.name != exclude }
+                .joinToString("\n") {
                 val n = it.relativeTo(project.projectDir).toString().replace("\\", "/")
                 "<script src=\"$n\"></script>"
             }
         )
+        val app = depsOrdered.last().relativeTo(project.projectDir).toString().replace("\\", "/")
+        text += """
+            <script>
+                window.onload = function() {
+                    let script = document.createElement('script');
+                    script.src = "$app";
+                    document.head.appendChild(script)
+                };
+            </script>
+        """.trimIndent()
         file("index.html").apply {
             delete()
             writeText(text)
