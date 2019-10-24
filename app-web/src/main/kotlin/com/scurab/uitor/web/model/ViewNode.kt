@@ -11,9 +11,10 @@ import com.scurab.uitor.web.util.getMap
 import com.scurab.uitor.web.util.getTypedListOf
 import com.scurab.uitor.web.util.jsonField
 import com.scurab.uitor.web.util.optJsonField
+import d3.ITreeItem
 import kotlin.js.Json
 
-class ViewNode(json: Json) : IViewNode {
+class ViewNode(json: Json) : IViewNode, ITreeItem {
 
     override val idi: Int by jsonField(json, ViewNodeFields.IDi)
     override val ids: String? by optJsonField(json, ViewNodeFields.IDs)
@@ -45,6 +46,8 @@ class ViewNode(json: Json) : IViewNode {
         }
     }
 
+    override val children: Array<ViewNode> = nodes.toTypedArray()
+
     override val rect: Rect by lazy {
         Rect(
             locationScreenX,
@@ -56,6 +59,7 @@ class ViewNode(json: Json) : IViewNode {
     val locationScreenX: Int get() = data.int(ViewNodeFields.LocationScreenX)
     val locationScreenY: Int get() = data.int(ViewNodeFields.LocationScreenY)
     val typeSimple: String by lazy { data.string(ViewNodeFields.Type).substringAfterLast(".") }
+    val typeAbbr: String by lazy { typeSimple.filter { it.toInt() in ('A'.toInt()..'Z'.toInt()) } }
     val type: String get() = data.string(ViewNodeFields.Type)
 
     override fun findFrontVisibleView(x: Int, y: Int, ignore: Set<IViewNode>): ViewNode? {
@@ -83,6 +87,12 @@ class ViewNode(json: Json) : IViewNode {
     fun forEachIndexed(block: (Int, ViewNode) -> Unit) {
         block(position, this)
         nodes.forEach { it.forEachIndexed(block) }
+    }
+
+    fun all(): List<ViewNode> {
+        val result = mutableListOf<ViewNode>()
+        forEachIndexed { _, viewNode -> result.add(viewNode) }
+        return result
     }
 
     private fun Map<String, Any?>.int(key: String): Int {
