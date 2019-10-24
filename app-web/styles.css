@@ -182,5 +182,36 @@ table.properties b {
     font-weight: bolder;
 }
 
+.ui-tree-node {
+    cursor: pointer;
+}
+
+.ui-tree-circle, .ui-tree-circle-selected {
+    stroke: #4682B4;
+    stroke-width: 1.5px;
+}
+
+.ui-tree-circle {
+    fill: #FFFFFF;
+}
+
+.ui-tree-circle-selected {
+    fill: coral;
+}
+
+svg text {
+    /*font: 9.5px "Lucida Console", Monaco, monospace, sans-serif;*/
+    /*font: 12px monospace;*/
+}
+
+.ui-tree-node-type {
+    font: 9.5px "Lucida Console", Monaco, monospace, sans-serif;
+}
+
+.ui-tree-node-id {
+    font: 8.5px "Lucida Console", Monaco, monospace, sans-serif;
+    fill: #6f7277;
+}
+
 
 /*endregion Props*/

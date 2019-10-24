@@ -16,4 +16,6 @@ data class Rect(val left: Int, val top: Int, val width: Int, val height: Int) {
             height.scaled(scale)
         )
     }
+
+    fun toIntArray() = intArrayOf(left, top, width, height)
 }
