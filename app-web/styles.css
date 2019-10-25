@@ -5,6 +5,10 @@
     --selected-background: #a3d7fb;
 }
 
+body {
+    margin: 0;
+}
+
 /*region Scrollbar*/
 
 ::-webkit-scrollbar {
