@@ -1,5 +1,6 @@
 package com.scurab.dev.server
 
+import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CallLogging
@@ -7,13 +8,18 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.http.ContentType
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.readText
+import io.ktor.http.content.URIFileContent
 import io.ktor.http.content.files
 import io.ktor.http.content.static
+import io.ktor.request.uri
+import io.ktor.response.respond
 import io.ktor.response.respondText
+import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.util.pipeline.PipelineInterceptor
 import io.ktor.websocket.WebSocketServerSession
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
@@ -22,12 +28,14 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.slf4j.event.Level
 import java.io.File
+import java.net.URL
 import java.nio.charset.Charset
 
 
 class DevServer(
     private val watchingDirectories: Array<File>,
-    private val rebuildCommand: String
+    private val rebuildCommand: String,
+    private val localDeviceIp: String? = null
 ) {
     fun start() {
         val sockets = mutableSetOf<WebSocketServerSession>()
@@ -72,6 +80,10 @@ class DevServer(
                     files(File("app-web/build"))
                 }
 
+                if (localDeviceIp != null) {
+                    initRemoteServerRoutes(localDeviceIp)
+                }
+
                 static {
                     files(File("app-web/src/test/resources/v1"))
                     files(File("app-web"))
@@ -102,6 +114,23 @@ class DevServer(
                 }
             }
         }.start(wait = true)
+    }
+
+    private fun Routing.initRemoteServerRoutes(localDeviceIp: String) {
+        val response : PipelineInterceptor<Unit, ApplicationCall> = {
+            var uri = call.request.uri.substringAfter("/")
+            if (!uri.contains("screenIndex=")) {
+                var s = "screenIndex=0"
+                if(!uri.contains("?")) {
+                    s = "?$s"
+                }
+                uri += s
+            }
+            call.respond(URIFileContent(URL("http://$localDeviceIp/${uri}")))
+        }
+        get("/{data}.json", response)
+        get("/screen.png", response)
+        get("/view.png", response)
     }
 
     private fun executeRebuildCommand(): Boolean {
