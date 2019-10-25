@@ -15,7 +15,9 @@ class Observable<T> {
 
     fun observe(observer: (T?) -> Unit) {
         observers.add(observer)
-        observer(item)
+        if (_item != NULL) {
+            observer(item)
+        }
     }
 
     private fun notifyObservers() {
