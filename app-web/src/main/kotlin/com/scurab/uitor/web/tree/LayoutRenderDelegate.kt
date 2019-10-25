@@ -3,7 +3,6 @@ package com.scurab.uitor.web.tree
 import com.scurab.uitor.web.model.ViewNode
 import d3.Link
 import d3.Node
-import d3.translate
 import kotlin.math.max
 
 interface LayoutRenderDelegate {
@@ -35,10 +34,10 @@ data class LayoutResult(
  * Layout delegate to have a horizontally-growing tree
  */
 class HorizontalDelegate(private val denseFirstNColumns: Int = 0) : LayoutRenderDelegate {
-    override fun translateNode(d: Node<*>): String = translate(d.y, d.x)
+    override fun translateNode(d: Node<*>): String = d3.translate(d.y, d.x)
     override fun drawingPath(): Link = d3.linkHorizontal().x { it.y }.y { it.x }
     override fun graphTranslation(config: TreeConfig, root: Node<*>, x0: Double): String {
-        return translate(
+        return d3.translate(
             if (config.viewGroupAnchorEnd) config.nodeOffsetX else config.nodeOffsetY / 2,
             root.dx - x0
         )
@@ -79,10 +78,10 @@ class HorizontalDelegate(private val denseFirstNColumns: Int = 0) : LayoutRender
  * Layout delegate to have a vertically-growing tree
  */
 class VerticalDelegate : LayoutRenderDelegate {
-    override fun translateNode(d: Node<*>): String = translate(d.x, d.y)
+    override fun translateNode(d: Node<*>): String = d3.translate(d.x, d.y)
     override fun drawingPath(): Link = d3.linkVertical().x { it.x }.y { it.y }
     override fun graphTranslation(config: TreeConfig, root: Node<*>, x0: Double): String {
-        return translate(
+        return d3.translate(
             root.dx - x0,
             if (config.viewGroupAnchorEnd) config.nodeOffsetX else config.nodeOffsetY / 2
         )
