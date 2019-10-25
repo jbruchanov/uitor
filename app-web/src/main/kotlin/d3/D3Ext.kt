@@ -34,20 +34,4 @@ fun Selection.onMouseOver(block: (Node<*>) -> Unit): Selection = on("mouseover",
 fun Selection.onMouseLeave(block: (Node<*>) -> Unit): Selection = on("mouseleave", block)
 fun Selection.classes(classes: Set<String>): Selection = attr("class", (classes.joinToString(" ")))
 fun Selection.classes(classes: String): Selection = attr("class", classes)
-
-
 fun translate(x: Double, y: Double): String = "translate($x, $y)"
-
-/**
-const link = g.append("g")
-.attr("fill", "none")
-.attr("stroke", "#555")
-.attr("stroke-opacity", 0.4)
-.attr("stroke-width", 1.5)
-.selectAll("path")
-.data(root.links())
-.join("path")
-.attr("d", d3.linkHorizontal()
-.x(d => d.y)
-.y(d => d.x));
- */
