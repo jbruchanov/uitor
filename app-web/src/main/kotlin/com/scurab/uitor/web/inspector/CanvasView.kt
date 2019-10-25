@@ -7,6 +7,7 @@ import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.*
 import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.LoadImageHandler
 import com.scurab.uitor.web.util.pickNodeForNotification
 import kotlinx.html.canvas
@@ -14,6 +15,7 @@ import kotlinx.html.dom.create
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLCanvasElement
+import org.w3c.dom.HTMLElement
 import org.w3c.dom.Image
 import org.w3c.dom.events.EventListener
 import org.w3c.dom.events.KeyboardEvent
@@ -34,9 +36,13 @@ private const val SCALE_MIN = 0.1
 private typealias Point = Pair<Double, Double>
 
 class CanvasView(
-    private val rootElement: Element,
     private val inspectorViewModel: InspectorViewModel
-) {
+) : HtmlView() {
+
+    override var element: HTMLElement
+        get() = TODO("This is more elements")
+        set(value) {}
+
     private val TAG = "CanvasView"
     private var layers: Array<HTMLCanvasElement> = Array(2) { document.create.canvas(null, "") as HTMLCanvasElement }
     private val image = Image()
@@ -53,25 +59,16 @@ class CanvasView(
     var renderMouseCross: Boolean = false
     var useWheelToScale: Boolean = false
 
-    init {
-        document.addEventListener(Events.keydown.name, EventListener {
-            val keyboardEvent = it as KeyboardEvent
-            dlog(TAG) { "KeyEvent:${keyboardEvent.keyCode} => '${keyboardEvent.key}'(${keyboardEvent.code})" }
-            when (keyboardEvent.keyCode) {
-                106/*'*'*/ -> renderDeviceScreenshot(scaleToFit())
-                107/*+*/ -> onScaleChange(1)
-                109/*-*/ -> onScaleChange(-1)
-                else -> {/*none*/
-                }
-            }
-        })
+    override fun onAttachToRoot(rootElement: Element) {
+        layers.forEach { rootElement.append(it) }
+    }
 
+    override fun buildContent() {
         layers.forEach {
             it.style.apply {
                 cursor = CURSOR_CROSS_HAIR
                 position = "fixed"
             }
-            rootElement.append(it)
         }
 
         layers.last().apply {
@@ -93,6 +90,21 @@ class CanvasView(
                 renderScene(it.offsetPoint)
             }
         }
+    }
+
+    override fun onAttached() {
+        super.onAttached()
+        document.addEventListener(Events.keydown.name, EventListener {
+            val keyboardEvent = it as KeyboardEvent
+            dlog(TAG) { "KeyEvent:${keyboardEvent.keyCode} => '${keyboardEvent.key}'(${keyboardEvent.code})" }
+            when (keyboardEvent.keyCode) {
+                106/*'*'*/ -> renderDeviceScreenshot(scaleToFit())
+                107/*+*/ -> onScaleChange(1)
+                109/*-*/ -> onScaleChange(-1)
+                else -> {/*none*/
+                }
+            }
+        })
 
         inspectorViewModel.selectedNode.observe {
             renderScene(it)

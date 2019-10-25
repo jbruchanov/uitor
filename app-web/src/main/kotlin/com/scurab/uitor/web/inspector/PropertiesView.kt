@@ -6,6 +6,7 @@ import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.highlightAt
 import com.scurab.uitor.common.util.matchingIndexes
 import com.scurab.uitor.web.ui.HtmlView
+import com.scurab.uitor.web.util.requireElementById
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.asFlow
@@ -15,7 +16,6 @@ import kotlinx.coroutines.launch
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.onKeyUpFunction
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import kotlin.browser.document
@@ -32,21 +32,17 @@ private const val HTML_BOLD_END = "</b>"
 
 
 class PropertiesView(
-    private val rootElement: Element,
     private val inspectorViewModel: InspectorViewModel
-) : HtmlView {
+) : HtmlView() {
 
     private val TAG = "PropertiesView"
-    override lateinit var element: HTMLElement
-        private set
-
-    private val contentRoot: HTMLElement
-    private val tableRootElement: HTMLElement
+    override lateinit var element: HTMLElement private set
+    private lateinit var tableRootElement: HTMLElement
     private val filterChannel = ConflatedBroadcastChannel("")
     private val propertyHighlights = inspectorViewModel.clientConfig.propertyHighlights
 
-    init {
-        contentRoot = document.create.div {
+    override fun buildContent() {
+        element = document.create.div {
             div {
                 table(classes = "properties-filter") {
                     tr {
@@ -63,11 +59,9 @@ class PropertiesView(
                 }
             }
             div { id = "properties-table" }
-        }.apply {
-            rootElement.append(this)
         }
 
-        tableRootElement = document.getElementById("properties-table") as HTMLElement
+        tableRootElement = element.requireElementById("properties-table")
         inspectorViewModel.selectedNode.observe {
             rebuildHtml(filterChannel.value ?: "")
         }
@@ -77,10 +71,6 @@ class PropertiesView(
                 rebuildHtml(it)
             }
         }
-    }
-
-    override fun attach(): HtmlView {
-        return this
     }
 
     private fun rebuildHtml(filter: String = "") {

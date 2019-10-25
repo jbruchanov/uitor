@@ -27,9 +27,8 @@ const val CSS_TREE_CLASS_NAME = "tree-class_name"
 const val CSS_TREE_SELECTED = "tree-selected"
 
 class TreeView(
-    private val rootElement: Element,
     private val inspectorViewModel: InspectorViewModel
-) : HtmlView {
+) : HtmlView() {
     private val TAG = "TreeView"
     private val tableRowToViewNodeMap = mutableListOf<ViewNode?>()
     private val styleTemplate: (Int) -> String = { "padding-left: calc(var( --tree-offset-left) * $it);" }
@@ -61,7 +60,8 @@ class TreeView(
     override lateinit var element: HTMLElement
         private set
 
-    override fun attach(): TreeView {
+    override fun onAttachToRoot(rootElement: Element) {
+        super.onAttachToRoot(rootElement)
         inspectorViewModel.rootNode.observe {
             rebuildHtml()
         }
@@ -91,13 +91,23 @@ class TreeView(
                 }
             }
         }
-        return this
+    }
+
+    override fun buildContent() {
+        //just empty stuff for now, will be removed later
+        element = document.create.div {  }
+    }
+
+    override fun onAttached() {
+        super.onAttached()
+        rebuildHtml()
     }
 
     private fun rebuildHtml() {
         tableRowToViewNodeMap.clear()
-        rootElement.clear()
         val viewNode = inspectorViewModel.rootNode.item ?: return
+        val parentElement = parentElement ?: return
+        parentElement.clear()
 
         element = document.create.table {
             classes = setOf(CSS_TREE)
@@ -130,7 +140,7 @@ class TreeView(
                 }
             }
         }.apply {
-            rootElement.append(this)
+            parentElement.append(this)
         }
     }
 

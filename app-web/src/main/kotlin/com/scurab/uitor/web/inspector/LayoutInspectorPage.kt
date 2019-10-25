@@ -3,16 +3,16 @@ package com.scurab.uitor.web.inspector
 import com.scurab.uitor.web.ServerApi
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.ui.ColumnsLayout
+import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
-import com.scurab.uitor.web.util.requireElementById
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.w3c.dom.Element
+import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLTableElement
 import org.w3c.dom.get
-import kotlin.browser.document
 import kotlin.browser.window
-import kotlin.dom.clear
 import kotlin.math.max
 import kotlin.math.min
 
@@ -22,22 +22,33 @@ private const val ID_RIGHT = "split-table-right"
 
 class LayoutInspectorPage(
     clientConfig: ClientConfig
-) {
-    private val root = document.requireElementById("root")
+) : HtmlView() {
+
     private lateinit var columnsLayout: ColumnsLayout
     private lateinit var canvasView: CanvasView
     private lateinit var treeView: TreeView
     private lateinit var propertiesView: PropertiesView
+    override lateinit var element: HTMLElement
     private val inspectorViewModel = InspectorViewModel(clientConfig)
     private val serverApi = ServerApi()
 
-    fun onStart() {
-        root.clear()
-        columnsLayout = ColumnsLayout(root, ColumnsLayoutDelegate(this)).attach()
-        canvasView = CanvasView(columnsLayout.left, inspectorViewModel)
-        treeView = TreeView(columnsLayout.middle.first(), inspectorViewModel).attach()
-        propertiesView = PropertiesView(columnsLayout.right, inspectorViewModel)
+    override fun buildContent() {
+        columnsLayout = ColumnsLayout(ColumnsLayoutDelegate(this))
+        canvasView = CanvasView(inspectorViewModel)
+        treeView = TreeView(inspectorViewModel)
+        propertiesView = PropertiesView(inspectorViewModel)
+    }
 
+    override fun onAttachToRoot(rootElement: Element) {
+        columnsLayout.attachTo(rootElement)
+        canvasView.attachTo(columnsLayout.left)
+        treeView.attachTo(columnsLayout.middle.first())
+        propertiesView.attachTo(columnsLayout.right)
+        element = columnsLayout.element
+    }
+
+    override fun onAttached() {
+        super.onAttached()
         GlobalScope.launch {
             async {
                 val item = serverApi.loadViewHierarchy(0)

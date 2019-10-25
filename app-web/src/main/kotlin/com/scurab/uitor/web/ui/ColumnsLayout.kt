@@ -3,6 +3,7 @@ package com.scurab.uitor.web.ui
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.*
 import com.scurab.uitor.web.util.forEachIndexed
+import com.scurab.uitor.web.util.getElementByClass
 import com.scurab.uitor.web.util.indexOf
 import com.scurab.uitor.web.util.requireElementById
 import com.scurab.uitor.web.util.requireElementsByClass
@@ -23,24 +24,23 @@ private const val CLASS_SEPARATOR = "split-table-separator"
 private const val CLASS_COLUMN = "split-table-column"
 private const val GRID_TEMPLATE_COLUMNS = "grid-template-columns"
 
-class ColumnsLayout(private val root: Element,
-                    private val delegate: IColumnsLayoutDelegate
-) : HtmlView {
+class ColumnsLayout(
+    private val delegate: IColumnsLayoutDelegate
+) : HtmlView() {
 
     val columns: Int = 3//not fully ready for != 3
-    val left: Element by lazy { document.requireElementById(ID_LEFT) }
-    val middle: Array<Element> by lazy { document.requireElementsByClass(CLASS_MIDDLE) }
-    val right: Element by lazy { document.requireElementById(ID_RIGHT) }
+    val left by lazy { element.requireElementById<Element>(ID_LEFT) }
+    val middle: Array<Element> by lazy { element.getElementByClass(CLASS_MIDDLE).toTypedArray() }
+    val right by lazy { element.requireElementById<Element>(ID_RIGHT) }
 
     init {
         check(columns >= 2) { "Min amount of columns is 2, not $columns" }
     }
 
-    override lateinit var element: HTMLElement
-        private set
+    override lateinit var element: HTMLElement private set
     private val resizableColumnsFeature = ResizableColumnsFeature(this, delegate.innerContentWidthEstimator)
 
-    override fun attach(): ColumnsLayout {
+    override fun buildContent() {
         element = document.create.div("split-table") {
             div("$CLASS_COLUMN left") { id = ID_LEFT }
             div(CLASS_SEPARATOR)
@@ -53,12 +53,13 @@ class ColumnsLayout(private val root: Element,
                 div(CLASS_SEPARATOR)
             }
             div("$CLASS_COLUMN right") { id = ID_RIGHT }
-        }.apply {
-            root.append(this)
-            resizableColumnsFeature.attach()
         }
-        return this
         //TODO inject styling
+    }
+
+    override fun onAttached() {
+        super.onAttached()
+        resizableColumnsFeature.attach()
     }
 
     fun initColumnSizes() {
@@ -73,8 +74,9 @@ interface IColumnsLayoutDelegate {
 /**
  * Simple and naive column drag resizing
  */
-private class ResizableColumnsFeature(private val splitTableView: ColumnsLayout,
-                                      private val widthEstimator: (Int) -> Double
+private class ResizableColumnsFeature(
+    private val splitTableView: ColumnsLayout,
+    private val widthEstimator: (Int) -> Double
 ) {
     private val TAG = "ResizableColumnsFeature"
     private var draggingElement: Element? = null
@@ -84,7 +86,7 @@ private class ResizableColumnsFeature(private val splitTableView: ColumnsLayout,
     //columns + separators in between them
     private val sizes = DoubleArray((2 * splitTableView.columns) - 1)
 
-    fun attach() : ResizableColumnsFeature {
+    fun attach(): ResizableColumnsFeature {
         separators = document.requireElementsByClass(CLASS_SEPARATOR)
         separators.forEach { sep ->
             sep.addMouseDownListener { de ->
