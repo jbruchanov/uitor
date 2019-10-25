@@ -39,3 +39,40 @@ fun scrollIntoViewArgs(
         override val inline: String = horizontalAlignment
     }
 }
+
+/**
+ * Helper method to create javascript iface object used as json args
+ */
+fun <T> js(initBlock: T.() -> Unit) : T {
+    return (js("{}") as T).apply(initBlock)
+}
+
+fun <T: Element> Element.getElementById(id: String): T? {
+    if (this.id == id) {
+        return this as T
+    } else {
+        for (i in (0 until children.length)) {
+            val ch = children[i] ?: continue
+            val r: T? = ch.getElementById<T>(id)
+            if (r != null) {
+                return r
+            }
+        }
+    }
+    return null
+}
+
+fun <T : Element> Element.requireElementById(id: String): T {
+    return getElementById(id) ?: throw NullPointerException("Unable to find element with id:'$id'")
+}
+
+fun Element.getElementByClass(clazz: String, to: MutableList<Element> = mutableListOf()): List<Element> {
+    if (this.className.split(" ").contains(clazz)) {
+        to.add(this)
+    }
+    for (i in (0 until children.length)) {
+        val ch = children[i] ?: continue
+        ch.getElementByClass(clazz, to)
+    }
+    return to
+}
