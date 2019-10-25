@@ -8,6 +8,8 @@ import org.w3c.dom.svg.SVGElement
 
 /**
  * Inspired from https://observablehq.com/@d3/tidy-tree
+ * Depends on
+ * <script src="https://d3js.org/d3.v5.min.js"></script>
  */
 private const val CSS_NODE = "ui-tree-node"
 private const val CSS_CIRCLE = "ui-tree-circle"
