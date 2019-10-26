@@ -18,4 +18,11 @@ data class Rect(val left: Int, val top: Int, val width: Int, val height: Int) {
     }
 
     fun toIntArray() = intArrayOf(left, top, width, height)
+
+    fun addRelative(render: Rect): Rect = Rect(
+        left + render.left,
+        top + render.top,
+        render.width,
+        render.height
+    )
 }

@@ -1,11 +1,19 @@
 package com.scurab.uitor.web.inspector
 
+import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.render.RectangleRenderContext
 import com.scurab.uitor.common.render.StrokeRenderContext
 import com.scurab.uitor.common.render.relativeToScale
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
-import com.scurab.uitor.web.*
+import com.scurab.uitor.web.Events
+import com.scurab.uitor.web.addMouseClickListener
+import com.scurab.uitor.web.addMouseMoveListener
+import com.scurab.uitor.web.addMouseOutListener
+import com.scurab.uitor.web.addMouseWheelListener
+import com.scurab.uitor.web.clear
+import com.scurab.uitor.web.drawCross
+import com.scurab.uitor.web.drawRectangle
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.LoadImageHandler
@@ -53,6 +61,11 @@ class CanvasView(
         RectangleRenderContext(
             inspectorViewModel.clientConfig.selectionColor.toColor(),
             inspectorViewModel.clientConfig.selectionColor.toColor().withAlpha(0.3)
+        )
+    private val nodeDifferentAreaRender =
+        RectangleRenderContext(
+            Color.Yellow,
+            Color.Yellow.withAlpha(0.05)
         )
     private var scale: Double = 1.0
 
@@ -160,7 +173,13 @@ class CanvasView(
 
     private fun renderViewRectangle(viewNode: ViewNode?) {
         viewNode?.let {
-            drawingContext.drawRectangle(it.rect.scale(scale), nodeRender)
+            val rect = it.rect
+            val view = rect.scale(scale)
+            drawingContext.drawRectangle(view, nodeRender)
+            it.renderAreaRelative?.let { render ->
+                val renderArea = rect.addRelative(render).scale(scale)
+                drawingContext.drawRectangle(renderArea, nodeDifferentAreaRender)
+            }
         }
     }
 

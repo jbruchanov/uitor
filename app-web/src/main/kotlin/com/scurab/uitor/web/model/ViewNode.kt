@@ -65,6 +65,12 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
     val type: String by rawdata.usingKey(ViewNodeFields.Type)
     val shouldRender: Boolean by rawdata.usingKey(ViewNodeFields.InternalRenderViewContent)
     val isLeaf: Boolean = children.isEmpty()
+    val renderAreaRelative: Rect? by lazy {
+        (rawdata[ViewNodeFields.InternalRenderAreaRelative] as? String)
+            ?.split(",")
+            ?.let { arrayOf(it[0].toInt(), it[1].toInt(), it[2].toInt(), it[3].toInt()) }
+            ?.let { Rect(it[0], it[1], it[2] - it[0], it[3] - it[1]) }
+    }
 
     override fun findFrontVisibleView(x: Int, y: Int, ignore: Set<IViewNode>): ViewNode? {
         //disabled for now, this makes views inactive actitivies "invisible" for search

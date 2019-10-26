@@ -27,6 +27,7 @@ data class Color(val value: Int) {
 
     companion object {
         val Red = Color(0xFFFF0000.toInt())
+        val Yellow = Color(0xFFFFFF00.toInt())
         val Gray20 = Color(0xFF333333.toInt())
     }
 }
