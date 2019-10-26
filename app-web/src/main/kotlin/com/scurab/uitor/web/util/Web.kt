@@ -43,7 +43,7 @@ fun scrollIntoViewArgs(
 /**
  * Helper method to create javascript iface object used as json args
  */
-fun <T> js(initBlock: T.() -> Unit) : T {
+fun <T> obj(initBlock: T.() -> Unit) : T {
     return (js("{}") as T).apply(initBlock)
 }
 
