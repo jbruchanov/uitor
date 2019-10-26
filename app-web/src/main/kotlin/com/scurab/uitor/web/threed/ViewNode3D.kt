@@ -1,7 +1,11 @@
 package com.scurab.uitor.web.threed
 
+import com.scurab.uitor.common.model.IViewNode
+import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.util.obj
 import threejs.BackSide
 import threejs.BoxGeometry
+import threejs.Color
 import threejs.EdgesGeometry
 import threejs.FrontSide
 import threejs.LineSegments
@@ -11,24 +15,19 @@ import threejs.Object3D
 import threejs.Scene
 import threejs.Side
 import threejs.TextureLoader
-import com.scurab.uitor.common.model.IViewNode
-import com.scurab.uitor.web.model.ViewNode
-import com.scurab.uitor.web.util.obj
 
 private const val DEPTH = 1
 private const val HALF = 0.5
 private const val COLOR_TEXTURE_DEFAULT = "#FFFFFF"
 private const val COLOR_TEXTURE_SELECTED = "#808080"
-private const val COLOR_EDGE_LEAF_DEFAULT = "#005B00"
-private const val COLOR_EDGE_LEAF_SELECTED = "#00FF00"
-private const val COLOR_EDGE_NODE_DEFAULT = "#5B0000"
-private const val COLOR_EDGE_NODE_SELECTED = "#FF0000"
 
 /**
  * Help class to compose ViewNode related threejs objects
  */
 class ViewNode3D(val viewNode: ViewNode) : IViewNode by viewNode {
 
+    override val rect = viewNode.renderAreaRelative?.let { viewNode.rect.addRelative(it) } ?: viewNode.rect
+    private val hasCustomRenderArea = rect != viewNode.rect
     private val geometry = BoxGeometry(rect.width, rect.height, DEPTH)
     private val lineMaterial = threejs.LineBasicMaterial(obj {
         color = viewNode.edgeColor(false)
@@ -74,9 +73,9 @@ class ViewNode3D(val viewNode: ViewNode) : IViewNode by viewNode {
     }
 
     fun setSelected(selected: Boolean) {
-        lineMaterial.color = viewNode.edgeColor(selected).threeColor
+        lineMaterial.color = viewNode.edgeColor(selected)
         textures.forEach {
-            if(textureSideMaterial != it) {
+            if (textureSideMaterial != it) {
                 it?.color = (if (selected) COLOR_TEXTURE_SELECTED else COLOR_TEXTURE_DEFAULT).threeColor
             }
         }
@@ -92,10 +91,26 @@ class ViewNode3D(val viewNode: ViewNode) : IViewNode by viewNode {
         }).withTexture(viewNode, side)
     }
 
+    private fun ViewNode.edgeColor(selected: Boolean): Color {
+        return colorMatcher[StateMatcher(
+            isLeaf, selected, hasCustomRenderArea
+        )] ?: throw IllegalStateException("Invalid state for color, " +
+                "isLeaf:$isLeaf, selected:$selected, hasCustomRenderArea:$hasCustomRenderArea")
+    }
+
     companion object {
         internal val textureLoader = TextureLoader()
         private val idsToViewNode3D = mutableMapOf<String, ViewNode3D>()
-
+        private val colorMatcher = mutableMapOf<StateMatcher, Color>(
+            StateMatcher(isLeaf = false, selected = false, hasCustomRenderArea = false) to "#5B0000".threeColor,
+            StateMatcher(isLeaf = false, selected = true, hasCustomRenderArea = false) to "#FF0000".threeColor,
+            StateMatcher(isLeaf = true, selected = false, hasCustomRenderArea = false) to "#005B00".threeColor,
+            StateMatcher(isLeaf = true, selected = true, hasCustomRenderArea = false) to "#00FF00".threeColor,
+            StateMatcher(isLeaf = false, selected = false, hasCustomRenderArea = true) to "#5B5B00".threeColor,
+            StateMatcher(isLeaf = false, selected = true, hasCustomRenderArea = true) to "#FFFF00".threeColor,
+            StateMatcher(isLeaf = true, selected = false, hasCustomRenderArea = true) to "#5B5B00".threeColor,
+            StateMatcher(isLeaf = true, selected = true, hasCustomRenderArea = true) to "#FFFF00".threeColor
+        )
         fun fromObject(item: Object3D?): ViewNode3D? {
             return item?.let { idsToViewNode3D[it.uuid] }
         }
@@ -103,15 +118,6 @@ class ViewNode3D(val viewNode: ViewNode) : IViewNode by viewNode {
 }
 
 //region ext methods
-private fun ViewNode.edgeColor(selected: Boolean): String {
-    return when {
-        selected && isLeaf -> COLOR_EDGE_LEAF_SELECTED
-        selected && !isLeaf -> COLOR_EDGE_NODE_SELECTED
-        isLeaf -> COLOR_EDGE_LEAF_DEFAULT
-        !isLeaf -> COLOR_EDGE_NODE_DEFAULT
-        else -> COLOR_TEXTURE_DEFAULT
-    }
-}
 private fun ViewNode.elementName(type: String) = "ViewNode-$type:${position}"
 
 private fun <T : Object3D> T.withPosition(viewNode: ViewNode): T {
@@ -156,3 +162,9 @@ private fun MeshBasicMaterial.withTexture(viewNode: ViewNode, side: Side): MeshB
     return this
 }
 //endregion ext methods
+
+private data class StateMatcher(
+    val isLeaf: Boolean,
+    val selected: Boolean,
+    val hasCustomRenderArea: Boolean
+)
