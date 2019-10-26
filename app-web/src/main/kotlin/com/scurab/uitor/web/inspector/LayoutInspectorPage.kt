@@ -21,7 +21,7 @@ private const val ID_MID = "split-table-mid"
 private const val ID_RIGHT = "split-table-right"
 
 class LayoutInspectorPage(
-    clientConfig: ClientConfig
+    private val inspectorViewModel: InspectorViewModel
 ) : HtmlView() {
 
     private lateinit var columnsLayout: ColumnsLayout
@@ -29,7 +29,6 @@ class LayoutInspectorPage(
     private lateinit var treeView: TreeView
     private lateinit var propertiesView: PropertiesView
     override lateinit var element: HTMLElement
-    private val inspectorViewModel = InspectorViewModel(clientConfig)
     private val serverApi = ServerApi()
 
     override fun buildContent() {
@@ -57,7 +56,7 @@ class LayoutInspectorPage(
                 columnsLayout.initColumnSizes()
             }
             async {
-                canvasView.loadImage("/device.png")
+                canvasView.loadImage("/screen.png")
             }
         }
     }
