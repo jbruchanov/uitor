@@ -3,7 +3,24 @@ package com.scurab.uitor.web.tree
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.model.ViewNode
-import d3.*
+import d3.Node
+import d3.classes
+import d3.dy
+import d3.fill
+import d3.group
+import d3.height
+import d3.onClick
+import d3.onMouseLeave
+import d3.onMouseOver
+import d3.radius
+import d3.stroke
+import d3.strokeLineJoin
+import d3.strokeWidth
+import d3.style
+import d3.textAnchor
+import d3.transform
+import d3.width
+import d3.x
 import org.w3c.dom.svg.SVGElement
 
 /**
@@ -21,7 +38,7 @@ class TidyTree {
 
     private val TAG = "TidyTree"
 
-    fun generateSvg(data: ViewNode, config: TreeConfig = TreeConfig.shortTypesTidyTree()): SVGElement {
+    fun generateSvg(data: ViewNode, config: TreeConfig = TreeConfig.shortTypesTidyTree): SVGElement {
         val (root, width, height, x0) = config.layout(data, config)
 
         val svg = d3.svg()
@@ -111,30 +128,26 @@ class TreeConfig(
     val nodeTitleSelector: (Node<*>) -> String
 ) : LayoutRenderDelegate by delegate {
     companion object {
-        fun defaultTidyTree(): TreeConfig {
-            return TreeConfig(
-                175.0, 30.0, 5.0,
-                showViewIds = true,
-                viewGroupAnchorEnd = false,
-                delegate = HorizontalDelegate(4)
-            ) { it.item.typeSimple }
+        val defaultTidyTree: TreeConfig = TreeConfig(
+            175.0, 30.0, 5.0,
+            showViewIds = true,
+            viewGroupAnchorEnd = false,
+            delegate = HorizontalDelegate(4)
+        ) { it.item.typeSimple }
+
+        val shortTypesTidyTree = TreeConfig(
+            62.5,
+            25.0,
+            7.5,
+            showViewIds = false,
+            viewGroupAnchorEnd = false,
+            delegate = HorizontalDelegate()
+        ) {
+            it.item.typeAbbr
         }
 
-        fun shortTypesTidyTree(): TreeConfig {
-            return TreeConfig(
-                62.5,
-                25.0,
-                7.5,
-                showViewIds = false,
-                viewGroupAnchorEnd = false,
-                delegate = HorizontalDelegate()
-            ) {
-                it.item.typeAbbr
-            }
-        }
-
-        fun verticalSimpleTree(): TreeConfig {
-            return TreeConfig(
+        val verticalSimpleTree =
+            TreeConfig(
                 25.0,
                 30.0,
                 10.0,
@@ -142,6 +155,5 @@ class TreeConfig(
                 viewGroupAnchorEnd = false,
                 delegate = VerticalDelegate()
             ) { "" }
-        }
     }
 }
