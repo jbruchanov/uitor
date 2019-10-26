@@ -13,6 +13,8 @@ import com.scurab.uitor.web.util.jsonField
 import com.scurab.uitor.web.util.optJsonField
 import d3.ITreeItem
 import kotlin.js.Json
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 class ViewNode(json: Json) : IViewNode, ITreeItem {
 
@@ -52,19 +54,21 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
         Rect(
             locationScreenX,
             locationScreenY,
-            data.int(ViewNodeFields.Width),
-            data.int(ViewNodeFields.Height)
+            data.typed(ViewNodeFields.Width),
+            data.typed(ViewNodeFields.Height)
         )
     }
-    val locationScreenX: Int get() = data.int(ViewNodeFields.LocationScreenX)
-    val locationScreenY: Int get() = data.int(ViewNodeFields.LocationScreenY)
-    val typeSimple: String by lazy { data.string(ViewNodeFields.Type).substringAfterLast(".") }
+    val locationScreenX: Int by rawdata.usingKey(ViewNodeFields.LocationScreenX)
+    val locationScreenY: Int by rawdata.usingKey(ViewNodeFields.LocationScreenY)
+    val typeSimple: String by lazy { rawdata.typed<String>(ViewNodeFields.Type).substringAfterLast(".") }
     val typeAbbr: String by lazy { typeSimple.filter { it.toInt() in ('A'.toInt()..'Z'.toInt()) } }
-    val type: String get() = data.string(ViewNodeFields.Type)
+    val type: String by rawdata.usingKey(ViewNodeFields.Type)
+    val shouldRender: Boolean by rawdata.usingKey(ViewNodeFields.InternalRenderViewContent)
+    val isLeaf: Boolean = children.isEmpty()
 
     override fun findFrontVisibleView(x: Int, y: Int, ignore: Set<IViewNode>): ViewNode? {
         //disabled for now, this makes views inactive actitivies "invisible" for search
-        if (false && (data.int(ViewNodeFields.InternalVisibility)) != 0) {//not visible
+        if (false && (data.typed<Int>(ViewNodeFields.InternalVisibility)) != 0) {//not visible
             return null;
         }
 
@@ -95,22 +99,11 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
         return result
     }
 
-    private fun Map<String, Any?>.int(key: String): Int {
-        try {
-            return this[key] as Int
-        } catch (e: Exception) {
-            println("Unable to get Int of key:$key in $this")
-            throw e
-        }
-    }
-
-    private fun Map<String, Any?>.string(key: String): String {
-        try {
-            return this[key] as String
-        } catch (e: Exception) {
-            println("Unable to get String of key:$key in $this")
-            throw e
-        }
+    private fun <T> Map<String, Any?>.typed(key: String): T {
+        val v = this[key]
+        check(containsKey(key)) { "Key:'${key}' doesn't exist in the map" }
+        check(v != null) { "Value of Key:'${key}' is null" }
+        return v as T
     }
 
     companion object {
@@ -129,12 +122,23 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
                 Pair("StringValue",             "010")
                 // @formatter:on
             )
+
             override fun compare(a: String, b: String): Int {
                 val a = (orderMap[a] ?: "999") + a
                 val b = (orderMap[b] ?: "999") + b
                 return a.compareTo(b)
             }
         }
+    }
+}
+
+private fun <T> Map<String, Any?>.usingKey(key: String): MapDelegate<T> {
+    return MapDelegate(key, this)
+}
+
+private class MapDelegate<T>(private val key: String, private val map: Map<String, Any?>) : ReadOnlyProperty<Any, T> {
+    override fun getValue(thisRef: Any, property: KProperty<*>): T {
+        return map[key] as T
     }
 }
 
