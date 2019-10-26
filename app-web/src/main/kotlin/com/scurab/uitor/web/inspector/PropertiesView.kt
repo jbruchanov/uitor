@@ -27,6 +27,7 @@ private const val CSS_PROPERTIES_HEADER_TITLE = "properties-header-title"
 private const val CSS_PROPERTIES_COLOR = "properties-color"
 private const val CSS_PROPERTIES_EVEN = "properties-even"
 private const val CSS_PROPERTIES_ODD = "properties-odd"
+private const val CSS_PROPERTIES_VALUE = "properties-value"
 private const val HTML_BOLD_START = "<b>"
 private const val HTML_BOLD_END = "</b>"
 
@@ -123,7 +124,7 @@ class PropertiesView(
                             }
                         }
                         td {
-                            span {
+                            span(classes = CSS_PROPERTIES_VALUE) {
                                 unsafe { raw(value?.highlightAt(filter, HTML_BOLD_START, HTML_BOLD_END) ?: "") }
                             }
                         }

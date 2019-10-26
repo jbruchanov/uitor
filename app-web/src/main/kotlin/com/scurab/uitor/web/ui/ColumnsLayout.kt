@@ -24,13 +24,16 @@ private const val CLASS_SEPARATOR = "split-table-separator"
 private const val CLASS_COLUMN = "split-table-column"
 private const val GRID_TEMPLATE_COLUMNS = "grid-template-columns"
 
+//TODO:handle window resizing (doesn't change width of columns)
+//TODO:what is this
+private const val UNKNOWNGAP = 4
 class ColumnsLayout(
     private val delegate: IColumnsLayoutDelegate
 ) : HtmlView() {
 
     val columns: Int = 3//not fully ready for != 3
     val left by lazy { element.requireElementById<Element>(ID_LEFT) }
-    val middle: Array<Element> by lazy { element.getElementByClass(CLASS_MIDDLE).toTypedArray() }
+    val middle by lazy { element.getElementByClass(CLASS_MIDDLE).toTypedArray() }
     val right by lazy { element.requireElementById<Element>(ID_RIGHT) }
 
     init {
@@ -138,7 +141,7 @@ private class ResizableColumnsFeature(
         val sum = sizes.asList().subList(1, sizes.size - 1).sum()
         sizes[sizes.size - 1] = widthEstimator.invoke(sizes.size - 1)
         sizes[sizes.size - 3] = widthEstimator.invoke(sizes.size - 3)
-        sizes[0] += (sum - sizes.asList().subList(1, sizes.size - 1).sum())
+        sizes[0] += (sum - sizes.asList().subList(1, sizes.size - 1).sum() - UNKNOWNGAP)
         val result = sizes.joinToString("px ", postfix = "px")
         splitTableView.element.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
     }

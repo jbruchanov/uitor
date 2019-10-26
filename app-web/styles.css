@@ -3,33 +3,39 @@
     --even-background: #f3f7fb;
     --odd-background: #ffffff;
     --selected-background: #a3d7fb;
+    --column-height: calc(100vh);
+    /* Filter height - 28px*/
+    --column-height-properties: calc(100vh - 28px);;
+    --props-header-titles: calc(100% - 5px);;
 }
 
 body {
     margin: 0;
+    background: #C1C1C1;
 }
 
 /*region Scrollbar*/
 
-::-webkit-scrollbar {
-    width: 0.5em;
-    height: 0.5em
-}
+/*::-webkit-scrollbar {*/
+/*    width: 0.5em;*/
+/*    height: 0.5em*/
+/*}*/
 
-::-webkit-scrollbar-track-piece {
-    background: #F1F1F1
-}
+/*::-webkit-scrollbar-track-piece {*/
+/*    background: #F1F1F1*/
+/*}*/
 
-::-webkit-scrollbar-thumb {
-    background: #C1C1C1
-}
+/*::-webkit-scrollbar-thumb {*/
+/*    background: #C1C1C1*/
+/*}*/
 
 /*endregion Scrollbar*/
 
 .split-table {
     display: grid;
-    grid-template-columns: 1fr 5px 1fr 5px 1fr;
-    height: calc(100vh - 20px);
+    /*grid-template-columns: 1fr 5px 1fr 5px 1fr;*/
+    grid-template-columns: 1.3fr 5px 0.7fr 5px 1fr;
+    height: var(--column-height);
     bottom: 0;
     align-items: stretch;
 }
@@ -85,7 +91,7 @@ table.tree {
     font-size: 10pt;
     border-spacing: 0px;
     cursor: pointer;
-    height: calc(100vh - 20px);
+    height: var(--column-height);
     overflow-y: scroll;
     display: block;
 }
@@ -129,7 +135,7 @@ tr.tree-odd {
     font-family: monospace;
     font-size: 9pt;
     border-spacing: 0;
-    height: calc(100vh - 60px);
+    height: var(--column-height-properties);
     overflow-y: scroll;
     display: block;
     column-gap: 40px;
@@ -146,9 +152,12 @@ tr.tree-odd {
 }
 
 .properties-header-title {
-    width: calc(100% - 5px);
+    /* ? */
+    width: var(--props-header-titles);
 }
-
+.properties-value {
+    word-break: break-word;
+}
 tr.properties-even {
     background-color: var(--even-background);
 }
@@ -178,7 +187,7 @@ td {
 .properties-filter {
     font-family: monospace;
     font-size: 9pt;
-    width: calc(100% - 1px);
+    width: var(--props-header-titles);
 }
 
 table.properties b {
