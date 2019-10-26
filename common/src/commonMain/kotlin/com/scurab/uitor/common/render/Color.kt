@@ -12,8 +12,7 @@ data class Color(val value: Int) {
     val blue: Int = (value and 0xFF)
 
     private val alphaAs2Decimals: String
-        get() =
-            ((alpha * 100).roundToInt() / 100.0).toString()
+        get() = ((alpha * 100).roundToInt() / 100.0).toString()
 
     val htmlRGB = "#${red.hex}${green.hex}${blue.hex}"
     val htmlARGB = "#${(alpha * 255).roundToInt().hex}${red.hex}${green.hex}${blue.hex}"
