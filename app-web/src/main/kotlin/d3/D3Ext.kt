@@ -2,6 +2,7 @@ package d3
 
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.render.Rect
+import com.scurab.uitor.web.tree.LayoutRenderDelegate
 
 fun svg() = create("svg")
 fun group() = create("g")
@@ -34,4 +35,4 @@ fun Selection.onMouseOver(block: (Node<*>) -> Unit): Selection = on("mouseover",
 fun Selection.onMouseLeave(block: (Node<*>) -> Unit): Selection = on("mouseleave", block)
 fun Selection.classes(classes: Set<String>): Selection = attr("class", (classes.joinToString(" ")))
 fun Selection.classes(classes: String): Selection = attr("class", classes)
-fun translate(x: Double, y: Double): String = "translate($x, $y)"
+fun LayoutRenderDelegate.translate(x: Double, y: Double): String = "translate($x, $y)"
