@@ -1,18 +1,21 @@
 package com.scurab.uitor.web.threed
 
-import THREE.BoxGeometry
-import THREE.EdgesGeometry
-import THREE.LineSegments
-import THREE.Mesh
-import THREE.MeshBasicMaterial
-import THREE.Object3D
-import THREE.Scene
-import THREE.TextureLoader
+import threejs.BackSide
+import threejs.BoxGeometry
+import threejs.EdgesGeometry
+import threejs.FrontSide
+import threejs.LineSegments
+import threejs.Mesh
+import threejs.MeshBasicMaterial
+import threejs.Object3D
+import threejs.Scene
+import threejs.Side
+import threejs.TextureLoader
 import com.scurab.uitor.common.model.IViewNode
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.util.obj
 
-private const val DEPTH = 0.01
+private const val DEPTH = 1
 private const val HALF = 0.5
 private const val COLOR_TEXTURE_DEFAULT = "#FFFFFF"
 private const val COLOR_TEXTURE_SELECTED = "#808080"
@@ -27,7 +30,7 @@ private const val COLOR_EDGE_NODE_SELECTED = "#FF0000"
 class ViewNode3D(val viewNode: ViewNode) : IViewNode by viewNode {
 
     private val geometry = BoxGeometry(rect.width, rect.height, DEPTH)
-    private val lineMaterial = THREE.LineBasicMaterial(obj {
+    private val lineMaterial = threejs.LineBasicMaterial(obj {
         color = viewNode.edgeColor(false)
     })
 
@@ -35,13 +38,23 @@ class ViewNode3D(val viewNode: ViewNode) : IViewNode by viewNode {
         .withPosition(viewNode)
         .withName(viewNode.elementName("Edge"))
 
-    private val textureMaterial = MeshBasicMaterial(obj {
+    private val textureSideMaterial = MeshBasicMaterial(obj {
         transparent = true
-        color = COLOR_TEXTURE_DEFAULT
-    }).withTexture(viewNode)
+        opacity = 1
+        color = "#000000"
+    })
 
-    @Suppress("DuplicatedCode")
-    private val mesh = Mesh(geometry, textureMaterial)
+    private val textures = arrayOf<MeshBasicMaterial?>(
+        //can't be nulls for raycast
+        textureSideMaterial,//right
+        textureSideMaterial,//left
+        textureSideMaterial,//top
+        textureSideMaterial,//bottom
+        viewTexture(FrontSide),//front
+        viewTexture(BackSide)//back
+    )
+
+    private val mesh = Mesh(geometry, textures)
         .withPosition(viewNode)
         .withName(viewNode.elementName("Mesh"))
 
@@ -62,7 +75,21 @@ class ViewNode3D(val viewNode: ViewNode) : IViewNode by viewNode {
 
     fun setSelected(selected: Boolean) {
         lineMaterial.color = viewNode.edgeColor(selected).threeColor
-        textureMaterial.color = (if (selected) COLOR_TEXTURE_SELECTED else COLOR_TEXTURE_DEFAULT).threeColor
+        textures.forEach {
+            if(textureSideMaterial != it) {
+                it?.color = (if (selected) COLOR_TEXTURE_SELECTED else COLOR_TEXTURE_DEFAULT).threeColor
+            }
+        }
+    }
+
+    private fun viewTexture(side: Side): MeshBasicMaterial {
+        return MeshBasicMaterial(obj {
+            transparent = true
+            opacity = 1
+            color = COLOR_TEXTURE_DEFAULT
+            depthWrite = false
+            this.side = FrontSide
+        }).withTexture(viewNode, side)
     }
 
     companion object {
@@ -107,13 +134,21 @@ private fun <T : Object3D> T.withName(name: String): T {
     return this
 }
 
-private fun MeshBasicMaterial.withTexture(viewNode: ViewNode): MeshBasicMaterial {
+private fun MeshBasicMaterial.withTexture(viewNode: ViewNode, side: Side): MeshBasicMaterial {
     transparent = !viewNode.shouldRender
     if (viewNode.shouldRender) {
         //this expects to server handle the hammering
         map = ViewNode3D.textureLoader.load("view.png?position=${viewNode.position}").apply {
-            minFilter = THREE.NearestFilter
-            magFilter = THREE.NearestFilter
+            minFilter = threejs.LinearFilter
+            magFilter = threejs.LinearFilter
+            transparent = true
+            opacity = 1
+            premultiplyAlpha = true
+            wrapS = threejs.RepeatWrapping;
+            repeat.x = when (side) {
+                BackSide -> -1
+                else -> 1
+            }
         }
     } else {
         opacity = 0

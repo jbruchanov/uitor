@@ -24,6 +24,11 @@ data class Color(val value: Int) {
         val alpha = (min(1.0, max(0.0, alpha)) * 255.0).roundToInt()
         return Color(v or (alpha shl 24))
     }
+
+    companion object {
+        val Red = Color(0xFFFF0000.toInt())
+        val Gray20 = Color(0xFF333333.toInt())
+    }
 }
 
 private val CSS_COLOR_REGEX = "rgba?\\((.*)\\)".toRegex()

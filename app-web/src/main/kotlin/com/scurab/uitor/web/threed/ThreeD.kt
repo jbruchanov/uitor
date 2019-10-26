@@ -1,10 +1,12 @@
 package com.scurab.uitor.web.threed
 
-import THREE.GridHelper
-import THREE.PerspectiveCamera
-import THREE.Scene
-import THREE.WebGLRenderer
+import com.scurab.uitor.common.render.Color
+import threejs.GridHelper
+import threejs.PerspectiveCamera
+import threejs.Scene
+import threejs.WebGLRenderer
 import com.scurab.uitor.common.util.dlog
+import com.scurab.uitor.common.util.vlog
 import com.scurab.uitor.web.Events
 import com.scurab.uitor.web.addMouseMoveListener
 import com.scurab.uitor.web.inspector.InspectorViewModel
@@ -16,10 +18,14 @@ import org.w3c.dom.events.Event
 import org.w3c.dom.events.EventListener
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
+import threejs.BoxBufferGeometry
+import threejs.Mesh
+import threejs.MeshBasicMaterial
+import threejs.Raycaster
+import threejs.TrackballControls
+import threejs.Vector2
 import kotlin.browser.document
 import kotlin.browser.window
-
-external fun requestAnimationFrame(callback: dynamic)
 
 class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
     private val TAG = "ThreeD"
@@ -29,8 +35,8 @@ class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
     private lateinit var renderer: WebGLRenderer
     private lateinit var scene: Scene
     private lateinit var controls: Any/*TrackballControls*/
-    private val rayCaster = THREE.Raycaster()
-    private val mouse = THREE.Vector2(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
+    private val rayCaster = Raycaster()
+    private val mouse = Vector2(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
 
     private val resizeAction = EventListener { e: Event ->
         camera.aspect = window.innerWidth / window.innerHeight.toDouble()
@@ -38,8 +44,8 @@ class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
         renderer.setSize(window.innerWidth, window.innerHeight)
     }
 
-    private val requestAnimationFrameAction: () -> Unit = { requestAnimationFrame(renderAction) }
-    private val renderAction = {
+    private val requestAnimationFrameAction: () -> Unit = { window.requestAnimationFrame(renderAction) }
+    private val renderAction = { d: Double ->
         requestAnimationFrameAction()
         renderer.render(scene, camera)
         controls.asDynamic().update()
@@ -63,7 +69,6 @@ class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
         window.addMouseMoveListener(mouseMoveAction)
         requestAnimationFrameAction()
         viewModel.rootNode.observe {
-//            it?.let { buildLayout(it, scene) }
             it?.let { buildLayout(it, scene) }
         }
     }
@@ -77,24 +82,26 @@ class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
     }
 
     private fun initScene() {
-        scene = THREE.Scene()
-        renderer = THREE.WebGLRenderer(obj { antialias = true })
+        scene = Scene()
+        renderer = WebGLRenderer(obj {
+            antialias = true
+        })
         renderer.setSize(window.innerWidth, window.innerHeight)
         element = renderer.domElement
 
         camera = PerspectiveCamera(
-            45,
+            50,
             window.innerWidth / window.innerHeight.toDouble(),
             1,
             1000000
         )
         camera.position.apply {
             x = 3000.0
-            y = 500.0
+            y = 1500.0
             z = 7000.0
         }
 
-        debugAddOriginBox(scene)
+        //debugAddOriginBox(scene)
         addGrid(scene)
     }
 
@@ -103,7 +110,7 @@ class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
         { "TrackballControls have to be initialized after attaching the element to DOM" }
         //has to be created after the element has been added to parent
 
-        controls = THREE.TrackballControls(camera, renderer.domElement).apply {
+        controls = TrackballControls(camera, renderer.domElement).apply {
             maxDistance = 100000.0
             addEventListener("change") {
                 dlog("${TAG}Controls") { "Camera: Position:${camera.position.d} Euler:${camera.rotation.d}" }
@@ -112,7 +119,7 @@ class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
 
         document.addEventListener(Events.keydown.name, EventListener {
             val keyboardEvent = it as KeyboardEvent
-            dlog(TAG) { "KeyEvent:${keyboardEvent.keyCode} => '${keyboardEvent.key}'(${keyboardEvent.code})" }
+            vlog(TAG) { "KeyEvent:${keyboardEvent.keyCode} => '${keyboardEvent.key}'(${keyboardEvent.code})" }
             when (keyboardEvent.keyCode) {
                 106/*'*'*/ -> camera.rotation.x = 0.0
                 107/*+*/ -> camera.rotation.y = 0.0
@@ -127,29 +134,29 @@ class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
     private fun raycastObjects() {
         rayCaster.setFromCamera(mouse, camera)
         val intersectObjects = rayCaster.intersectObjects(scene.children)
-//        dlog(TAG) { "raycastObjects:${mouse.d}, chilrden:${scene.children.size} found:${intersectObjects.size}" }
         val item = intersectObjects.firstOrNull()?.item
         val n = ViewNode3D.fromObject(item)
         if (selectedObject != n) {
             selectedObject?.setSelected(false)
             selectedObject = n
             selectedObject?.setSelected(true)
+            vlog(TAG) { "Pointing at:ViewNode=${n?.viewNode?.position}" }
         }
-//        dlog(TAG) { "raycastObjects:${item?.name}" }
+        dlog(TAG) { "raycastObjects:${mouse.d}, children:${scene.children.size} found:${item?.name}" }
     }
 
     private fun debugAddOriginBox(scene: Scene) {
-        val geometry = THREE.BoxBufferGeometry(50, 50, 50)
-        val material = THREE.MeshBasicMaterial(obj {
-            color = "#FF0000"
+        val geometry = BoxBufferGeometry(50, 50, 50)
+        val material = MeshBasicMaterial(obj {
+            color = Color.Red.htmlRGB
         })
-        val mesh = THREE.Mesh(geometry, material)
+        val mesh = Mesh(geometry, material)
         mesh.name = "Box"
         scene.add(mesh)
     }
 
     private fun addGrid(scene: Scene) {
-        val color = "#333333".threeColor
+        val color = Color.Gray20.threeColor
         scene.add(GridHelper(100000, 50, color, color).apply {
             position.y = -8000.0
         })
