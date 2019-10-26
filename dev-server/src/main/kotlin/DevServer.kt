@@ -117,17 +117,20 @@ class DevServer(
     }
 
     private fun Routing.initRemoteServerRoutes(localDeviceIp: String) {
-        val response : PipelineInterceptor<Unit, ApplicationCall> = {
+        val response: PipelineInterceptor<Unit, ApplicationCall> = {
             var uri = call.request.uri.substringAfter("/")
             if (!uri.contains("screenIndex=")) {
                 var s = "screenIndex=0"
-                if(!uri.contains("?")) {
+                if (!uri.contains("?")) {
                     s = "?$s"
+                } else {
+                    s = "&$s"
                 }
                 uri += s
             }
             call.respond(URIFileContent(URL("http://$localDeviceIp/${uri}")))
         }
+
         get("/{data}.json", response)
         get("/screen.png", response)
         get("/view.png", response)
