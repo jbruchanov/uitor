@@ -56,7 +56,7 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
             locationScreenY,
             data.typed(ViewNodeFields.Width),
             data.typed(ViewNodeFields.Height)
-        )
+        ).scaleSize(absoluteScaleX, absoluteScaleY)
     }
     val locationScreenX: Int by rawdata.usingKey(ViewNodeFields.LocationScreenX)
     val locationScreenY: Int by rawdata.usingKey(ViewNodeFields.LocationScreenY)
@@ -64,6 +64,8 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
     val typeAbbr: String by lazy { typeSimple.filter { it.toInt() in ('A'.toInt()..'Z'.toInt()) } }
     val type: String by rawdata.usingKey(ViewNodeFields.Type)
     val shouldRender: Boolean by rawdata.usingKey(ViewNodeFields.InternalRenderViewContent)
+    val absoluteScaleX: Double by rawdata.usingKey(ViewNodeFields.InternalViewScaleX)
+    val absoluteScaleY: Double by rawdata.usingKey(ViewNodeFields.InternalViewScaleY)
     val isLeaf: Boolean = children.isEmpty()
     val renderAreaRelative: Rect? by lazy {
         (rawdata[ViewNodeFields.InternalRenderAreaRelative] as? String)
