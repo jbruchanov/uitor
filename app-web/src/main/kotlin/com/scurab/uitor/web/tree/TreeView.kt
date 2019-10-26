@@ -16,6 +16,7 @@ import kotlinx.html.tr
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLTableElement
+import org.w3c.dom.events.Event
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.clear
@@ -33,26 +34,22 @@ class TreeView(private val viewModel: InspectorViewModel) : HtmlView() {
     private val tidyTree = TidyTree()
     private val treeElement by lazy { element.requireElementById<HTMLElement>(TREE_SVG_CONTAINER) }
     private val statsElement by lazy { element.requireElementById<HTMLElement>(TREE_STATS_CONTAINER) }
-    private var tidyTreeConfig = when(window.location.hash.substringAfter("#")) {
-        CONFIG_SHORT -> TreeConfig.shortTypesTidyTree
-        CONFIG_SIMPLE -> TreeConfig.verticalSimpleTree
-        else -> TreeConfig.defaultTidyTree
-    }
+    private var tidyTreeConfig = configFromLocationHash()
 
     override fun buildContent() {
         element = document.create.div {
             div(classes = CSS_BUTTONS) {
                 button {
                     text("Default")
-                    onClickFunction = { setTidyTreeConfig(TreeConfig.defaultTidyTree, "") }
+                    onClickFunction = { setConfigHash("") }
                 }
                 button {
                     text("ShortType")
-                    onClickFunction = { setTidyTreeConfig(TreeConfig.shortTypesTidyTree, CONFIG_SHORT) }
+                    onClickFunction = { setConfigHash(CONFIG_SHORT) }
                 }
                 button {
                     text("Simple")
-                    onClickFunction = { setTidyTreeConfig(TreeConfig.verticalSimpleTree, CONFIG_SIMPLE) }
+                    onClickFunction = { setConfigHash(CONFIG_SIMPLE) }
                 }
             }
             div(classes = CSS_STATS) {
@@ -64,12 +61,8 @@ class TreeView(private val viewModel: InspectorViewModel) : HtmlView() {
         }
     }
 
-    private fun setTidyTreeConfig(config: TreeConfig, key: String) {
-        if (tidyTreeConfig != config) {
-            tidyTreeConfig = config
-            drawDiagram(false)
-            window.location.hash = key
-        }
+    private fun setConfigHash(key: String) {
+        window.location.hash = key
     }
 
     override fun onAttachToRoot(rootElement: Element) {
@@ -77,6 +70,10 @@ class TreeView(private val viewModel: InspectorViewModel) : HtmlView() {
         viewModel.rootNode.observe {
             it?.let { drawDiagram(true) }
         }
+        window.addEventListener("hashchange", { e: Event ->
+            tidyTreeConfig = configFromLocationHash()
+            drawDiagram(false)
+        })
     }
 
     private fun drawDiagram(refreshStats: Boolean) {
@@ -87,6 +84,14 @@ class TreeView(private val viewModel: InspectorViewModel) : HtmlView() {
                 statsElement.clear()
                 statsElement.append(statsTable(it))
             }
+        }
+    }
+
+    private fun configFromLocationHash(): TreeConfig {
+        return when(window.location.hash.substringAfter("#")) {
+            CONFIG_SHORT -> TreeConfig.shortTypesTidyTree
+            CONFIG_SIMPLE -> TreeConfig.verticalSimpleTree
+            else -> TreeConfig.defaultTidyTree
         }
     }
 
