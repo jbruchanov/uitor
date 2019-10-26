@@ -11,23 +11,7 @@
 
 body {
     margin: 0;
-    background: #C1C1C1;
 }
-
-/*region Scrollbar*/
-
-/*::-webkit-scrollbar {*/
-/*    width: 0.5em;*/
-/*    height: 0.5em*/
-/*}*/
-
-/*::-webkit-scrollbar-track-piece {*/
-/*    background: #F1F1F1*/
-/*}*/
-
-/*::-webkit-scrollbar-thumb {*/
-/*    background: #C1C1C1*/
-/*}*/
 
 /*endregion Scrollbar*/
 
@@ -212,6 +196,23 @@ table.properties b {
     fill: coral;
 }
 
+.ui-tree-buttons {
+    position:fixed;
+    left: 5px;
+    top: 5px;
+}
+
+.ui-tree-stats {
+    background: #ddddff;
+    padding: 2px 0 2px 5px;
+    font-family: monospace;
+    font-size: 10pt;
+    border-spacing: 0px;
+    position:fixed;
+    right: 5px;
+    top: 5px;
+}
+
 svg text {
     /*font: 9.5px "Lucida Console", Monaco, monospace, sans-serif;*/
     /*font: 12px monospace;*/
@@ -225,6 +226,5 @@ svg text {
     font: 8.5px "Lucida Console", Monaco, monospace, sans-serif;
     fill: #6f7277;
 }
-
 
 /*endregion Props*/
