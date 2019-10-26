@@ -17,41 +17,42 @@ import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLTableElement
 import kotlin.browser.document
+import kotlin.browser.window
 import kotlin.dom.clear
 
 private const val TREE_SVG_CONTAINER = "tree-svg-container"
 private const val TREE_STATS_CONTAINER = "tree-stats-container"
 private const val CSS_BUTTONS = "ui-tree-buttons"
 private const val CSS_STATS = "ui-tree-stats"
+private const val CONFIG_SHORT = "short"
+private const val CONFIG_SIMPLE = "simple"
 
-class TreeView(val viewModel: InspectorViewModel) : HtmlView() {
+class TreeView(private val viewModel: InspectorViewModel) : HtmlView() {
 
     override lateinit var element: HTMLElement
     private val tidyTree = TidyTree()
     private val treeElement by lazy { element.requireElementById<HTMLElement>(TREE_SVG_CONTAINER) }
     private val statsElement by lazy { element.requireElementById<HTMLElement>(TREE_STATS_CONTAINER) }
-    private var tidyTreeConfig = TreeConfig.defaultTidyTree
-        set(value) {
-            if (field != value) {
-                field = value
-                drawDiagram()
-            }
-        }
+    private var tidyTreeConfig = when(window.location.hash.substringAfter("#")) {
+        CONFIG_SHORT -> TreeConfig.shortTypesTidyTree
+        CONFIG_SIMPLE -> TreeConfig.verticalSimpleTree
+        else -> TreeConfig.defaultTidyTree
+    }
 
     override fun buildContent() {
         element = document.create.div {
             div(classes = CSS_BUTTONS) {
                 button {
                     text("Default")
-                    onClickFunction = { tidyTreeConfig = TreeConfig.defaultTidyTree }
+                    onClickFunction = { setTidyTreeConfig(TreeConfig.defaultTidyTree, "") }
                 }
                 button {
                     text("ShortType")
-                    onClickFunction = { tidyTreeConfig = TreeConfig.shortTypesTidyTree }
+                    onClickFunction = { setTidyTreeConfig(TreeConfig.shortTypesTidyTree, CONFIG_SHORT) }
                 }
                 button {
                     text("Simple")
-                    onClickFunction = { tidyTreeConfig = TreeConfig.verticalSimpleTree }
+                    onClickFunction = { setTidyTreeConfig(TreeConfig.verticalSimpleTree, CONFIG_SIMPLE) }
                 }
             }
             div(classes = CSS_STATS) {
@@ -63,19 +64,29 @@ class TreeView(val viewModel: InspectorViewModel) : HtmlView() {
         }
     }
 
-    override fun onAttachToRoot(rootElement: Element) {
-        super.onAttachToRoot(rootElement)
-        viewModel.rootNode.observe {
-            it?.let { drawDiagram() }
+    private fun setTidyTreeConfig(config: TreeConfig, key: String) {
+        if (tidyTreeConfig != config) {
+            tidyTreeConfig = config
+            drawDiagram(false)
+            window.location.hash = key
         }
     }
 
-    private fun drawDiagram() {
+    override fun onAttachToRoot(rootElement: Element) {
+        super.onAttachToRoot(rootElement)
+        viewModel.rootNode.observe {
+            it?.let { drawDiagram(true) }
+        }
+    }
+
+    private fun drawDiagram(refreshStats: Boolean) {
         viewModel.rootNode.item?.let {
             treeElement.clear()
-            statsElement.clear()
             treeElement.append(tidyTree.generateSvg(it, tidyTreeConfig))
-            statsElement.append(statsTable(it))
+            if (refreshStats) {
+                statsElement.clear()
+                statsElement.append(statsTable(it))
+            }
         }
     }
 
