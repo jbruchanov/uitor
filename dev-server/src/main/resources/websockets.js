@@ -8,7 +8,7 @@ startSocket();
 function dlog(msg) {console.log(msg)}
 
 function initUI() {
-    reloadButton.style = "position:absolute;right:10px;bottom:10px";
+    reloadButton.style = "position:fixed;right:10px;bottom:10px";
     reloadButton.innerHTML = "Reload";
     document.body.appendChild(reloadButton);
     reloadButton.style.display = "none";
