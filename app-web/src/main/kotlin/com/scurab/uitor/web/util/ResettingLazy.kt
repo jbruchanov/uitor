@@ -1,14 +1,10 @@
 package com.scurab.uitor.web.util
 
-import com.scurab.uitor.common.util.Observable
+import com.scurab.uitor.common.util.HasLifecycle
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 fun <T> lazyLifecycled(initBlock: () -> T) = ResettingLazy(initBlock)
-
-interface HasLifecycle {
-    val onDetachObservable: Observable<HasLifecycle>
-}
 
 class ResettingLazy<T>(private val initBlock: () -> T) : ReadOnlyProperty<HasLifecycle, T> {
     private var item: T? = null
