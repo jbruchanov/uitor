@@ -1,10 +1,12 @@
 package com.scurab.uitor.web.ui
 
 import com.scurab.uitor.common.util.dlog
+import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.*
 import com.scurab.uitor.web.util.forEachIndexed
 import com.scurab.uitor.web.util.getElementByClass
 import com.scurab.uitor.web.util.indexOf
+import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
 import com.scurab.uitor.web.util.requireElementsByClass
 import kotlinx.html.div
@@ -32,15 +34,17 @@ class ColumnsLayout(
 ) : HtmlView() {
 
     val columns: Int = 3//not fully ready for != 3
-    val left by lazy { element.requireElementById<Element>(ID_LEFT) }
-    val middle by lazy { element.getElementByClass(CLASS_MIDDLE).toTypedArray() }
-    val right by lazy { element.requireElementById<Element>(ID_RIGHT) }
+    val left by lazyLifecycled { element.ref.requireElementById<Element>(ID_LEFT) }
+    val middle by lazyLifecycled { element.ref.getElementByClass(CLASS_MIDDLE).toTypedArray() }
+    val right by lazyLifecycled { element.ref.requireElementById<Element>(ID_RIGHT) }
 
     init {
         check(columns >= 2) { "Min amount of columns is 2, not $columns" }
     }
 
-    override lateinit var element: HTMLElement private set
+    override var element: HTMLElement? = null
+        private set
+
     private val resizableColumnsFeature = ResizableColumnsFeature(this, delegate.innerContentWidthEstimator)
 
     override fun buildContent() {
@@ -105,7 +109,7 @@ private class ResizableColumnsFeature(
                 resizeColumnsDoubleClick(draggingIndex, widthEstimator(draggingIndex + 1))
                 dlog(TAG) {
                     "MouseDoubleClick [${de.clientX},${de.clientY}] " +
-                            "result:${splitTableView.element.style.getPropertyValue(GRID_TEMPLATE_COLUMNS)}"
+                            "result:${splitTableView.element.ref.style.getPropertyValue(GRID_TEMPLATE_COLUMNS)}"
                 }
             }
 
@@ -126,7 +130,7 @@ private class ResizableColumnsFeature(
                     downX = me.clientX
                     dlog(TAG) {
                         "MouseMove [${me.clientX},${me.clientY}] diff:$diff " +
-                                "result:${splitTableView.element.style.getPropertyValue(GRID_TEMPLATE_COLUMNS)}"
+                                "result:${splitTableView.element.ref.style.getPropertyValue(GRID_TEMPLATE_COLUMNS)}"
                     }
                 }
             }
@@ -136,14 +140,14 @@ private class ResizableColumnsFeature(
 
     fun initColumnSizes() {
         //take the table itself not the root
-        refreshColumnsSizes(splitTableView.element.firstElementChild)
+        refreshColumnsSizes(splitTableView.element.ref.firstElementChild)
         //TODO something better
         val sum = sizes.asList().subList(1, sizes.size - 1).sum()
         sizes[sizes.size - 1] = widthEstimator.invoke(sizes.size - 1)
         sizes[sizes.size - 3] = widthEstimator.invoke(sizes.size - 3)
         sizes[0] += (sum - sizes.asList().subList(1, sizes.size - 1).sum() - UNKNOWNGAP)
         val result = sizes.joinToString("px ", postfix = "px")
-        splitTableView.element.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
+        splitTableView.element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
     }
 
     private fun refreshColumnsSizes(draggingElement: Element?) {
@@ -162,7 +166,7 @@ private class ResizableColumnsFeature(
             sizes[draggingIndex + 1] -= diff
         }
         val result = sizes.joinToString("px ", postfix = "px")
-        splitTableView.element.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
+        splitTableView.element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
     }
 
     private fun resizeColumnsDragging(draggingIndex: Int, diff: Int, sizes: DoubleArray = this.sizes) {
@@ -173,7 +177,7 @@ private class ResizableColumnsFeature(
                 stopDragging()
             }
             val result = sizes.joinToString("px ", postfix = "px")
-            splitTableView.element.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
+            splitTableView.element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
         }
     }
 

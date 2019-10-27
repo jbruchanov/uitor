@@ -47,9 +47,8 @@ class CanvasView(
     private val inspectorViewModel: InspectorViewModel
 ) : HtmlView() {
 
-    override var element: HTMLElement
-        get() = TODO("This is more elements")
-        set(value) {}
+    //TODO: fix to have it inside element
+    override var element: HTMLElement? = null
 
     private val TAG = "CanvasView"
     private var layers: Array<HTMLCanvasElement> = Array(2) { document.create.canvas(null, "") as HTMLCanvasElement }

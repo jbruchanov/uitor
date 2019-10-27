@@ -1,12 +1,10 @@
 package com.scurab.uitor.web.inspector
 
-import com.scurab.uitor.web.ServerApi
-import com.scurab.uitor.web.model.ClientConfig
+import com.scurab.uitor.web.Page
+import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.ui.ColumnsLayout
-import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
@@ -21,21 +19,31 @@ private const val ID_MID = "split-table-mid"
 private const val ID_RIGHT = "split-table-right"
 
 class LayoutInspectorPage(
-    private val inspectorViewModel: InspectorViewModel
-) : HtmlView() {
+    pageViewModel: PageViewModel
+) : Page() {
 
     private lateinit var columnsLayout: ColumnsLayout
     private lateinit var canvasView: CanvasView
     private lateinit var treeView: TreeView
     private lateinit var propertiesView: PropertiesView
-    override lateinit var element: HTMLElement
-    private val serverApi = ServerApi()
+    private val viewModel = InspectorViewModel(pageViewModel)
+    override var element: HTMLElement? = null; private set
+
+    init {
+        GlobalScope.launch {
+            try {
+                viewModel.load()
+            } catch (e: Exception) {
+                window.alert(e.message ?: "Null message")
+            }
+        }
+    }
 
     override fun buildContent() {
         columnsLayout = ColumnsLayout(ColumnsLayoutDelegate(this))
-        canvasView = CanvasView(inspectorViewModel)
-        treeView = TreeView(inspectorViewModel)
-        propertiesView = PropertiesView(inspectorViewModel)
+        canvasView = CanvasView(viewModel)
+        treeView = TreeView(viewModel)
+        propertiesView = PropertiesView(viewModel)
     }
 
     override fun onAttachToRoot(rootElement: Element) {
@@ -48,16 +56,12 @@ class LayoutInspectorPage(
 
     override fun onAttached() {
         super.onAttached()
+        viewModel.rootNode.observe {
+            canvasView.renderMouseCross = true
+            columnsLayout.initColumnSizes()
+        }
         GlobalScope.launch {
-            async {
-                val item = serverApi.loadViewHierarchy(0)
-                canvasView.renderMouseCross = true
-                inspectorViewModel.rootNode.post(item)
-                columnsLayout.initColumnSizes()
-            }
-            async {
-                canvasView.loadImage("/screen.png")
-            }
+            canvasView.loadImage("/screen.png")
         }
     }
 

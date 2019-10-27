@@ -5,7 +5,9 @@ package com.scurab.uitor.web.inspector
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.highlightAt
 import com.scurab.uitor.common.util.matchingIndexes
+import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.ui.HtmlView
+import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
@@ -13,9 +15,18 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
-import kotlinx.html.*
+import kotlinx.html.a
+import kotlinx.html.div
 import kotlinx.html.dom.create
+import kotlinx.html.id
 import kotlinx.html.js.onKeyUpFunction
+import kotlinx.html.span
+import kotlinx.html.table
+import kotlinx.html.td
+import kotlinx.html.textInput
+import kotlinx.html.thead
+import kotlinx.html.tr
+import kotlinx.html.unsafe
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import kotlin.browser.document
@@ -37,8 +48,10 @@ class PropertiesView(
 ) : HtmlView() {
 
     private val TAG = "PropertiesView"
-    override lateinit var element: HTMLElement private set
-    private lateinit var tableRootElement: HTMLElement
+    override var element: HTMLElement? = null; private set
+    private val tableRootElement by lazyLifecycled {
+        element.ref.requireElementById<HTMLElement>("properties-table")
+    }
     private val filterChannel = ConflatedBroadcastChannel("")
     private val propertyHighlights = inspectorViewModel.clientConfig.propertyHighlights
 
@@ -62,9 +75,8 @@ class PropertiesView(
             div { id = "properties-table" }
         }
 
-        tableRootElement = element.requireElementById("properties-table")
         inspectorViewModel.selectedNode.observe {
-            rebuildHtml(filterChannel.value ?: "")
+            rebuildHtml(filterChannel.value)
         }
 
         GlobalScope.launch {

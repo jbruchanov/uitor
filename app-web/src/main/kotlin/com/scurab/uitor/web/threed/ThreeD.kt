@@ -1,10 +1,6 @@
 package com.scurab.uitor.web.threed
 
 import com.scurab.uitor.common.render.Color
-import threejs.GridHelper
-import threejs.PerspectiveCamera
-import threejs.Scene
-import threejs.WebGLRenderer
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.vlog
 import com.scurab.uitor.web.Events
@@ -19,17 +15,21 @@ import org.w3c.dom.events.EventListener
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
 import threejs.BoxBufferGeometry
+import threejs.GridHelper
 import threejs.Mesh
 import threejs.MeshBasicMaterial
+import threejs.PerspectiveCamera
 import threejs.Raycaster
+import threejs.Scene
 import threejs.TrackballControls
 import threejs.Vector2
+import threejs.WebGLRenderer
 import kotlin.browser.document
 import kotlin.browser.window
 
 class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
     private val TAG = "ThreeD"
-    override lateinit var element: HTMLElement
+    override var element: HTMLElement? = null; private set
 
     private lateinit var camera: PerspectiveCamera
     private lateinit var renderer: WebGLRenderer
@@ -106,7 +106,7 @@ class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
     }
 
     private fun initControls() {
-        check(element.parentElement != null)
+        check(element?.parentElement != null)
         { "TrackballControls have to be initialized after attaching the element to DOM" }
         //has to be created after the element has been added to parent
 

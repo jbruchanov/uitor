@@ -6,12 +6,17 @@ import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.pickNodeForNotification
 import com.scurab.uitor.web.util.scrollIntoViewArgs
-import kotlinx.html.*
+import kotlinx.html.classes
+import kotlinx.html.div
 import kotlinx.html.dom.create
+import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.onMouseOutFunction
 import kotlinx.html.js.onMouseOverFunction
 import kotlinx.html.js.table
+import kotlinx.html.span
+import kotlinx.html.td
+import kotlinx.html.tr
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.Event
@@ -57,8 +62,7 @@ class TreeView(
         }
     }
 
-    override lateinit var element: HTMLElement
-        private set
+    override var element: HTMLElement? = null; private set
 
     override fun onAttachToRoot(rootElement: Element) {
         super.onAttachToRoot(rootElement)
