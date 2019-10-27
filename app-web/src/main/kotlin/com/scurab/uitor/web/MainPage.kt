@@ -9,7 +9,6 @@ import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
-import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.removeAll
 import com.scurab.uitor.web.util.requireElementById
 import kotlinx.coroutines.GlobalScope
@@ -68,6 +67,7 @@ class MainPage : Page() {
             activeScreens.forEach {
                 screensSelect.add(document.create.option { text(it) })
             }
+            screensSelect.selectedIndex = activeScreens.size - 1
             screensSelect.disabled = false
         }
     }
