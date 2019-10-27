@@ -7,11 +7,12 @@ import com.scurab.uitor.web.model.ViewNode
 
 class InspectorViewModel(
     pageViewModel: PageViewModel,
-    override var screenIndex: Int = pageViewModel.screenIndex
+    override val screenIndex: Int = pageViewModel.screenIndex
 ) : CommonViewModel by pageViewModel {
     val rootNode = Observable<ViewNode?>()
     val hoveredNode = Observable<ViewNode?>()
     val selectedNode = Observable<ViewNode?>()
+    val screenPreviewUrl = "/screen.png?screenIndex=$screenIndex"
 
     suspend fun load() {
         rootNode.post(serverApi.viewHierarchy(screenIndex))

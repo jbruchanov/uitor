@@ -10,7 +10,7 @@ import kotlin.js.Json
 class ServerApi {
 
     suspend fun viewHierarchy(screenIndex: Int): ViewNode {
-        val json = load("viewhierarchy.json")
+        val json = load("viewhierarchy.json?screenIndex=${screenIndex}")
         return ViewNode(json)
     }
 

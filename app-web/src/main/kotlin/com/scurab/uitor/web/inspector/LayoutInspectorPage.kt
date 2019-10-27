@@ -61,7 +61,7 @@ class LayoutInspectorPage(
             columnsLayout.initColumnSizes()
         }
         GlobalScope.launch {
-            canvasView.loadImage("/screen.png")
+            canvasView.loadImage(viewModel.screenPreviewUrl)
         }
     }
 
