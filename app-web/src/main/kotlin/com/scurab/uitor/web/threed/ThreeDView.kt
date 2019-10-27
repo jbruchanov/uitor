@@ -34,6 +34,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     private lateinit var controls: Any/*TrackballControls*/
     private val rayCaster = Raycaster()
     private val mouse = Vector2(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
+    private var selectedObject: ViewNode3D? = null
 
     private val resizeAction = EventListener { e: Event ->
         camera.aspect = window.innerWidth / window.innerHeight.toDouble()
@@ -72,7 +73,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
 
     private fun buildLayout(root: ViewNode, scene: Scene) {
         root.all()
-            .map { ViewNode3D(it) }
+            .map { ViewNode3D(it, viewModel.screenIndex) }
             .forEach {
                 it.add(scene)
             }
@@ -126,7 +127,6 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
         }
     }
 
-    var selectedObject: ViewNode3D? = null
     private fun raycastObjects() {
         rayCaster.setFromCamera(mouse, camera)
         val intersectObjects = rayCaster.intersectObjects(scene.children)

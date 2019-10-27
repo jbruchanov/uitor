@@ -24,7 +24,7 @@ private const val COLOR_TEXTURE_SELECTED = "#808080"
 /**
  * Help class to compose ViewNode related threejs objects
  */
-class ViewNode3D(val viewNode: ViewNode) : IViewNode by viewNode {
+class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int) : IViewNode by viewNode {
 
     override val rect = viewNode.renderAreaRelative?.let { viewNode.rect.addRelative(it) } ?: viewNode.rect
     private val hasCustomRenderArea = rect != viewNode.rect
@@ -88,7 +88,7 @@ class ViewNode3D(val viewNode: ViewNode) : IViewNode by viewNode {
             color = COLOR_TEXTURE_DEFAULT
             depthWrite = false
             this.side = FrontSide
-        }).withTexture(viewNode, side)
+        }).withTexture(viewNode, side, screenIndex)
     }
 
     private fun ViewNode.edgeColor(selected: Boolean): Color {
@@ -140,11 +140,11 @@ private fun <T : Object3D> T.withName(name: String): T {
     return this
 }
 
-private fun MeshBasicMaterial.withTexture(viewNode: ViewNode, side: Side): MeshBasicMaterial {
+private fun MeshBasicMaterial.withTexture(viewNode: ViewNode, side: Side, screenIndex: Int): MeshBasicMaterial {
     transparent = !viewNode.shouldRender
     if (viewNode.shouldRender) {
         //this expects to server handle the hammering
-        map = ViewNode3D.textureLoader.load("view.png?position=${viewNode.position}").apply {
+        map = ViewNode3D.textureLoader.load("view.png?position=${viewNode.position}&screenIndex=$screenIndex").apply {
             minFilter = threejs.LinearFilter
             magFilter = threejs.LinearFilter
             transparent = true
