@@ -1,10 +1,12 @@
 package com.scurab.uitor.web.ui
 
 import com.scurab.uitor.common.util.Observable
+import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.web.util.DocumentWrapper
 import com.scurab.uitor.web.util.HasLifecycle
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
+import kotlin.browser.window
 import kotlin.dom.clear
 
 abstract class HtmlView : HasLifecycle {
@@ -51,5 +53,15 @@ abstract class HtmlView : HasLifecycle {
 
     open fun onDetached() {
         //let subclass to do something
+    }
+
+    fun alert(e: Throwable) {
+        val msg = e.message ?: "Null Exception"
+        elog { msg }
+        alert(msg)
+    }
+
+    fun alert(msg: String?) {
+        window.alert(msg ?: "Null message")
     }
 }

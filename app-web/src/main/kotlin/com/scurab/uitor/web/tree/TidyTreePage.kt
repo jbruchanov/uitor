@@ -43,7 +43,7 @@ class TidyTreePage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewMo
             try {
                 viewModel.load()
             } catch (e: Exception) {
-                window.alert(e.message ?: "Null message")
+                alert(e)
             }
         }
     }

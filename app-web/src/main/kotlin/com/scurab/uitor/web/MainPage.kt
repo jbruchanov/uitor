@@ -25,7 +25,6 @@ import kotlinx.html.td
 import kotlinx.html.tr
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSelectElement
-import kotlin.browser.window
 
 private const val ID_SCREEN_INDEX = "main-screen-index"
 
@@ -81,7 +80,7 @@ class MainPage : Page() {
                         try {
                             Navigation.open(block())
                         } catch (e: Throwable) {
-                            window.alert(e.message ?: "Null error message :(")
+                            alert(e)
                         }
                     }
                 }
