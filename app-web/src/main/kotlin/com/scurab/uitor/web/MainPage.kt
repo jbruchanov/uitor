@@ -35,7 +35,7 @@ class MainPage : Page() {
     override var element: HTMLElement? = null
         private set
 
-    private val screensSelect by lazyLifecycled { element.ref.requireElementById<HTMLSelectElement>(ID_SCREEN_INDEX) }
+    private val screensSelect by lazy { element.ref.requireElementById<HTMLSelectElement>(ID_SCREEN_INDEX) }
     private val serverApi = ServerApi()
     private val selectedScreenIndex: Int
         get() = screensSelect.selectedIndex.takeIf { it >= 0 } ?: isa("Invalid screen selection")

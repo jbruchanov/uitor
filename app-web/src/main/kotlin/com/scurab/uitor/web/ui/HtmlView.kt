@@ -16,6 +16,8 @@ abstract class HtmlView : HasLifecycle {
     override val onDetachObservable = Observable<HasLifecycle>()
     protected var document = DocumentWrapper()
 
+    abstract fun buildContent()
+
     fun attachTo(rootElement: Element) {
         check(!attached) { "This view has been already attached" }
         attached = true
@@ -31,12 +33,6 @@ abstract class HtmlView : HasLifecycle {
         element?.let { rootElement.appendChild(it) }
     }
 
-    abstract fun buildContent()
-
-    open fun onAttached() {
-        //TODO let subclass to do something
-    }
-
     fun detach() {
         document.dispose()
         onDetachObservable.let {
@@ -48,7 +44,12 @@ abstract class HtmlView : HasLifecycle {
         attached = false
     }
 
-    open fun onDetached() {
+    open fun onAttached() {
+        //let subclass to do something
+    }
 
+
+    open fun onDetached() {
+        //let subclass to do something
     }
 }

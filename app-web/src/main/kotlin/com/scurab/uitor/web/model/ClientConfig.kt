@@ -1,7 +1,6 @@
 package com.scurab.uitor.web.model
 
 import com.scurab.uitor.common.model.ConfigFields
-import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.map
 import com.scurab.uitor.web.util.getMap

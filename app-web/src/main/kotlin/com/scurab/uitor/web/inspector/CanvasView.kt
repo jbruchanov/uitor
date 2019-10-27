@@ -7,11 +7,11 @@ import com.scurab.uitor.common.render.relativeToScale
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
+import com.scurab.uitor.web.clear
 import com.scurab.uitor.web.common.addMouseClickListener
 import com.scurab.uitor.web.common.addMouseMoveListener
 import com.scurab.uitor.web.common.addMouseOutListener
 import com.scurab.uitor.web.common.addMouseWheelListener
-import com.scurab.uitor.web.clear
 import com.scurab.uitor.web.drawCross
 import com.scurab.uitor.web.drawRectangle
 import com.scurab.uitor.web.model.ViewNode
@@ -33,7 +33,6 @@ import kotlin.math.sign
 private const val LAYER_IMAGE = 0
 private const val LAYER_DRAWING = 1
 private const val CURSOR_CROSS_HAIR = "crosshair"
-private const val INNER_HEIGHT_OFFSET = 50
 private const val SCALE_STEP = 0.05
 private const val SCALE_MAX = 3.0
 private const val SCALE_MIN = 0.1
