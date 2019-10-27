@@ -7,7 +7,6 @@ import com.scurab.uitor.common.render.relativeToScale
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
-import com.scurab.uitor.web.Events
 import com.scurab.uitor.web.addMouseClickListener
 import com.scurab.uitor.web.addMouseMoveListener
 import com.scurab.uitor.web.addMouseOutListener
@@ -21,7 +20,6 @@ import com.scurab.uitor.web.util.LoadImageHandler
 import com.scurab.uitor.web.util.pickNodeForNotification
 import kotlinx.html.canvas
 import kotlinx.html.div
-import kotlinx.html.dom.create
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLElement
@@ -29,7 +27,6 @@ import org.w3c.dom.Image
 import org.w3c.dom.events.EventListener
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
-import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -49,9 +46,7 @@ class CanvasView(
     private val inspectorViewModel: InspectorViewModel
 ) : HtmlView() {
 
-    //TODO: fix to have it inside element
     override var element: HTMLElement? = null
-
     private val TAG = "CanvasView"
     private var layers: Array<HTMLCanvasElement> = Array(2) { document.create.canvas(null, "") as HTMLCanvasElement }
     private val image = Image()
@@ -106,9 +101,7 @@ class CanvasView(
                 renderScene(it.offsetPoint)
             }
         }
-        //TODO:global listener, has to die
-        document.addEventListener(Events.keydown.name, EventListener {
-            val keyboardEvent = it as KeyboardEvent
+        document.addKeyDownListener { keyboardEvent ->
             dlog(TAG) { "KeyEvent:${keyboardEvent.keyCode} => '${keyboardEvent.key}'(${keyboardEvent.code})" }
             when (keyboardEvent.keyCode) {
                 106/*'*'*/ -> renderDeviceScreenshot(scaleToFit())
@@ -117,7 +110,7 @@ class CanvasView(
                 else -> {/*none*/
                 }
             }
-        })
+        }
 
         inspectorViewModel.selectedNode.observe {
             renderScene(it)

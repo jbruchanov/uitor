@@ -8,7 +8,6 @@ import com.scurab.uitor.web.util.pickNodeForNotification
 import com.scurab.uitor.web.util.scrollIntoViewArgs
 import kotlinx.html.classes
 import kotlinx.html.div
-import kotlinx.html.dom.create
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.onMouseOutFunction
@@ -19,7 +18,6 @@ import kotlinx.html.td
 import kotlinx.html.tr
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.Event
-import kotlin.browser.document
 import kotlin.dom.addClass
 import kotlin.dom.clear
 import kotlin.dom.removeClass

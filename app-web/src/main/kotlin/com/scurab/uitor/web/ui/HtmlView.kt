@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.ui
 
 import com.scurab.uitor.common.util.Observable
+import com.scurab.uitor.web.util.DocumentWrapper
 import com.scurab.uitor.web.util.HasLifecycle
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
@@ -13,6 +14,7 @@ abstract class HtmlView : HasLifecycle {
     protected var parentElement: Element? = null
     private var attached: Boolean = false
     override val onDetachObservable = Observable<HasLifecycle>()
+    protected var document = DocumentWrapper()
 
     fun attachTo(rootElement: Element) {
         check(!attached) { "This view has been already attached" }
@@ -36,6 +38,7 @@ abstract class HtmlView : HasLifecycle {
     }
 
     fun detach() {
+        document.dispose()
         onDetachObservable.let {
             it.post(this)
             it.removeObservers()

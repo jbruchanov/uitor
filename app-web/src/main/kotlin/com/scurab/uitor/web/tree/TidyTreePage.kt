@@ -12,7 +12,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.html.button
 import kotlinx.html.div
-import kotlinx.html.dom.create
 import kotlinx.html.id
 import kotlinx.html.js.div
 import kotlinx.html.js.onClickFunction
@@ -21,7 +20,6 @@ import kotlinx.html.td
 import kotlinx.html.tr
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLTableElement
-import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.clear
 

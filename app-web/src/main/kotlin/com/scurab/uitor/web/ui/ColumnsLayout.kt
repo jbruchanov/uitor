@@ -2,20 +2,19 @@ package com.scurab.uitor.web.ui
 
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
-import com.scurab.uitor.web.*
+import com.scurab.uitor.web.addMouseDoubleClickListener
+import com.scurab.uitor.web.addMouseDownListener
+import com.scurab.uitor.web.util.DocumentWrapper
 import com.scurab.uitor.web.util.forEachIndexed
 import com.scurab.uitor.web.util.getElementByClass
 import com.scurab.uitor.web.util.indexOf
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
-import com.scurab.uitor.web.util.requireElementsByClass
 import kotlinx.html.div
-import kotlinx.html.dom.create
 import kotlinx.html.id
 import kotlinx.html.js.div
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
-import kotlin.browser.document
 import kotlin.math.max
 
 private const val ID_LEFT = "split-table-left"
@@ -69,6 +68,11 @@ class ColumnsLayout(
         resizableColumnsFeature.attach()
     }
 
+    override fun onDetached() {
+        resizableColumnsFeature.detach()
+        super.onDetached()
+    }
+
     fun initColumnSizes() {
         resizableColumnsFeature.initColumnSizes()
     }
@@ -92,6 +96,7 @@ private class ResizableColumnsFeature(
     private lateinit var separators: Array<Element>
     //columns + separators in between them
     private val sizes = DoubleArray((2 * splitTableView.columns) - 1)
+    private val document = DocumentWrapper()
 
     fun attach(): ResizableColumnsFeature {
         separators = document.requireElementsByClass(CLASS_SEPARATOR)
@@ -136,6 +141,10 @@ private class ResizableColumnsFeature(
             }
         }
         return this
+    }
+
+    fun detach() {
+        document.dispose()
     }
 
     fun initColumnSizes() {

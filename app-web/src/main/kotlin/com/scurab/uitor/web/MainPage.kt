@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import kotlinx.html.TABLE
 import kotlinx.html.button
 import kotlinx.html.div
-import kotlinx.html.dom.create
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.option
@@ -21,10 +20,8 @@ import kotlinx.html.select
 import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.tr
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSelectElement
-import kotlin.browser.document
 import kotlin.browser.window
 
 private const val ID_SCREEN_INDEX = "main-screen-index"

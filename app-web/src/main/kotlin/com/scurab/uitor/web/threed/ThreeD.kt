@@ -3,7 +3,6 @@ package com.scurab.uitor.web.threed
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.vlog
-import com.scurab.uitor.web.Events
 import com.scurab.uitor.web.addMouseMoveListener
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.ViewNode
@@ -12,7 +11,6 @@ import com.scurab.uitor.web.util.obj
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.EventListener
-import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
 import threejs.BoxBufferGeometry
 import threejs.GridHelper
@@ -24,7 +22,6 @@ import threejs.Scene
 import threejs.TrackballControls
 import threejs.Vector2
 import threejs.WebGLRenderer
-import kotlin.browser.document
 import kotlin.browser.window
 
 class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
@@ -117,8 +114,7 @@ class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
             }
         }
 
-        document.addEventListener(Events.keydown.name, EventListener {
-            val keyboardEvent = it as KeyboardEvent
+        document.addKeyDownListener { keyboardEvent ->
             vlog(TAG) { "KeyEvent:${keyboardEvent.keyCode} => '${keyboardEvent.key}'(${keyboardEvent.code})" }
             when (keyboardEvent.keyCode) {
                 106/*'*'*/ -> camera.rotation.x = 0.0
@@ -127,7 +123,7 @@ class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
                 else -> {/*none*/
                 }
             }
-        })
+        }
     }
 
     var selectedObject: ViewNode3D? = null

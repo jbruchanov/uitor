@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import kotlinx.html.a
 import kotlinx.html.div
-import kotlinx.html.dom.create
 import kotlinx.html.id
 import kotlinx.html.js.onKeyUpFunction
 import kotlinx.html.span
@@ -29,7 +28,6 @@ import kotlinx.html.tr
 import kotlinx.html.unsafe
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
-import kotlin.browser.document
 import kotlin.dom.clear
 
 private const val CSS_PROPERTIES_TABLE = "properties"
