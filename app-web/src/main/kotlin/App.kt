@@ -1,6 +1,7 @@
 import com.scurab.uitor.web.MainPage
 import com.scurab.uitor.web.Navigation
 import com.scurab.uitor.web.ServerApi
+import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.tree.TidyTreePage
@@ -33,6 +34,7 @@ object App {
         val screenIndex = token.screenIndex?.toInt() ?: 0
         val page = when (token.pageId) {
             "TidyTreePage" -> TidyTreePage(PageViewModel(screenIndex, clientConfig, serverApi))
+            "LayoutInspectorPage" -> LayoutInspectorPage(PageViewModel(screenIndex, clientConfig, serverApi))
             else -> MainPage()
         }
         Navigation.open(page)
