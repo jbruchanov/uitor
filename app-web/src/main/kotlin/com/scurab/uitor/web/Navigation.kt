@@ -34,7 +34,12 @@ object Navigation {
     fun open(page: Page, pushState: Boolean) {
         currentPage?.detach()
         if (pushState) {
-            window.history.pushState(page.id, page.id, "#${page.id}")
+            val state = page.stateDescription()?.let { "${HashToken.DELIMITER}$it" } ?: ""
+            window.history.pushState(
+                page.id,
+                page.id,
+                "${HashToken.HASH}${page.id}$state"
+            )
         }
         currentPage = page
         page.attachTo(rootElement)

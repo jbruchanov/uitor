@@ -1,7 +1,7 @@
 package com.scurab.uitor.web.tree
 
 import com.scurab.uitor.common.util.ref
-import com.scurab.uitor.web.Page
+import com.scurab.uitor.web.common.InspectorPage
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.model.ViewNode
@@ -31,7 +31,7 @@ private const val CONFIG_DEFAULT = "default"
 private const val CONFIG_SHORT = "short"
 private const val CONFIG_SIMPLE = "simple"
 
-class TidyTreePage(pageViewModel: PageViewModel) : Page() {
+class TidyTreePage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewModel(pageViewModel)) {
 
     override var element: HTMLElement? = null; private set
     private val tidyTree = TidyTree()
@@ -43,7 +43,6 @@ class TidyTreePage(pageViewModel: PageViewModel) : Page() {
         CONFIG_SIMPLE to TreeConfig.verticalSimpleTree
     )
     private var tidyTreeConfig = configFromLocationHash()
-    private val viewModel = InspectorViewModel(pageViewModel)
 
     init {
         GlobalScope.launch {
@@ -95,6 +94,13 @@ class TidyTreePage(pageViewModel: PageViewModel) : Page() {
         viewModel.rootNode.observe {
             it?.let { drawDiagram(true) }
         }
+    }
+
+    override fun stateDescription(): String {
+        return HashToken.state(
+            HashToken.SCREEN_INDEX to viewModel.screenIndex.toString(),
+            HashToken.TYPE to (configs.entries.find { it.value == tidyTreeConfig }?.key ?: CONFIG_DEFAULT)
+        )
     }
 
     private fun drawDiagram(refreshStats: Boolean) {

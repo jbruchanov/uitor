@@ -1,6 +1,6 @@
 package com.scurab.uitor.web.inspector
 
-import com.scurab.uitor.web.Page
+import com.scurab.uitor.web.common.InspectorPage
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
@@ -20,13 +20,12 @@ private const val ID_RIGHT = "split-table-right"
 
 class LayoutInspectorPage(
     pageViewModel: PageViewModel
-) : Page() {
+) : InspectorPage(InspectorViewModel(pageViewModel)) {
 
     private lateinit var columnsLayout: ColumnsLayout
     private lateinit var canvasView: CanvasView
     private lateinit var treeView: TreeView
     private lateinit var propertiesView: PropertiesView
-    private val viewModel = InspectorViewModel(pageViewModel)
     override var element: HTMLElement? = null; private set
 
     init {

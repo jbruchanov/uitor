@@ -27,6 +27,7 @@ import kotlin.browser.window
 private const val ID_SCREEN_INDEX = "main-screen-index"
 
 class MainPage : Page() {
+
     override var element: HTMLElement? = null
         private set
 
@@ -51,6 +52,8 @@ class MainPage : Page() {
         super.onAttached()
         reloadScreens()
     }
+
+    override fun stateDescription(): String? = null
 
     private fun reloadScreens() {
         GlobalScope.launch {

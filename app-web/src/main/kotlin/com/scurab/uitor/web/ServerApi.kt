@@ -26,10 +26,9 @@ class ServerApi {
 
     private suspend fun load(url: String, timeOut: Long = 2000): Json {
         return withTimeout(timeOut) {
-            val text = window
-                .fetch(url)
-                .asDeferred()
-                .await()
+            val response = window.fetch(url).asDeferred().await()
+            check(response.status == 200.toShort()) { "[${response.status}]${response.statusText}" }
+            val text = response
                 .text()
                 .asDeferred()
                 .await()

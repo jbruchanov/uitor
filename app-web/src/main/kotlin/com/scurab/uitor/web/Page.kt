@@ -9,4 +9,6 @@ abstract class Page : HtmlView() {
     open fun onHashTokenChanged(old: HashToken, new: HashToken)  {
         //let subclass do something useful
     }
+
+    abstract fun stateDescription(): String?
 }
