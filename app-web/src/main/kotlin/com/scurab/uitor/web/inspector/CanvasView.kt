@@ -6,6 +6,7 @@ import com.scurab.uitor.common.render.StrokeRenderContext
 import com.scurab.uitor.common.render.relativeToScale
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
+import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.Events
 import com.scurab.uitor.web.addMouseClickListener
 import com.scurab.uitor.web.addMouseMoveListener
@@ -19,9 +20,9 @@ import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.LoadImageHandler
 import com.scurab.uitor.web.util.pickNodeForNotification
 import kotlinx.html.canvas
+import kotlinx.html.div
 import kotlinx.html.dom.create
 import org.w3c.dom.CanvasRenderingContext2D
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Image
@@ -30,6 +31,7 @@ import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
 import kotlin.browser.document
 import kotlin.browser.window
+import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
@@ -71,18 +73,20 @@ class CanvasView(
     var renderMouseCross: Boolean = false
     var useWheelToScale: Boolean = false
 
-    override fun onAttachToRoot(rootElement: Element) {
-        layers.forEach { rootElement.append(it) }
-    }
-
     override fun buildContent() {
+        val el = document.create.div {}
+        element = el
         layers.forEach {
+            el.append(it)
             it.style.apply {
                 cursor = CURSOR_CROSS_HAIR
                 position = "fixed"
             }
         }
+    }
 
+    override fun onAttached() {
+        super.onAttached()
         layers.last().apply {
             addMouseMoveListener {
                 inspectorViewModel.hoveredNode.post(it.offsetPoint.viewNode())
@@ -102,10 +106,7 @@ class CanvasView(
                 renderScene(it.offsetPoint)
             }
         }
-    }
-
-    override fun onAttached() {
-        super.onAttached()
+        //TODO:global listener, has to die
         document.addEventListener(Events.keydown.name, EventListener {
             val keyboardEvent = it as KeyboardEvent
             dlog(TAG) { "KeyEvent:${keyboardEvent.keyCode} => '${keyboardEvent.key}'(${keyboardEvent.code})" }
@@ -138,8 +139,20 @@ class CanvasView(
 
     //region scale
     private fun scaleToFit(): Double {
-        //TODO:landscape
-        return (window.innerHeight.toDouble() - INNER_HEIGHT_OFFSET) / image.height
+        var scale = 1.0
+        val imageWidth = image.width
+        val imageHeight = image.height
+        val windowHeight = window.innerHeight
+        val maxH = windowHeight - 80
+        if (imageWidth > imageHeight) {
+            val maxW = element.ref.getBoundingClientRect().width - 20// margins
+            scale = maxW / imageWidth
+            scale = max(SCALE_MIN / 100, scale)
+        } else if (imageHeight > maxH) {
+            scale = maxH / imageHeight.toDouble()
+            scale = max(SCALE_MIN / 100, scale)
+        }
+        return scale
     }
 
     private fun onScaleChange(sign: Int) {
