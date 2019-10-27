@@ -20,6 +20,10 @@ class Observable<T> {
         }
     }
 
+    fun removeObservers() {
+        observers.clear()
+    }
+
     private fun notifyObservers() {
         if (_item != NULL) {
             observers.forEach {

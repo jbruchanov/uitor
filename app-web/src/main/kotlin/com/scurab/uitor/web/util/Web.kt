@@ -4,6 +4,7 @@ import com.scurab.uitor.common.util.npe
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLCollection
+import org.w3c.dom.HTMLOptionsCollection
 import org.w3c.dom.get
 
 fun Document.requireElementById(id: String) = getElementById(id) ?: npe(id)
@@ -75,4 +76,10 @@ fun Element.getElementByClass(clazz: String, to: MutableList<Element> = mutableL
         ch.getElementByClass(clazz, to)
     }
     return to
+}
+
+fun HTMLOptionsCollection.removeAll() {
+    while (this.length > 0) {
+        remove(0)
+    }
 }
