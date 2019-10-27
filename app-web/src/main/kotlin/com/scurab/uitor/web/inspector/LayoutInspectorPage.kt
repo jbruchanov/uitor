@@ -54,6 +54,13 @@ class LayoutInspectorPage(
         }
     }
 
+    override fun onDetached() {
+        canvasView.detach()
+        treeView.detach()
+        propertiesView.detach()
+        super.onDetached()
+    }
+
     class ColumnsLayoutDelegate(val page: LayoutInspectorPage) : IColumnsLayoutDelegate {
         override val innerContentWidthEstimator: (Int) -> Double = { column ->
             when(column) {

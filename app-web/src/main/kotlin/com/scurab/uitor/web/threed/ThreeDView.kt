@@ -3,14 +3,12 @@ package com.scurab.uitor.web.threed
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.vlog
-import com.scurab.uitor.web.common.addMouseMoveListener
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.obj
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.Event
-import org.w3c.dom.events.EventListener
 import org.w3c.dom.events.MouseEvent
 import threejs.BoxBufferGeometry
 import threejs.GridHelper
@@ -31,12 +29,12 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     private lateinit var camera: PerspectiveCamera
     private lateinit var renderer: WebGLRenderer
     private lateinit var scene: Scene
-    private lateinit var controls: Any/*TrackballControls*/
+    private lateinit var controls: TrackballControls
     private val rayCaster = Raycaster()
     private val mouse = Vector2(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
     private var selectedObject: ViewNode3D? = null
 
-    private val resizeAction = EventListener { e: Event ->
+    private val resizeAction = { e: Event ->
         camera.aspect = window.innerWidth / window.innerHeight.toDouble()
         camera.updateProjectionMatrix()
         renderer.setSize(window.innerWidth, window.innerHeight)
@@ -44,10 +42,12 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
 
     private val requestAnimationFrameAction: () -> Unit = { window.requestAnimationFrame(renderAction) }
     private val renderAction = { d: Double ->
-        requestAnimationFrameAction()
-        renderer.render(scene, camera)
-        controls.asDynamic().update()
-        raycastObjects()
+        if (isAttached) {
+            requestAnimationFrameAction()
+            renderer.render(scene, camera)
+            controls.asDynamic().update()
+            raycastObjects()
+        }
     }
 
     private val mouseMoveAction = { event: MouseEvent ->
@@ -63,12 +63,17 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     override fun onAttached() {
         super.onAttached()
         initControls()
-        window.addEventListener("resize", resizeAction)
-        window.addMouseMoveListener(mouseMoveAction)
+        document.addWindowResizeListener(resizeAction)
+        document.addMouseMoveListener(mouseMoveAction)
         requestAnimationFrameAction()
         viewModel.rootNode.observe {
             it?.let { buildLayout(it, scene) }
         }
+    }
+
+    override fun onDetached() {
+        controls.dispose()
+        super.onDetached()
     }
 
     private fun buildLayout(root: ViewNode, scene: Scene) {

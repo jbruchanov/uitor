@@ -14,15 +14,15 @@ abstract class HtmlView : HasLifecycle {
 
     @Suppress("MemberVisibilityCanBePrivate")
     protected var parentElement: Element? = null
-    private var attached: Boolean = false
+    protected var isAttached: Boolean = false; private set
     override val onDetachObservable = Observable<HasLifecycle>()
     protected var document = DocumentWrapper()
 
     abstract fun buildContent()
 
     fun attachTo(rootElement: Element) {
-        check(!attached) { "This view has been already attached" }
-        attached = true
+        check(!isAttached) { "This view has been already attached" }
+        isAttached = true
         parentElement = rootElement
         if (element == null) {
             buildContent()
@@ -43,7 +43,7 @@ abstract class HtmlView : HasLifecycle {
         }
         parentElement?.clear()
         onDetached()
-        attached = false
+        isAttached = false
     }
 
     open fun onAttached() {

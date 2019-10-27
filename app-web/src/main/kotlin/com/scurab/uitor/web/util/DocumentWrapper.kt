@@ -22,13 +22,17 @@ class DocumentWrapper(document: Document = window.document) {
     fun dispose() {
         listeners.forEach { (event, listener) ->
             listener.forEach {
-                document.removeEventListener(event.name, it)
+                when (event) {
+                    Events.resize -> window.removeEventListener(event.name, it)
+                    else -> document.removeEventListener(event.name, it)
+                }
             }
         }
     }
 
     private fun addEventListener(event: Events, param: HtmlEventListener) {
         val set = listeners.getOrPut(event) { mutableSetOf() }
+        set.add(param)
         document.addEventListener(event.name, param)
     }
 
@@ -51,6 +55,10 @@ class DocumentWrapper(document: Document = window.document) {
     fun requireElementsByClass(clazz: String): Array<Element> {
         return document.requireElementsByClass(clazz)
     }
+
+    fun addWindowResizeListener(callback: (Event) -> Unit) =
+        window.addEventListener(Events.resize.name, callback)
+
 
     fun getElementById(id: String): Element? {
         return document.getElementById(id)

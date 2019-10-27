@@ -21,4 +21,9 @@ class ThreeDPage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewMode
         super.onAttachToRoot(rootElement)
         threeDView.attachTo(element.ref)
     }
+
+    override fun onDetached() {
+        threeDView.detach()
+        super.onDetached()
+    }
 }

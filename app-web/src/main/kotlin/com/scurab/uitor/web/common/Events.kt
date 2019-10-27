@@ -16,6 +16,7 @@ enum class Events {
     mousewheel,
     wheel,
     keydown,
+    resize,
 }
 
 fun EventTarget.addMouseClickListener(callback: (MouseEvent) -> Unit) =

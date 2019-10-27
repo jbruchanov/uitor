@@ -12,4 +12,5 @@ external class TrackballControls(camera: Camera, element: Element) {
     var maxDistance: Double
     fun addEventListener(name: String, callback: (dynamic) -> Unit)
     fun update()
+    fun dispose()
 }
