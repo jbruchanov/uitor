@@ -7,14 +7,13 @@ import com.scurab.uitor.common.model.ViewNodeFields
 import com.scurab.uitor.common.render.Rect
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.forEachReversed
+import com.scurab.uitor.common.util.usingKey
 import com.scurab.uitor.web.util.getMap
 import com.scurab.uitor.web.util.getTypedListOf
 import com.scurab.uitor.web.util.jsonField
 import com.scurab.uitor.web.util.optJsonField
 import d3.ITreeItem
 import kotlin.js.Json
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
 
 class ViewNode(json: Json) : IViewNode, ITreeItem {
 
@@ -137,16 +136,6 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
                 return a.compareTo(b)
             }
         }
-    }
-}
-
-private fun <T> Map<String, Any?>.usingKey(key: String): MapDelegate<T> {
-    return MapDelegate(key, this)
-}
-
-private class MapDelegate<T>(private val key: String, private val map: Map<String, Any?>) : ReadOnlyProperty<Any, T> {
-    override fun getValue(thisRef: Any, property: KProperty<*>): T {
-        return map[key] as T
     }
 }
 
