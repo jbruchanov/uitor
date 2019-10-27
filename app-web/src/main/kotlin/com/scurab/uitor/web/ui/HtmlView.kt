@@ -1,9 +1,9 @@
 package com.scurab.uitor.web.ui
 
+import com.scurab.uitor.common.util.HasLifecycle
 import com.scurab.uitor.common.util.Observable
 import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.web.util.DocumentWrapper
-import com.scurab.uitor.web.util.HasLifecycle
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import kotlin.browser.window
