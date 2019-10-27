@@ -17,7 +17,6 @@ import kotlinx.html.js.table
 import kotlinx.html.span
 import kotlinx.html.td
 import kotlinx.html.tr
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.Event
 import kotlin.browser.document
@@ -64,8 +63,18 @@ class TreeView(
 
     override var element: HTMLElement? = null; private set
 
-    override fun onAttachToRoot(rootElement: Element) {
-        super.onAttachToRoot(rootElement)
+    override fun buildContent() {
+        //just empty stuff for now, will be removed later
+        element = document.create.div { }
+    }
+
+    override fun onAttached() {
+        super.onAttached()
+        bind()
+        rebuildHtml()
+    }
+
+    private fun bind() {
         inspectorViewModel.rootNode.observe {
             rebuildHtml()
         }
@@ -95,16 +104,6 @@ class TreeView(
                 }
             }
         }
-    }
-
-    override fun buildContent() {
-        //just empty stuff for now, will be removed later
-        element = document.create.div {  }
-    }
-
-    override fun onAttached() {
-        super.onAttached()
-        rebuildHtml()
     }
 
     private fun rebuildHtml() {
@@ -156,6 +155,7 @@ class TreeView(
         (element as? HTMLElement)?.let { block(element, this) }
         return this
     }
+
     private fun ViewNode.typeHighlightColor(): Color? {
         return inspectorViewModel.clientConfig.typeHighlights[type]
     }

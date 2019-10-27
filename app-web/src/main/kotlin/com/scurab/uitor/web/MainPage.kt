@@ -50,8 +50,8 @@ class MainPage : Page() {
         }
     }
 
-    override fun onAttachToRoot(rootElement: Element) {
-        super.onAttachToRoot(rootElement)
+    override fun onAttached() {
+        super.onAttached()
         reloadScreens()
     }
 

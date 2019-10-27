@@ -19,7 +19,6 @@ import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.table
 import kotlinx.html.td
 import kotlinx.html.tr
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLTableElement
 import kotlin.browser.document
@@ -49,13 +48,13 @@ class TidyTreePage(pageViewModel: PageViewModel) : Page() {
     private val viewModel = InspectorViewModel(pageViewModel)
 
     init {
-       GlobalScope.launch {
-           try {
-               viewModel.load()
-           } catch (e: Exception) {
-               window.alert(e.message ?: "Null message")
-           }
-       }
+        GlobalScope.launch {
+            try {
+                viewModel.load()
+            } catch (e: Exception) {
+                window.alert(e.message ?: "Null message")
+            }
+        }
     }
 
     override fun buildContent() {
@@ -93,8 +92,8 @@ class TidyTreePage(pageViewModel: PageViewModel) : Page() {
         drawDiagram(false)
     }
 
-    override fun onAttachToRoot(rootElement: Element) {
-        super.onAttachToRoot(rootElement)
+    override fun onAttached() {
+        super.onAttached()
         viewModel.rootNode.observe {
             it?.let { drawDiagram(true) }
         }
