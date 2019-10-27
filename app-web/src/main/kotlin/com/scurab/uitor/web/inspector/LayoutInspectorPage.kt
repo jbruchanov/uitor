@@ -28,16 +28,6 @@ class LayoutInspectorPage(
     private lateinit var propertiesView: PropertiesView
     override var element: HTMLElement? = null; private set
 
-    init {
-        GlobalScope.launch {
-            try {
-                viewModel.load()
-            } catch (e: Exception) {
-                window.alert(e.message ?: "Null message")
-            }
-        }
-    }
-
     override fun buildContent() {
         columnsLayout = ColumnsLayout(ColumnsLayoutDelegate(this))
         canvasView = CanvasView(viewModel)
