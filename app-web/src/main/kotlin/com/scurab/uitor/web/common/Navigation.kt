@@ -34,14 +34,22 @@ object Navigation {
     fun open(page: Page, pushState: Boolean) {
         currentPage?.detach()
         if (pushState) {
-            val state = page.stateDescription()?.let { "${HashToken.DELIMITER}$it" } ?: ""
             window.history.pushState(
                 page.id,
                 page.id,
-                "${HashToken.HASH}${page.id}$state"
+                page.hashTokenValue()
             )
         }
         currentPage = page
         page.attachTo(rootElement)
+    }
+
+    fun updateDescriptionState(page: Page) {
+        window.history.replaceState(page.id, page.id, page.hashTokenValue())
+    }
+
+    private fun Page.hashTokenValue(): String {
+        val state = stateDescription()?.let { "${HashToken.DELIMITER}$it" } ?: ""
+        return "${HashToken.HASH}${id}$state"
     }
 }

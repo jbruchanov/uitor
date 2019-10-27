@@ -117,6 +117,7 @@ internal fun SVGElement.setClass(name: String) {
 }
 
 class TreeConfig(
+    val id: String,
     //distance between nodes vertically
     val nodeOffsetX: Double,
     //distance between nodes horizontally
@@ -129,6 +130,7 @@ class TreeConfig(
 ) : LayoutRenderDelegate by delegate {
     companion object {
         val defaultTidyTree: TreeConfig = TreeConfig(
+            "default",
             175.0, 30.0, 5.0,
             showViewIds = true,
             viewGroupAnchorEnd = false,
@@ -136,6 +138,7 @@ class TreeConfig(
         ) { it.item.typeSimple }
 
         val shortTypesTidyTree = TreeConfig(
+            "shortTypes",
             62.5,
             25.0,
             7.5,
@@ -148,6 +151,7 @@ class TreeConfig(
 
         val verticalSimpleTree =
             TreeConfig(
+                "simple",
                 25.0,
                 30.0,
                 10.0,
