@@ -1,6 +1,5 @@
 package com.scurab.uitor.web.common
 
-import com.scurab.uitor.web.Page
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.util.HashToken
 import kotlinx.coroutines.GlobalScope

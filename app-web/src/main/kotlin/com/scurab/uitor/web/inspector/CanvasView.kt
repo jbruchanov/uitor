@@ -7,10 +7,10 @@ import com.scurab.uitor.common.render.relativeToScale
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
-import com.scurab.uitor.web.addMouseClickListener
-import com.scurab.uitor.web.addMouseMoveListener
-import com.scurab.uitor.web.addMouseOutListener
-import com.scurab.uitor.web.addMouseWheelListener
+import com.scurab.uitor.web.common.addMouseClickListener
+import com.scurab.uitor.web.common.addMouseMoveListener
+import com.scurab.uitor.web.common.addMouseOutListener
+import com.scurab.uitor.web.common.addMouseWheelListener
 import com.scurab.uitor.web.clear
 import com.scurab.uitor.web.drawCross
 import com.scurab.uitor.web.drawRectangle
@@ -24,8 +24,6 @@ import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Image
-import org.w3c.dom.events.EventListener
-import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
 import kotlin.browser.window
 import kotlin.math.max

@@ -2,8 +2,8 @@ package com.scurab.uitor.web.ui
 
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
-import com.scurab.uitor.web.addMouseDoubleClickListener
-import com.scurab.uitor.web.addMouseDownListener
+import com.scurab.uitor.web.common.addMouseDoubleClickListener
+import com.scurab.uitor.web.common.addMouseDownListener
 import com.scurab.uitor.web.util.DocumentWrapper
 import com.scurab.uitor.web.util.forEachIndexed
 import com.scurab.uitor.web.util.getElementByClass

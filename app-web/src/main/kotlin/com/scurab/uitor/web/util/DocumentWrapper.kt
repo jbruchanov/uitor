@@ -1,6 +1,6 @@
 package com.scurab.uitor.web.util
 
-import com.scurab.uitor.web.Events
+import com.scurab.uitor.web.common.Events
 import kotlinx.html.dom.create
 import org.w3c.dom.Document
 import org.w3c.dom.Element

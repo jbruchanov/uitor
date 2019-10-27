@@ -1,7 +1,7 @@
 package com.scurab.uitor.web.model
 
-import App
-import com.scurab.uitor.web.ServerApi
+import com.scurab.uitor.web.App
+import com.scurab.uitor.web.common.ServerApi
 
 interface CommonViewModel {
     val screenIndex: Int

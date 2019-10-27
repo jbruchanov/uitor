@@ -3,7 +3,7 @@ package com.scurab.uitor.web.threed
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.vlog
-import com.scurab.uitor.web.addMouseMoveListener
+import com.scurab.uitor.web.common.addMouseMoveListener
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView

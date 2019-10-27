@@ -1,6 +1,7 @@
-import com.scurab.uitor.web.MainPage
-import com.scurab.uitor.web.Navigation
-import com.scurab.uitor.web.ServerApi
+package com.scurab.uitor.web
+
+import com.scurab.uitor.web.common.Navigation
+import com.scurab.uitor.web.common.ServerApi
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel

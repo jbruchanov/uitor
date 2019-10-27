@@ -1,7 +1,7 @@
-package com.scurab.uitor.web
+package com.scurab.uitor.web.common
 
-import App
 import com.scurab.uitor.common.util.ilog
+import com.scurab.uitor.web.App
 import com.scurab.uitor.web.util.HashToken
 import com.scurab.uitor.web.util.requireElementById
 import org.w3c.dom.HashChangeEvent

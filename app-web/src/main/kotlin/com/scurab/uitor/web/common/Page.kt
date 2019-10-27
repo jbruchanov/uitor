@@ -1,4 +1,4 @@
-package com.scurab.uitor.web
+package com.scurab.uitor.web.common
 
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.HashToken
