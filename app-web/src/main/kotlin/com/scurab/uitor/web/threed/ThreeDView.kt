@@ -24,7 +24,7 @@ import threejs.Vector2
 import threejs.WebGLRenderer
 import kotlin.browser.window
 
-class ThreeD(private val viewModel: InspectorViewModel) : HtmlView() {
+class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     private val TAG = "ThreeD"
     override var element: HTMLElement? = null; private set
 
