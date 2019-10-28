@@ -11,7 +11,7 @@ class ResettingLazy<T>(private val initBlock: () -> T) : ReadOnlyProperty<HasLif
     private val onDetachListener: (HasLifecycle?) -> Unit = { item = null }
     override fun getValue(thisRef: HasLifecycle, property: KProperty<*>): T {
         if (item == null) {
-            thisRef.onDetachObservable.observe(onDetachListener)
+            thisRef.onDetachObservable.observe(thisRef, onDetachListener)
             item = initBlock()
         }
         return item ?: throw NullPointerException("Item is null")

@@ -1,5 +1,6 @@
 package com.scurab.uitor.web.inspector
 
+import com.scurab.uitor.common.util.IObservable
 import com.scurab.uitor.common.util.Observable
 import com.scurab.uitor.web.model.CommonViewModel
 import com.scurab.uitor.web.model.PageViewModel
@@ -9,9 +10,9 @@ class InspectorViewModel(
     pageViewModel: PageViewModel,
     override val screenIndex: Int = pageViewModel.screenIndex
 ) : CommonViewModel by pageViewModel {
-    val rootNode = Observable<ViewNode?>()
-    val hoveredNode = Observable<ViewNode?>()
-    val selectedNode = Observable<ViewNode?>()
+    val rootNode: IObservable<ViewNode?> = Observable()
+    val hoveredNode: IObservable<ViewNode?> = Observable()
+    val selectedNode: IObservable<ViewNode?> = Observable()
     val screenPreviewUrl = "/screen.png?screenIndex=$screenIndex"
 
     suspend fun load() {

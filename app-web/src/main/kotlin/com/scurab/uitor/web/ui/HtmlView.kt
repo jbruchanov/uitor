@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.ui
 
 import com.scurab.uitor.common.util.HasLifecycle
+import com.scurab.uitor.common.util.IObservable
 import com.scurab.uitor.common.util.Observable
 import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.web.util.DocumentWrapper
@@ -37,10 +38,7 @@ abstract class HtmlView : HasLifecycle {
 
     fun detach() {
         document.dispose()
-        onDetachObservable.let {
-            it.post(this)
-            it.removeObservers()
-        }
+        onDetachObservable.post(this)
         parentElement?.clear()
         onDetached()
         isAttached = false
@@ -63,5 +61,9 @@ abstract class HtmlView : HasLifecycle {
 
     fun alert(msg: String?) {
         window.alert(msg ?: "Null message")
+    }
+
+    fun <T> IObservable<T>.observe(observer: (T) -> Unit) {
+        this.observe(this@HtmlView, observer)
     }
 }
