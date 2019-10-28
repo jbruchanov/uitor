@@ -1,6 +1,6 @@
 package com.scurab.uitor.web
 
-import com.scurab.uitor.common.util.isa
+import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.Page
@@ -36,7 +36,7 @@ class MainPage : Page() {
     private val screensSelect by lazy { element.ref.requireElementById<HTMLSelectElement>(ID_SCREEN_INDEX) }
     private val serverApi = ServerApi()
     private val selectedScreenIndex: Int
-        get() = screensSelect.selectedIndex.takeIf { it >= 0 } ?: isa("Invalid screen selection")
+        get() = screensSelect.selectedIndex.takeIf { it >= 0 } ?: ise("Invalid screen selection")
 
     override fun buildContent() {
         element = document.create.div {
