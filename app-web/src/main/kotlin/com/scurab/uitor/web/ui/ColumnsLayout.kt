@@ -4,6 +4,7 @@ import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.addMouseDoubleClickListener
 import com.scurab.uitor.web.common.addMouseDownListener
+import com.scurab.uitor.web.ui.ColumnsLayout.Companion.UNKNOWNGAP
 import com.scurab.uitor.web.util.DocumentWrapper
 import com.scurab.uitor.web.util.forEachIndexed
 import com.scurab.uitor.web.util.getElementByClass
@@ -27,12 +28,11 @@ private const val GRID_TEMPLATE_COLUMNS = "grid-template-columns"
 
 //TODO:handle window resizing (doesn't change width of columns)
 //TODO:what is this
-private const val UNKNOWNGAP = 4
 class ColumnsLayout(
-    private val delegate: IColumnsLayoutDelegate
+    private val delegate: IColumnsLayoutDelegate,
+    val columns: Int = 3
 ) : HtmlView() {
 
-    val columns: Int = 3//not fully ready for != 3
     val left by lazyLifecycled { element.ref.requireElementById<Element>(ID_LEFT) }
     val middle by lazyLifecycled { element.ref.getElementByClass(CLASS_MIDDLE).toTypedArray() }
     val right by lazyLifecycled { element.ref.requireElementById<Element>(ID_RIGHT) }
@@ -75,6 +75,10 @@ class ColumnsLayout(
 
     fun initColumnSizes() {
         resizableColumnsFeature.initColumnSizes()
+    }
+
+    companion object {
+        const val UNKNOWNGAP = 4
     }
 }
 
