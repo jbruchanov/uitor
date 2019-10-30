@@ -143,7 +143,7 @@ tr.tree-odd {
 }
 
 .ui-table-view-filter-input {
-    width:100%;
+    width: 100%;
     font-family: monospace;
     font-size: 9pt;
 }
@@ -170,7 +170,7 @@ tr.tree-odd {
     font-weight: bolder;
 }
 
-.ui-table-view-properties-value{
+.ui-table-view-properties-value {
     word-break: break-all;
 }
 
@@ -183,3 +183,55 @@ tr.tree-odd {
     vertical-align: center;
     margin: 0 3px;
 }
+
+
+/*region tree node */
+.ui-tree-node {
+    cursor: pointer;
+}
+
+.ui-tree-circle, .ui-tree-circle-selected {
+    stroke: #4682B4;
+    stroke-width: 1.5px;
+}
+
+.ui-tree-circle {
+    fill: #FFFFFF;
+}
+
+.ui-tree-circle-selected {
+    fill: coral;
+}
+
+.ui-tree-buttons {
+    position: fixed;
+    left: 5px;
+    top: 5px;
+}
+
+.ui-tree-stats {
+    background: #ddddff;
+    padding: 2px 0 2px 5px;
+    font-family: monospace;
+    font-size: 10pt;
+    border-spacing: 0px;
+    position: fixed;
+    right: 5px;
+    top: 5px;
+}
+
+svg text {
+    /*font: 9.5px "Lucida Console", Monaco, monospace, sans-serif;*/
+    /*font: 12px monospace;*/
+}
+
+.ui-tree-node-type {
+    font: 9.5px "Lucida Console", Monaco, monospace, sans-serif;
+}
+
+.ui-tree-node-id {
+    font: 8.5px "Lucida Console", Monaco, monospace, sans-serif;
+    fill: #6f7277;
+}
+
+/*endregion tree node */
