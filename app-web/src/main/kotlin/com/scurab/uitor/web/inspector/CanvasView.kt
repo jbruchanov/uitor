@@ -109,6 +109,10 @@ class CanvasView(
             }
         }
 
+        document.addWindowResizeListener {
+            renderDeviceScreenshot(scaleToFit())
+        }
+
         inspectorViewModel.selectedNode.observe {
             renderScene(it)
         }
