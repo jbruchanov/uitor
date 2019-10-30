@@ -4,7 +4,7 @@
     --odd-background: #ffffff;
     --selected-background: #a3d7fb;
     --column-height: calc(100vh);
-    /* Filter height - 28px*/
+    /* Filter height - 28px, TODO handle it based on flag*/
     --column-height-properties: calc(100vh - 28px);;
     --props-header-titles: calc(100% - 5px);;
 }
@@ -113,133 +113,19 @@ tr.tree-odd {
 
 /*endregion*/
 
-/*region Props*/
-.properties {
-    text-align: left;
-    font-family: monospace;
-    font-size: 9pt;
-    border-spacing: 0;
+.ui-table-view-container {
+    /*height: var(--column-height);*/
     height: var(--column-height-properties);
-    overflow-y: scroll;
-    display: block;
-    column-gap: 40px;
 }
-
-.properties-header, .properties-header-title {
-    border-bottom: 2px solid #6f7277;
-    font-size: 1.2em;
-    font-weight: bold;
-    text-align: left;
-    color: #4b4a4a;
-    text-shadow: #ddf 1px 1px 0;
-    overflow: hidden;
-}
-
-.properties-header-title {
-    /* ? */
-    width: var(--props-header-titles);
-}
-
-.properties-value {
-    word-break: break-word;
-}
-
-tr.properties-even {
-    background-color: var(--even-background);
-}
-
-tr.properties-odd {
-    background-color: var(--odd-background);
-}
-
-td {
-    padding: 2px 5px;
-}
-
-.properties-even:hover, .properties-odd:hover {
-    background-color: var(--selected-background);
-}
-
-.properties-color {
-    display: block;
-    position: relative;
-    height: 12px;
-    width: 12px;
-    border: 1px gray solid;
-    vertical-align: center;
-    margin: 0 3px;
-}
-
-.properties-filter {
-    font-family: monospace;
-    font-size: 9pt;
-    width: var(--props-header-titles);
-}
-
-table.properties b {
-    color: #ff0077;
-    font-weight: bolder;
-}
-
-.ui-tree-node {
-    cursor: pointer;
-}
-
-.ui-tree-circle, .ui-tree-circle-selected {
-    stroke: #4682B4;
-    stroke-width: 1.5px;
-}
-
-.ui-tree-circle {
-    fill: #FFFFFF;
-}
-
-.ui-tree-circle-selected {
-    fill: coral;
-}
-
-.ui-tree-buttons {
-    position: fixed;
-    left: 5px;
-    top: 5px;
-}
-
-.ui-tree-stats {
-    background: #ddddff;
-    padding: 2px 0 2px 5px;
-    font-family: monospace;
-    font-size: 10pt;
-    border-spacing: 0px;
-    position: fixed;
-    right: 5px;
-    top: 5px;
-}
-
-svg text {
-    /*font: 9.5px "Lucida Console", Monaco, monospace, sans-serif;*/
-    /*font: 12px monospace;*/
-}
-
-.ui-tree-node-type {
-    font: 9.5px "Lucida Console", Monaco, monospace, sans-serif;
-}
-
-.ui-tree-node-id {
-    font: 8.5px "Lucida Console", Monaco, monospace, sans-serif;
-    fill: #6f7277;
-}
-
-/*endregion Props*/
-
 
 .ui-table-view {
     text-align: left;
     font-family: monospace;
     font-size: 10pt;
     border-spacing: 0px;
-    height: var(--column-height);
+    width: 100%;
     overflow-y: scroll;
-    display: block;
+    display: table;
 }
 
 .ui-table-view-header, .ui-table-view-header-title {
@@ -271,10 +157,6 @@ svg text {
     padding: 3px 10px;
 }
 
-.ui-table-view tr {
-    width: 100%;
-}
-
 .ui-table-view-row-even {
     background-color: var(--even-background);
 }
@@ -288,3 +170,16 @@ svg text {
     font-weight: bolder;
 }
 
+.ui-table-view-properties-value{
+    word-break: break-all;
+}
+
+.ui-table-view-properties-color {
+    display: block;
+    position: relative;
+    height: 12px;
+    width: 12px;
+    border: 1px gray solid;
+    vertical-align: center;
+    margin: 0 3px;
+}

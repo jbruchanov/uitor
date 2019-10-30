@@ -12,8 +12,6 @@ open class TableData<T : Comparable<T>> constructor(
     init {
         val sizes = elements.groupBy { it.size }
         check(sizes.size <= 1) { "Different sizes of columns:${sizes.keys}" }
-        check(headers.size == sizes.keys.firstOrNull() ?: 0)
-        { "Headers count:${headers.size} and items count:${sizes.keys.first()} is different" }
     }
 
     override val rows: Int get() = elements.size

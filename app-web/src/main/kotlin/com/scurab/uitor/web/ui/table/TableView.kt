@@ -72,7 +72,7 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
                     }
                 }
             }
-            div {
+            div(classes = ID_TABLE_CONTAINER) {
                 id = ID_TABLE_CONTAINER
             }
         }

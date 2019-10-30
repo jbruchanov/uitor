@@ -1,9 +1,13 @@
 package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.web.common.InspectorPage
+import com.scurab.uitor.web.common.ViewPropertiesTableView
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
+import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
+import com.scurab.uitor.web.ui.table.TableData
+import com.scurab.uitor.web.ui.table.TableViewDelegate
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.w3c.dom.Element
@@ -25,14 +29,18 @@ class LayoutInspectorPage(
     private lateinit var columnsLayout: ColumnsLayout
     private lateinit var canvasView: CanvasView
     private lateinit var treeView: TreeView
-    private lateinit var propertiesView: PropertiesView
+    private lateinit var propertiesView: ViewPropertiesTableView
     override var element: HTMLElement? = null; private set
+    private val tableViewDelegate = TableViewDelegate(
+        data = TableData.empty(),
+        render = ViewPropertiesTableViewComponents.columnRenderer(pageViewModel.clientConfig)
+    )
 
     override fun buildContent() {
         columnsLayout = ColumnsLayout(ColumnsLayoutDelegate(this))
         canvasView = CanvasView(viewModel)
         treeView = TreeView(viewModel)
-        propertiesView = PropertiesView(viewModel)
+        propertiesView = ViewPropertiesTableView(tableViewDelegate, viewModel.screenIndex)
     }
 
     override fun onAttachToRoot(rootElement: Element) {
@@ -45,9 +53,15 @@ class LayoutInspectorPage(
 
     override fun onAttached() {
         super.onAttached()
-        viewModel.rootNode.observe {
-            canvasView.renderMouseCross = true
-            columnsLayout.initColumnSizes()
+        viewModel.apply {
+            rootNode.observe {
+                canvasView.renderMouseCross = true
+                columnsLayout.initColumnSizes()
+            }
+
+            selectedNode.observe {
+                propertiesView.viewNode = it
+            }
         }
         GlobalScope.launch {
             canvasView.loadImage(viewModel.screenPreviewUrl)
