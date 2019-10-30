@@ -207,6 +207,7 @@ tr.tree-odd {
     position: fixed;
     left: 5px;
     top: 5px;
+    z-index: 999999;
 }
 
 .ui-tree-stats {
@@ -234,4 +235,7 @@ svg text {
     fill: #6f7277;
 }
 
+#ui-tree-tidy-tree {
+    margin-top: 30px;
+}
 /*endregion tree node */

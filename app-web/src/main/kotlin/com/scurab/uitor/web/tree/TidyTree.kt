@@ -21,6 +21,7 @@ import d3.textAnchor
 import d3.transform
 import d3.width
 import d3.x
+import org.w3c.dom.svg.SVGCircleElement
 import org.w3c.dom.svg.SVGElement
 
 /**
@@ -38,7 +39,11 @@ class TidyTree {
 
     private val TAG = "TidyTree"
 
-    fun generateSvg(data: ViewNode, config: TreeConfig = TreeConfig.shortTypesTidyTree): SVGElement {
+    fun generateSvg(data: ViewNode,
+                    preSelectedNode: ViewNode? = null,
+                    config: TreeConfig = TreeConfig.shortTypesTidyTree,
+                    nodeClickListener: (ViewNode) -> Unit
+    ): SVGElement {
         val (root, width, height, x0) = config.layout(data, config)
 
         val svg = d3.svg()
@@ -78,11 +83,21 @@ class TidyTree {
                 selectedNode = n.apply {
                     circle.setClass(CSS_CIRCLE_SELECTED)
                 }
+                nodeClickListener(n.item)
             }
             .transform { d -> config.translateNode(d) }
+
         node.append("circle")
             .classes(CSS_CIRCLE)
             .radius(config.circleRadius)
+            .attr("_id") { v: Node<*>, i: Int, items: Array<SVGCircleElement> ->
+                //just workaround how to iterate through nodes/circles and set the selected one
+                if (v.item == preSelectedNode) {
+                    selectedNode = v
+                    items[i].setClass(CSS_CIRCLE_SELECTED)
+                }
+                v.groupId
+            }
 
         node.append("text")
             .classes(CSS_NODE_TYPE)

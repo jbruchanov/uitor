@@ -3,9 +3,13 @@ package com.scurab.uitor.web.tree
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.InspectorPage
 import com.scurab.uitor.web.common.Navigation
+import com.scurab.uitor.web.common.ViewPropertiesTableView
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.ui.ColumnsLayout
+import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
+import com.scurab.uitor.web.ui.table.TableViewDelegate
 import com.scurab.uitor.web.util.HashToken
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
@@ -19,24 +23,37 @@ import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.table
 import kotlinx.html.td
 import kotlinx.html.tr
+import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLTableElement
 import kotlin.browser.window
 import kotlin.dom.clear
+import kotlin.math.max
 
-private const val TREE_SVG_CONTAINER = "tree-svg-container"
-private const val TREE_STATS_CONTAINER = "tree-stats-container"
 private const val CSS_BUTTONS = "ui-tree-buttons"
 private const val CSS_STATS = "ui-tree-stats"
+private const val ID_TIDY_TREE = "ui-tree-tidy-tree"
+private const val ID_VIEW_PROPS_CONTAINER = "ui-tree-view-properties"
 
 class TidyTreePage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewModel(pageViewModel)) {
 
     override var element: HTMLElement? = null; private set
     private val tidyTree = TidyTree()
-    private val treeElement by lazyLifecycled { element.ref.requireElementById<HTMLElement>(TREE_SVG_CONTAINER) }
-    private val statsElement by lazyLifecycled { element.ref.requireElementById<HTMLElement>(TREE_STATS_CONTAINER) }
-    private val configs = listOf(TreeConfig.defaultTidyTree, TreeConfig.shortTypesTidyTree, TreeConfig.verticalSimpleTree)
+    private val container by lazyLifecycled { element.ref.requireElementById<HTMLElement>(ID_VIEW_PROPS_CONTAINER) }
+    private val configs =
+        listOf(TreeConfig.defaultTidyTree, TreeConfig.shortTypesTidyTree, TreeConfig.verticalSimpleTree)
     private var tidyTreeConfig = configFromLocationHash()
+    private var viewPropertiesTableView =
+        ViewPropertiesTableView(TableViewDelegate.default(viewModel.clientConfig), viewModel.screenIndex)
+    private val columnsLayoutDelegate = object : IColumnsLayoutDelegate {
+        override val innerContentWidthEstimator: (Int) -> Double = { column ->
+            val windowWidth = window.innerWidth - ColumnsLayout.UNKNOWNGAP
+            val w = if (viewModel.selectedNode.item != null) max(windowWidth / 3.0, 600.0) else 0.0
+            if (column == 0) windowWidth- w else w
+        }
+    }
+    private val columnsLayout = ColumnsLayout(columnsLayoutDelegate, 2)
+    private var expandViewPropsColumn = true
 
     init {
         GlobalScope.launch {
@@ -64,19 +81,26 @@ class TidyTreePage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewMo
                     onClickFunction = { setTreeConfig(TreeConfig.verticalSimpleTree) }
                 }
             }
-            div(classes = CSS_STATS) {
-                id = TREE_STATS_CONTAINER
-            }
             div {
-                id = TREE_SVG_CONTAINER
+                id = ID_VIEW_PROPS_CONTAINER
             }
         }
     }
 
     private fun setTreeConfig(treeConfig: TreeConfig) {
-        tidyTreeConfig = treeConfig
-        drawDiagram(false)
-        Navigation.updateDescriptionState(this)
+        if (treeConfig != tidyTreeConfig) {
+            expandViewPropsColumn = true
+            tidyTreeConfig = treeConfig
+            drawDiagram(false)
+            Navigation.updateDescriptionState(this)
+
+        }
+    }
+
+    override fun onAttachToRoot(rootElement: Element) {
+        super.onAttachToRoot(rootElement)
+        columnsLayout.attachTo(container)
+        viewPropertiesTableView.attachTo(columnsLayout.right)
     }
 
     override fun onAttached() {
@@ -84,6 +108,14 @@ class TidyTreePage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewMo
         viewModel.rootNode.observe {
             it?.let { drawDiagram(true) }
         }
+        viewModel.selectedNode.observe {
+            viewPropertiesTableView.viewNode = it
+            if (expandViewPropsColumn) {
+                expandViewPropsColumn = false
+                columnsLayout.initColumnSizes()
+            }
+        }
+        columnsLayout.initColumnSizes()
     }
 
     override fun stateDescription(): String {
@@ -95,11 +127,15 @@ class TidyTreePage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewMo
 
     private fun drawDiagram(refreshStats: Boolean) {
         viewModel.rootNode.item?.let {
-            treeElement.clear()
-            treeElement.append(tidyTree.generateSvg(it, tidyTreeConfig))
+            columnsLayout.left.clear()
+            val svgDiagram = tidyTree.generateSvg(it, viewModel.selectedNode.item, tidyTreeConfig) {
+                viewModel.selectedNode.post(it)
+            }
+            svgDiagram.id = ID_TIDY_TREE
+            columnsLayout.left.append(svgDiagram)
             if (refreshStats) {
-                statsElement.clear()
-                statsElement.append(statsTable(it))
+//                statsElement.clear()
+//                statsElement.append(statsTable(it))
             }
         }
     }
