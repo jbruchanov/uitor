@@ -114,9 +114,8 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
     }
 
     companion object {
-        val COMPARATOR: Comparator<String> = object : Comparator<String> {
-            private val orderMap = mapOf(
-                // @formatter:off
+        private val orderMap = mapOf(
+            // @formatter:off
                 Pair(ViewNodeFields.Type,       "001"),
                 Pair(ViewNodeFields.IDi,        "002"),
                 Pair(ViewNodeFields.IDs,        "003"),
@@ -128,12 +127,12 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
                 Pair("Context:",                "009"),
                 Pair("StringValue",             "010")
                 // @formatter:on
-            )
+        )
+        fun orderKey(value: String): String = (orderMap[value] ?: "999") + value
 
+        val COMPARATOR: Comparator<String> = object : Comparator<String> {
             override fun compare(a: String, b: String): Int {
-                val a = (orderMap[a] ?: "999") + a
-                val b = (orderMap[b] ?: "999") + b
-                return a.compareTo(b)
+                return orderKey(a).compareTo(orderKey(b))
             }
         }
     }

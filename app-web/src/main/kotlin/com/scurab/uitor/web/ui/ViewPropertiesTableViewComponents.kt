@@ -7,6 +7,9 @@ import com.scurab.uitor.common.util.matchingIndexes
 import com.scurab.uitor.common.util.npe
 import com.scurab.uitor.web.common.PropertiesViewRenderingContext
 import com.scurab.uitor.web.model.ClientConfig
+import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_COLOR
+import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_KEY
+import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_VALUE
 import com.scurab.uitor.web.ui.table.IRenderingContext
 import com.scurab.uitor.web.ui.table.ITableViewRenderer
 import kotlinx.html.TD
@@ -15,15 +18,15 @@ import kotlinx.html.a
 import kotlinx.html.span
 import kotlinx.html.unsafe
 
-private const val INDEX_COLOR = 0
-private const val INDEX_KEY = 1
-private const val INDEX_VALUE = 2
 private const val HTML_BOLD_START = "<b>"
 private const val HTML_BOLD_END = "</b>"
 private const val CSS_PROPERTIES_COLOR = "ui-table-view-properties-color"
 private const val CSS_PROPERTIES_VALUE = "ui-table-view-properties-value"
 
 object ViewPropertiesTableViewComponents {
+    const val INDEX_COLOR = 0
+    const val INDEX_KEY = 1
+    const val INDEX_VALUE = 2
 
     /**
      * Filter data based on smart property filter and property value contains

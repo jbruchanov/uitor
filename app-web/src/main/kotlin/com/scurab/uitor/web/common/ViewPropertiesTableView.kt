@@ -32,6 +32,7 @@ class ViewPropertiesTableView(
                 value?.data
                     ?.entries
                     ?.filter { it.value != null }
+                    ?.sortedBy { ViewNode.orderKey(it.key) }
                     ?.map { entry -> arrayOf("", entry.key, entry.value.toString()) } ?: emptyList()
             ).apply {
                 filterAction = ViewPropertiesTableViewComponents.filterAction
