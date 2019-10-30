@@ -139,9 +139,11 @@ tr.tree-odd {
     /* ? */
     width: var(--props-header-titles);
 }
+
 .properties-value {
     word-break: break-word;
 }
+
 tr.properties-even {
     background-color: var(--even-background);
 }
@@ -197,7 +199,7 @@ table.properties b {
 }
 
 .ui-tree-buttons {
-    position:fixed;
+    position: fixed;
     left: 5px;
     top: 5px;
 }
@@ -208,7 +210,7 @@ table.properties b {
     font-family: monospace;
     font-size: 10pt;
     border-spacing: 0px;
-    position:fixed;
+    position: fixed;
     right: 5px;
     top: 5px;
 }
@@ -228,3 +230,61 @@ svg text {
 }
 
 /*endregion Props*/
+
+
+.ui-table-view {
+    text-align: left;
+    font-family: monospace;
+    font-size: 10pt;
+    border-spacing: 0px;
+    height: var(--column-height);
+    overflow-y: scroll;
+    display: block;
+}
+
+.ui-table-view-header, .ui-table-view-header-title {
+    border-bottom: 2px solid #6f7277;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: left;
+    color: #4b4a4a;
+    text-shadow: #ddf 1px 1px 0;
+    overflow: hidden;
+}
+
+.ui-table-view-filter {
+    width: var(--props-header-titles);
+}
+
+.ui-table-view-filter-input {
+    width:100%;
+    font-family: monospace;
+    font-size: 9pt;
+}
+
+.ui-table-view th {
+    padding: 3px 10px;
+}
+
+.ui-table-view-header {
+    cursor: pointer;
+    padding: 3px 10px;
+}
+
+.ui-table-view tr {
+    width: 100%;
+}
+
+.ui-table-view-row-even {
+    background-color: var(--even-background);
+}
+
+.ui-table-view-row-odd {
+    background-color: var(--odd-background);
+}
+
+.ui-table-view b {
+    color: #ff0077;
+    font-weight: bolder;
+}
+
