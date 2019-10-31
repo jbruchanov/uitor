@@ -7,6 +7,12 @@ import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.obj
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.MouseEvent
@@ -22,6 +28,9 @@ import threejs.Vector2
 import threejs.WebGLRenderer
 import kotlin.browser.window
 
+//stop rendering with no events in 5s
+private const val RENDER_PAUSE_TIMEOUT = 5000L
+
 class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     private val TAG = "ThreeD"
     override var element: HTMLElement? = null; private set
@@ -30,9 +39,11 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     private lateinit var renderer: WebGLRenderer
     private lateinit var scene: Scene
     private lateinit var controls: TrackballControls
+    private lateinit var pauseRenderingChannel: Channel<Boolean>
     private val rayCaster = Raycaster()
     private val mouse = Vector2(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
     private var selectedObject: ViewNode3D? = null
+    private var pausedRendering = false
 
     private val resizeAction = { e: Event ->
         camera.aspect = window.innerWidth / window.innerHeight.toDouble()
@@ -42,7 +53,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
 
     private val requestAnimationFrameAction: () -> Unit = { window.requestAnimationFrame(renderAction) }
     private val renderAction = { d: Double ->
-        if (isAttached) {
+        if (isAttached && !pausedRendering) {
             requestAnimationFrameAction()
             renderer.render(scene, camera)
             controls.asDynamic().update()
@@ -51,6 +62,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     }
 
     private val mouseMoveAction = { event: MouseEvent ->
+        resetRenderingPause()
         mouse.x = (event.clientX / window.innerWidth.toDouble()) * 2 - 1
         mouse.y = 1 - 2 * (event.clientY / window.innerHeight.toDouble())
         dlog(TAG) { "MouseMove:${mouse.d}" }
@@ -69,10 +81,29 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
         viewModel.rootNode.observe {
             it?.let { buildLayout(it, scene) }
         }
+
+        pauseRenderingChannel = Channel<Boolean>().also { channel ->
+            GlobalScope.launch {
+                channel.consumeAsFlow().debounce(RENDER_PAUSE_TIMEOUT).collect {
+                    vlog(TAG) { "Rendering Paused" }
+                    pausedRendering = true
+                }
+            }
+        }
+    }
+
+    private fun resetRenderingPause() {
+        vlog { "Rendering Pause reset" }
+        if (pausedRendering) {
+            requestAnimationFrameAction()
+        }
+        pausedRendering = false
+        pauseRenderingChannel.offer(true)
     }
 
     override fun onDetached() {
         controls.dispose()
+        pauseRenderingChannel.cancel()
         super.onDetached()
     }
 
