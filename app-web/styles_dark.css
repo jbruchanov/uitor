@@ -50,10 +50,12 @@ input {
 .split-table-separator {
     cursor: ew-resize;
     background: var(--line-color);
+    z-index: 9999;
 }
 
 .split-table-column {
     overflow-y: auto;
+    background-color: var(--background);
 }
 
 .left {
