@@ -6,6 +6,8 @@ import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.pickNodeForNotification
 import com.scurab.uitor.web.util.scrollIntoViewArgs
+import com.scurab.uitor.web.util.styleAttributes
+import com.scurab.uitor.web.util.styleBackgroundColor
 import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.id
@@ -27,6 +29,7 @@ const val CSS_ROW_EVEN = "tree-even"
 const val CSS_ROW_ODD = "tree-odd"
 const val CSS_TREE_CLASS_NAME = "tree-class_name"
 const val CSS_TREE_SELECTED = "tree-selected"
+const val CSS_TREE_ID = "tree-res-id"
 
 class TreeView(
     private val inspectorViewModel: InspectorViewModel
@@ -125,15 +128,15 @@ class TreeView(
                     }
                     td {
                         span {
-                            attributes["style"] = styleTemplate(vn.level)
+                            styleAttributes = styleTemplate(vn.level)
                         }
                         span(classes = CSS_TREE_CLASS_NAME) {
                             vn.typeHighlightColor()?.let {
-                                attributes["style"] = "background-color:${it.htmlRGBA}"
+                                styleAttributes = it.styleBackgroundColor()
                             }
                             text(vn.typeSimple)
                         }
-                        span(classes = "tree-res-id") {
+                        span(classes = CSS_TREE_ID) {
                             text(vn.ids?.takeIf { it != "undefined" }?.let { " [${it}]" } ?: "")
                         }
                     }

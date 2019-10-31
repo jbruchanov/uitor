@@ -1,12 +1,23 @@
 package com.scurab.uitor.web.util
 
+import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.npe
+import kotlinx.html.Tag
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLCollection
 import org.w3c.dom.HTMLOptionsCollection
 import org.w3c.dom.get
 
+const val ATTR_STYLE = "style"
+
+var Tag.styleAttributes: String
+    get() = attributes[ATTR_STYLE] ?: ""
+    set(value) {
+        attributes[ATTR_STYLE] = value
+    }
+
+fun Color.styleBackgroundColor(): String = "background-color:${htmlRGBA}"
 fun Document.requireElementById(id: String) = getElementById(id) ?: npe(id)
 fun Document.requireElementsByClass(clazz: String) = getElementsByClassName(clazz).toArray()
 fun HTMLCollection.toArray() = Array(this.length) { this[it] ?: npe("Null element at index:$it") }
@@ -44,11 +55,11 @@ fun scrollIntoViewArgs(
 /**
  * Helper method to create javascript iface object used as json args
  */
-fun <T> obj(initBlock: T.() -> Unit) : T {
+fun <T> obj(initBlock: T.() -> Unit): T {
     return (js("{}") as T).apply(initBlock)
 }
 
-fun <T: Element> Element.getElementById(id: String): T? {
+fun <T : Element> Element.getElementById(id: String): T? {
     if (this.id == id) {
         return this as T
     } else {

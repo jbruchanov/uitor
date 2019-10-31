@@ -12,6 +12,8 @@ import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_KEY
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_VALUE
 import com.scurab.uitor.web.ui.table.IRenderingContext
 import com.scurab.uitor.web.ui.table.ITableViewRenderer
+import com.scurab.uitor.web.util.styleAttributes
+import com.scurab.uitor.web.util.styleBackgroundColor
 import kotlinx.html.TD
 import kotlinx.html.TH
 import kotlinx.html.a
@@ -74,7 +76,7 @@ private class ViewPropertiesTableViewRenderer(
             INDEX_COLOR -> key.toPropertyHighlightColor()
                 ?.let {
                     span(classes = CSS_PROPERTIES_COLOR) {
-                        attributes["style"] = "background-color:${it.htmlRGBA}"
+                        styleAttributes = it.styleBackgroundColor()
                     }
                 }
             INDEX_KEY -> {

@@ -3,6 +3,7 @@ package d3
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.render.Rect
 import com.scurab.uitor.web.tree.LayoutRenderDelegate
+import com.scurab.uitor.web.util.ATTR_STYLE
 
 fun svg() = create("svg")
 fun group() = create("g")
@@ -27,7 +28,7 @@ fun Selection.dy(block: (Node<*>) -> String): Selection = attr("dy", block)
 fun Selection.x(block: (Node<*>) -> Double): Selection = attr("x", block)
 fun Selection.y(block: (Node<*>) -> Double): Selection = attr("y", block)
 fun Selection.textAnchor(block: (Node<*>) -> String): Selection = attr("text-anchor", block)
-fun Selection.style(style: String): Selection = attr("style", style)
+fun Selection.style(style: String): Selection = attr(ATTR_STYLE, style)
 fun Selection.width(width: Double): Selection = attr("width", "${width}px")
 fun Selection.height(height: Double): Selection = attr("height", "${height}px")
 fun Selection.onClick(block: (Node<*>) -> Unit): Selection = on("click", block)
