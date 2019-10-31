@@ -6,6 +6,7 @@ import kotlin.math.roundToInt
 
 @Suppress("MemberVisibilityCanBePrivate")
 data class Color(val value: Int) {
+
     val alpha: Double = (value ushr 24) / 255.0
     val red: Int = (value ushr 16 and 0xFF)
     val green: Int = (value ushr 8 and 0xFF)
@@ -28,6 +29,11 @@ data class Color(val value: Int) {
         val Red = Color(0xFFFF0000.toInt())
         val Yellow = Color(0xFFFFFF00.toInt())
         val Gray20 = Color(0xFF333333.toInt())
+
+        fun fromBytes(a: Byte, r: Byte, g: Byte, b: Byte): Color {
+            val value = (a.toInt() shl 24) or (r.toInt() shl 16) or (g.toInt() shl 8) or (b.toInt() shl 0)
+            return Color(value)
+        }
     }
 }
 

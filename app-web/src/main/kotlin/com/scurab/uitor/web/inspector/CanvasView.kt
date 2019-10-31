@@ -20,6 +20,7 @@ import com.scurab.uitor.web.util.LoadImageHandler
 import com.scurab.uitor.web.util.pickNodeForNotification
 import kotlinx.html.canvas
 import kotlinx.html.div
+import org.khronos.webgl.get
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLElement
@@ -30,6 +31,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
+private const val CSS_CANVAS_CONTAINER = "canvas-container"
 private const val LAYER_IMAGE = 0
 private const val LAYER_DRAWING = 1
 private const val CURSOR_CROSS_HAIR = "crosshair"
@@ -50,28 +52,24 @@ class CanvasView(
     private val imageContext get() = layers[LAYER_IMAGE].context
     private val drawingContext get() = layers[LAYER_DRAWING].context
     private val mouseCrossRender = StrokeRenderContext(inspectorViewModel.clientConfig.selectionColor.toColor())
-    private val nodeRender =
+    var nodeRender =
         RectangleRenderContext(
             inspectorViewModel.clientConfig.selectionColor.toColor(),
             inspectorViewModel.clientConfig.selectionColor.toColor().withAlpha(0.3)
         )
-    private val nodeDifferentAreaRender =
-        RectangleRenderContext(
-            Color.Yellow,
-            Color.Yellow.withAlpha(0.05)
-        )
-    private var scale: Double = 1.0
 
+    var nodeRenderDiffArea = RectangleRenderContext(Color.Yellow, Color.Yellow.withAlpha(0.05))
+    var scale: Double = 1.0;private set
     var renderMouseCross: Boolean = false
     var useWheelToScale: Boolean = false
+    var onMouseMove: ((Pair<Double, Double>?, ViewNode?) -> Unit)? = null
 
     override fun buildContent() {
-        val el = document.create.div {}
+        val el = document.create.div(classes = CSS_CANVAS_CONTAINER)
         element = el
         layers.forEach {
             el.append(it)
             it.style.apply {
-                cursor = CURSOR_CROSS_HAIR
                 position = "fixed"
             }
         }
@@ -81,10 +79,16 @@ class CanvasView(
         super.onAttached()
         layers.last().apply {
             addMouseMoveListener {
-                inspectorViewModel.hoveredNode.post(it.offsetPoint.viewNode())
-                renderMouseCross { it.offsetPoint }
+                val offsetPoint = it.offsetPoint
+                val viewNode = offsetPoint.viewNode()
+                inspectorViewModel.hoveredNode.post(viewNode)
+                onMouseMove?.invoke(offsetPoint, viewNode)
+                renderMouseCross { offsetPoint }
             }
-            addMouseOutListener { inspectorViewModel.hoveredNode.post(null) }
+            addMouseOutListener {
+                inspectorViewModel.hoveredNode.post(null)
+                onMouseMove?.invoke(null, null)
+            }
             addMouseWheelListener {
                 if (useWheelToScale) {
                     onScaleChange(sign(-it.deltaY).toInt())
@@ -137,9 +141,9 @@ class CanvasView(
         val imageWidth = image.width
         val imageHeight = image.height
         val windowHeight = window.innerHeight
-        val maxH = windowHeight - 80
+        val maxH = windowHeight - 45
         if (imageWidth > imageHeight) {
-            val maxW = element.ref.getBoundingClientRect().width - 20// margins
+            val maxW = element.ref.getBoundingClientRect().width
             scale = maxW / imageWidth
             scale = max(SCALE_MIN / 100, scale)
         } else if (imageHeight > maxH) {
@@ -184,7 +188,7 @@ class CanvasView(
             drawingContext.drawRectangle(view, nodeRender)
             it.renderAreaRelative?.let { render ->
                 val renderArea = rect.addRelative(render).scale(scale)
-                drawingContext.drawRectangle(renderArea, nodeDifferentAreaRender)
+                drawingContext.drawRectangle(renderArea, nodeRenderDiffArea)
             }
         }
     }
@@ -220,5 +224,11 @@ class CanvasView(
             first.relativeToScale(scale).roundToInt(),
             second.relativeToScale(scale).roundToInt()
         )
+    }
+
+    fun getColor(coords: Pair<Double, Double>): Color {
+        val (x, y) = coords
+        val arr = imageContext.getImageData(x, y, 1.0, 1.0).data
+        return Color.fromBytes(arr[3], arr[0], arr[1], arr[2])
     }
 }

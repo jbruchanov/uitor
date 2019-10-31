@@ -22,7 +22,7 @@ import kotlinx.html.unsafe
 
 private const val HTML_BOLD_START = "<b>"
 private const val HTML_BOLD_END = "</b>"
-private const val CSS_PROPERTIES_COLOR = "ui-table-view-properties-color"
+const val CSS_PROPERTIES_COLOR = "ui-table-view-properties-color"
 private const val CSS_PROPERTIES_VALUE = "ui-table-view-properties-value"
 
 object ViewPropertiesTableViewComponents {

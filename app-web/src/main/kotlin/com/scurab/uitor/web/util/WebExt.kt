@@ -3,9 +3,11 @@ package com.scurab.uitor.web.util
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.npe
 import kotlinx.html.Tag
+import org.w3c.dom.Attr
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLCollection
+import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLOptionsCollection
 import org.w3c.dom.get
 
