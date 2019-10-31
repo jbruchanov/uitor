@@ -23,7 +23,7 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
             if (column == 0) windowWidth - w else w
         }
     }
-    private val columnsLayout = ColumnsLayout(columnsLayoutDelegate, 2)
+    protected val columnsLayout = ColumnsLayout(columnsLayoutDelegate, 2)
     private var expandViewPropsColumn = true
 
     override fun onAttachToRoot(rootElement: Element) {
@@ -45,9 +45,20 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
             viewPropertiesTableView.viewNode = it
             if (expandViewPropsColumn) {
                 expandViewPropsColumn = false
-                columnsLayout.initColumnSizes()
+                columnsLayout.setGridTemplateColumns("1fr 5px 600px")
+                onColumnsResize(doubleArrayOf(columnsLayout.left.getBoundingClientRect().width, 5.0, 600.0))
             }
         }
+        columnsLayout.onResize = this::onColumnsResize
         columnsLayout.initColumnSizes()
+    }
+
+    override fun onDetached() {
+        columnsLayout.onResize = null
+        super.onDetached()
+    }
+
+    protected open fun onColumnsResize(sizes: DoubleArray) {
+        //subclass
     }
 }

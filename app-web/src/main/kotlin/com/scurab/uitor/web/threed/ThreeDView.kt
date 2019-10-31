@@ -1,11 +1,16 @@
 package com.scurab.uitor.web.threed
 
 import com.scurab.uitor.common.render.Color
+import com.scurab.uitor.common.render.r2
 import com.scurab.uitor.common.util.dlog
+import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.common.util.vlog
+import com.scurab.uitor.web.common.addMouseClickListener
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.HtmlView
+import com.scurab.uitor.web.util.SCROLL_BAR_WIDTH
 import com.scurab.uitor.web.util.obj
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -42,13 +47,13 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     private lateinit var pauseRenderingChannel: Channel<Boolean>
     private val rayCaster = Raycaster()
     private val mouse = Vector2(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
-    private var selectedObject: ViewNode3D? = null
+    private var pointingObject: ViewNode3D? = null
     private var pausedRendering = false
 
     private val resizeAction = { e: Event ->
-        camera.aspect = window.innerWidth / window.innerHeight.toDouble()
-        camera.updateProjectionMatrix()
-        renderer.setSize(window.innerWidth, window.innerHeight)
+        val size = element.ref.getBoundingClientRect()
+        dlog("SIZE") {"${size.width.r2}x${size.height.r2}"}
+        dispatchContainerSizeChanged(size.width, window.innerHeight.toDouble())
     }
 
     private val requestAnimationFrameAction: () -> Unit = { window.requestAnimationFrame(renderAction) }
@@ -63,7 +68,9 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
 
     private val mouseMoveAction = { event: MouseEvent ->
         resetRenderingPause()
-        mouse.x = (event.clientX / window.innerWidth.toDouble()) * 2 - 1
+        //TODO, check this
+        //mouse.x = (event.clientX / window.innerWidth.toDouble()) * 2 - 1
+        mouse.x = (event.clientX / element.ref.getBoundingClientRect().width.toDouble()) * 2 - 1
         mouse.y = 1 - 2 * (event.clientY / window.innerHeight.toDouble())
         dlog(TAG) { "MouseMove:${mouse.d}" }
     }
@@ -90,6 +97,20 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
                 }
             }
         }
+
+        element.ref.addMouseClickListener {
+            pointingObject?.let {
+//                val node = pickNodeForNotification(viewModel.selectedNode.item, it.viewNode)
+                viewModel.selectedNode.post(it.viewNode)
+//                resetRenderingPause()
+            }
+        }
+    }
+
+    fun dispatchContainerSizeChanged(width: Double, height: Double) {
+        camera.aspect = width / height
+        camera.updateProjectionMatrix()
+        renderer.setSize(width, height - ColumnsLayout.UNKNOWNGAP)
     }
 
     private fun resetRenderingPause() {
@@ -168,10 +189,10 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
         val intersectObjects = rayCaster.intersectObjects(scene.children)
         val item = intersectObjects.firstOrNull()?.item
         val n = ViewNode3D.fromObject(item)
-        if (selectedObject != n) {
-            selectedObject?.setSelected(false)
-            selectedObject = n
-            selectedObject?.setSelected(true)
+        if (pointingObject != n) {
+            pointingObject?.setSelected(false)
+            pointingObject = n
+            pointingObject?.setSelected(true)
             vlog(TAG) { "Pointing at:ViewNode=${n?.viewNode?.position}" }
         }
         dlog(TAG) { "raycastObjects:${mouse.d}, children:${scene.children.size} found:${item?.name}" }

@@ -11,6 +11,7 @@ import com.scurab.uitor.web.util.getElementByClass
 import com.scurab.uitor.web.util.indexOf
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
+import com.scurab.uitor.web.util.toArray
 import kotlinx.html.div
 import kotlinx.html.id
 import kotlinx.html.js.div
@@ -23,6 +24,7 @@ private const val ID_MID = "split-table-mid"
 private const val ID_RIGHT = "split-table-right"
 private const val CLASS_MIDDLE = "middle"
 private const val CLASS_SEPARATOR = "split-table-separator"
+private const val CLASS_SEPARATOR_DISABLED = "split-table-separator-disabled"
 private const val CLASS_COLUMN = "split-table-column"
 private const val GRID_TEMPLATE_COLUMNS = "grid-template-columns"
 
@@ -36,6 +38,7 @@ class ColumnsLayout(
     val left by lazyLifecycled { element.ref.requireElementById<Element>(ID_LEFT) }
     val middle by lazyLifecycled { element.ref.getElementByClass(CLASS_MIDDLE).toTypedArray() }
     val right by lazyLifecycled { element.ref.requireElementById<Element>(ID_RIGHT) }
+    val separators by lazyLifecycled { element.ref.getElementsByClassName(CLASS_SEPARATOR).toArray() }
 
     init {
         check(columns >= 2) { "Min amount of columns is 2, not $columns" }
@@ -44,7 +47,23 @@ class ColumnsLayout(
     override var element: HTMLElement? = null
         private set
 
-    private val resizableColumnsFeature = ResizableColumnsFeature(this, delegate.innerContentWidthEstimator)
+    var onResize: ((DoubleArray) -> Unit)? = null
+    private val resizableColumnsFeature =
+        ResizableColumnsFeature(this, delegate.innerContentWidthEstimator) { onResize }
+    var isDraggingEnabled: Boolean = true
+        set(value) {
+            if (field != value) {
+                if (value) {
+                    resizableColumnsFeature.attach()
+                } else {
+                    resizableColumnsFeature.detach()
+                }
+                separators.forEach {
+                    it.className = if (value) CLASS_SEPARATOR else CLASS_SEPARATOR_DISABLED
+                }
+            }
+            field = value
+        }
 
     override fun buildContent() {
         element = document.create.div("split-table") {
@@ -65,7 +84,9 @@ class ColumnsLayout(
 
     override fun onAttached() {
         super.onAttached()
-        resizableColumnsFeature.attach()
+        if (isDraggingEnabled) {
+            resizableColumnsFeature.attach()
+        }
     }
 
     override fun onDetached() {
@@ -75,6 +96,10 @@ class ColumnsLayout(
 
     fun initColumnSizes() {
         resizableColumnsFeature.initColumnSizes()
+    }
+
+    fun setGridTemplateColumns(value: String) {
+        element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, value)
     }
 
     companion object {
@@ -91,7 +116,8 @@ interface IColumnsLayoutDelegate {
  */
 private class ResizableColumnsFeature(
     private val splitTableView: ColumnsLayout,
-    private val widthEstimator: (Int) -> Double
+    private val widthEstimator: (Int) -> Double,
+    private val resizeActionRef: (() -> ((DoubleArray) -> Unit)?)
 ) {
     private val TAG = "ResizableColumnsFeature"
     private var draggingElement: Element? = null
@@ -159,6 +185,7 @@ private class ResizableColumnsFeature(
         sizes[sizes.size - 1] = widthEstimator.invoke(sizes.size - 1)
         sizes[sizes.size - 3] = widthEstimator.invoke(sizes.size - 3)
         sizes[0] += (sum - sizes.asList().subList(1, sizes.size - 1).sum() - UNKNOWNGAP)
+        resizeActionRef()?.invoke(sizes)
         val result = sizes.joinToString("px ", postfix = "px")
         splitTableView.element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
     }
@@ -178,6 +205,7 @@ private class ResizableColumnsFeature(
             sizes[draggingIndex - 1] += diff
             sizes[draggingIndex + 1] -= diff
         }
+        resizeActionRef()?.invoke(sizes)
         val result = sizes.joinToString("px ", postfix = "px")
         splitTableView.element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
     }
@@ -189,6 +217,7 @@ private class ResizableColumnsFeature(
             if (sizes[draggingIndex - 1] <= 0.0 || sizes[draggingIndex + 1] <= 0.0) {
                 stopDragging()
             }
+            resizeActionRef()?.invoke(sizes)
             val result = sizes.joinToString("px ", postfix = "px")
             splitTableView.element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
         }
