@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.tree
 
 import com.scurab.uitor.common.util.ref
+import com.scurab.uitor.web.common.BaseViewPropertiesPage
 import com.scurab.uitor.web.common.InspectorPage
 import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.ViewPropertiesTableView
@@ -31,42 +32,21 @@ import kotlin.dom.clear
 import kotlin.math.max
 
 private const val CSS_BUTTONS = "ui-tree-buttons"
-private const val CSS_STATS = "ui-tree-stats"
 private const val ID_TIDY_TREE = "ui-tree-tidy-tree"
-private const val ID_VIEW_PROPS_CONTAINER = "ui-tree-view-properties"
+private const val ID_TREE_CONTAINER = "ui-tree-view-container"
 
-class TidyTreePage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewModel(pageViewModel)) {
+class TidyTreePage(pageViewModel: PageViewModel) : BaseViewPropertiesPage(pageViewModel) {
 
-    override var element: HTMLElement? = null; private set
+    override var contentElement: HTMLElement? = null; private set
     private val tidyTree = TidyTree()
-    private val container by lazyLifecycled { element.ref.requireElementById<HTMLElement>(ID_VIEW_PROPS_CONTAINER) }
-    private val configs =
-        listOf(TreeConfig.defaultTidyTree, TreeConfig.shortTypesTidyTree, TreeConfig.verticalSimpleTree)
+    private val container by lazyLifecycled { contentElement.ref.requireElementById<HTMLElement>(ID_TREE_CONTAINER) }
+    private val configs = listOf(TreeConfig.defaultTidyTree, TreeConfig.shortTypesTidyTree, TreeConfig.verticalSimpleTree)
     private var tidyTreeConfig = configFromLocationHash()
-    private var viewPropertiesTableView =
-        ViewPropertiesTableView(TableViewDelegate.default(viewModel.clientConfig), viewModel.screenIndex)
-    private val columnsLayoutDelegate = object : IColumnsLayoutDelegate {
-        override val innerContentWidthEstimator: (Int) -> Double = { column ->
-            val windowWidth = window.innerWidth - ColumnsLayout.UNKNOWNGAP
-            val w = if (viewModel.selectedNode.item != null) max(windowWidth / 3.0, 600.0) else 0.0
-            if (column == 0) windowWidth- w else w
-        }
-    }
-    private val columnsLayout = ColumnsLayout(columnsLayoutDelegate, 2)
     private var expandViewPropsColumn = true
 
-    init {
-        GlobalScope.launch {
-            try {
-                viewModel.load()
-            } catch (e: Exception) {
-                alert(e)
-            }
-        }
-    }
-
     override fun buildContent() {
-        element = document.create.div {
+        super.buildContent()
+        contentElement = document.create.div {
             div(classes = CSS_BUTTONS) {
                 button {
                     text("Default")
@@ -82,7 +62,7 @@ class TidyTreePage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewMo
                 }
             }
             div {
-                id = ID_VIEW_PROPS_CONTAINER
+                id = ID_TREE_CONTAINER
             }
         }
     }
@@ -97,25 +77,11 @@ class TidyTreePage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewMo
         }
     }
 
-    override fun onAttachToRoot(rootElement: Element) {
-        super.onAttachToRoot(rootElement)
-        columnsLayout.attachTo(container)
-        viewPropertiesTableView.attachTo(columnsLayout.right)
-    }
-
     override fun onAttached() {
         super.onAttached()
         viewModel.rootNode.observe {
             it?.let { drawDiagram(true) }
         }
-        viewModel.selectedNode.observe {
-            viewPropertiesTableView.viewNode = it
-            if (expandViewPropsColumn) {
-                expandViewPropsColumn = false
-                columnsLayout.initColumnSizes()
-            }
-        }
-        columnsLayout.initColumnSizes()
     }
 
     override fun stateDescription(): String {
@@ -127,16 +93,12 @@ class TidyTreePage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewMo
 
     private fun drawDiagram(refreshStats: Boolean) {
         viewModel.rootNode.item?.let {
-            columnsLayout.left.clear()
+            container.clear()
             val svgDiagram = tidyTree.generateSvg(it, viewModel.selectedNode.item, tidyTreeConfig) {
                 viewModel.selectedNode.post(it)
             }
             svgDiagram.id = ID_TIDY_TREE
-            columnsLayout.left.append(svgDiagram)
-            if (refreshStats) {
-//                statsElement.clear()
-//                statsElement.append(statsTable(it))
-            }
+            container.append(svgDiagram)
         }
     }
 
@@ -147,30 +109,5 @@ class TidyTreePage(pageViewModel: PageViewModel) : InspectorPage(InspectorViewMo
     override fun onHashTokenChanged(old: HashToken, new: HashToken) {
         super.onHashTokenChanged(old, new)
         setTreeConfig(configFromLocationHash(new))
-    }
-
-    private fun statsTable(node: ViewNode): HTMLTableElement {
-        val nodes = node.all()
-        val itemsSimple = nodes.groupBy { it.typeSimple }
-        val itemsFull = nodes.groupBy { it.type }
-        //check if we can use Simple Names (there is no same View with different package)
-        val items = (if (itemsSimple.size == itemsFull.size) itemsSimple else itemsFull)
-            .mapValues { it.value.size }
-            .toList()
-            .sortedByDescending { it.second }
-            .toList()
-
-        return document.create.table {
-            items.forEach { (type, count) ->
-                tr {
-                    td { text(type) }
-                    td { text(count.toString()) }
-                }
-            }
-            tr {
-                td { text("----- SUM ------") }
-                td { text(nodes.size.toString()) }
-            }
-        }
     }
 }
