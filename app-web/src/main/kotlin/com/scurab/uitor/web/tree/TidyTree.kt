@@ -33,6 +33,7 @@ private const val CSS_NODE = "ui-tree-node"
 private const val CSS_CIRCLE = "ui-tree-circle"
 private const val CSS_CIRCLE_SELECTED = "ui-tree-circle-selected"
 private const val CSS_NODE_TYPE = "ui-tree-node-type"
+private const val CSS_NODE_LINKS = "ui-tree-node-links"
 private const val CSS_NODE_ID = "ui-tree-node-id"
 
 class TidyTree {
@@ -57,9 +58,7 @@ class TidyTree {
             .transform(config.graphTranslation(config, root, x0))
 
         val link = g.group()
-            .fill("none")
-            .stroke("#dfdfdf".toColor())
-            .strokeWidth(1.0)
+            .classes(CSS_NODE_LINKS)
             .selectAll("path")
             .data(root.links())
             .join("path")
