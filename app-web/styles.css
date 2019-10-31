@@ -5,8 +5,10 @@
     --selected-background: #a3d7fb;
     --column-height: calc(100vh);
     /* Filter height - 28px, TODO handle it based on flag*/
-    --column-height-properties: calc(100vh - 28px);;
-    --props-header-titles: calc(100% - 5px);;
+    --column-height-properties: calc(100vh - 28px);
+    --props-header-titles: calc(100% - 5px);
+    --font-size: 10pt;
+    --font-size-small: 8pt;
 }
 
 body {
@@ -72,7 +74,7 @@ body {
 table.tree {
     text-align: left;
     font-family: monospace;
-    font-size: 10pt;
+    font-size: var(--font-size);
     border-spacing: 0px;
     cursor: pointer;
     height: var(--column-height);
@@ -107,8 +109,9 @@ tr.tree-odd {
 .tree-res-id {
     color: #000;
     opacity: 0.5;
-    margin-left: 5pt;
-    font-size: 0.8em;
+    margin: 0 10px;
+    font-size: var(--font-size-small);
+    float: right;
 }
 
 /*endregion*/
@@ -121,7 +124,7 @@ tr.tree-odd {
 .ui-table-view {
     text-align: left;
     font-family: monospace;
-    font-size: 10pt;
+    font-size: var(--font-size);
     border-spacing: 0px;
     width: 100%;
     overflow-y: scroll;
@@ -150,6 +153,10 @@ tr.tree-odd {
 
 .ui-table-view th {
     padding: 3px 10px;
+}
+
+.ui-table-view tr:hover {
+    background: var(--selected-background);
 }
 
 .ui-table-view-header {
@@ -214,7 +221,7 @@ tr.tree-odd {
     background: #ddddff;
     padding: 2px 0 2px 5px;
     font-family: monospace;
-    font-size: 10pt;
+    font-size: var(--font-size);
     border-spacing: 0px;
     position: fixed;
     right: 5px;

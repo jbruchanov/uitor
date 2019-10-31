@@ -124,7 +124,7 @@ class TreeView(
                     onMouseOutFunction = { hoverCallBack(null) }
 
                     td {
-                        span { text("X") }
+                        span { text(" ") }
                     }
                     td {
                         span {
@@ -137,10 +137,11 @@ class TreeView(
                             text(vn.typeSimple)
                         }
                         span(classes = CSS_TREE_ID) {
-                            text(vn.ids?.takeIf { it != "undefined" }?.let { " [${it}]" } ?: "")
+                            text(vn.ids
+                                ?.takeIf { !(it == "undefined" || it == "View.NO_ID") }
+                                ?.let { " [${it}]" } ?: "")
                         }
                     }
-
                 }
             }
         }.apply {

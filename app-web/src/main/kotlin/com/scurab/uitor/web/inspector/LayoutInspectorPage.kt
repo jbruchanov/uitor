@@ -79,7 +79,7 @@ class LayoutInspectorPage(
         override val innerContentWidthEstimator: (Int) -> Double = { column ->
             when(column) {
                 2 -> {
-                    7.0 + ((page.treeView.element as? HTMLTableElement)?.rows?.get(0)?.getBoundingClientRect()?.width
+                    ((page.treeView.element as? HTMLTableElement)?.rows?.get(0)?.getBoundingClientRect()?.width
                         ?: window.innerWidth / 4.0)
                 }
                 else -> max(500.0, min(window.innerWidth, window.screen.width) / 3.0)
