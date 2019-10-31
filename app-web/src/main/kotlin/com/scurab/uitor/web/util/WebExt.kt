@@ -12,6 +12,7 @@ import org.w3c.dom.HTMLOptionsCollection
 import org.w3c.dom.get
 
 const val ATTR_STYLE = "style"
+const val SCROLL_BAR_WIDTH = 17
 
 var Tag.styleAttributes: String
     get() = attributes[ATTR_STYLE] ?: ""

@@ -14,6 +14,7 @@ import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
 import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableViewDelegate
+import com.scurab.uitor.web.util.SCROLL_BAR_WIDTH
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
 import kotlinx.coroutines.GlobalScope
@@ -166,7 +167,7 @@ class LayoutInspectorPage(
         override val innerContentWidthEstimator: (Int) -> Double = { column ->
             when(column) {
                 2 -> {
-                    ((page.treeView.element as? HTMLTableElement)?.rows?.get(0)?.getBoundingClientRect()?.width
+                    SCROLL_BAR_WIDTH + ((page.treeView.element as? HTMLTableElement)?.rows?.get(0)?.getBoundingClientRect()?.width
                         ?: window.innerWidth / 4.0)
                 }
                 else -> max(500.0, min(window.innerWidth, window.screen.width) / 3.0)

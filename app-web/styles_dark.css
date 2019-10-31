@@ -126,6 +126,7 @@ table.tree {
     height: var(--column-height);
     overflow-y: scroll;
     display: block;
+    white-space: nowrap;
 }
 
 table.tree th {
