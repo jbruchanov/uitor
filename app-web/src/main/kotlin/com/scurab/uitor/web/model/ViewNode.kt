@@ -125,7 +125,8 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
                 Pair(ViewNodeFields.Owner,      "007"),
                 Pair("Inheritance",             "008"),
                 Pair("Context:",                "009"),
-                Pair("StringValue",             "010")
+                Pair("Extractor",               "010"),
+                Pair("StringValue",             "011")
                 // @formatter:on
         )
         fun orderKey(value: String): String = (orderMap[value] ?: "999") + value
