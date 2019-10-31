@@ -21,7 +21,7 @@ object Navigation {
             val to = HashToken(ev.newURL)
             ilog(TAG) { "HashChanged from:'${from.pageId}' to:'${to.pageId}'" }
             when {
-                currentPage?.id == to.pageId -> currentPage?.onHashTokenChanged(from, to)
+                currentPage?.pageId == to.pageId -> currentPage?.onHashTokenChanged(from, to)
                 else -> App.openPageBaseOnUrl()
             }
         })
@@ -35,8 +35,8 @@ object Navigation {
         currentPage?.detach()
         if (pushState) {
             window.history.pushState(
-                page.id,
-                page.id,
+                page.pageId,
+                page.pageId,
                 page.hashTokenValue()
             )
         }
@@ -45,11 +45,11 @@ object Navigation {
     }
 
     fun updateDescriptionState(page: Page) {
-        window.history.replaceState(page.id, page.id, page.hashTokenValue())
+        window.history.replaceState(page.pageId, page.pageId, page.hashTokenValue())
     }
 
     private fun Page.hashTokenValue(): String {
         val state = stateDescription()?.let { "${HashToken.DELIMITER}$it" } ?: ""
-        return "${HashToken.HASH}${id}$state"
+        return "${HashToken.HASH}${pageId}$state"
     }
 }
