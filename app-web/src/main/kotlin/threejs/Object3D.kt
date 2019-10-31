@@ -15,6 +15,7 @@ open external class Object3D : EventDispatcher {
     open var rotation: Euler
     open var scale: Vector3
     open var visible: Boolean
+    open var userData: Any?
     open fun rotateX(angle: Number): Object3D /* this */
 
     open fun rotateY(angle: Number): Object3D /* this */

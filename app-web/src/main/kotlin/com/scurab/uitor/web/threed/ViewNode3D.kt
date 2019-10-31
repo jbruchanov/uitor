@@ -58,8 +58,8 @@ class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int) : IViewNo
         .withName(viewNode.elementName("Mesh"))
 
     init {
-        idsToViewNode3D[mesh.uuid] = this
-        idsToViewNode3D[lineSegments.uuid] = this
+        mesh.userData = this
+        lineSegments.userData = this
     }
 
     fun add(scene: Scene) {
@@ -100,7 +100,6 @@ class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int) : IViewNo
 
     companion object {
         internal val textureLoader = TextureLoader()
-        private val idsToViewNode3D = mutableMapOf<String, ViewNode3D>()
         private val colorMatcher = mutableMapOf<StateMatcher, Color>(
             StateMatcher(isLeaf = false, selected = false, hasCustomRenderArea = false) to "#5B0000".threeColor,
             StateMatcher(isLeaf = false, selected = true, hasCustomRenderArea = false) to "#FF0000".threeColor,
@@ -112,7 +111,7 @@ class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int) : IViewNo
             StateMatcher(isLeaf = true, selected = true, hasCustomRenderArea = true) to "#FFFF00".threeColor
         )
         fun fromObject(item: Object3D?): ViewNode3D? {
-            return item?.let { idsToViewNode3D[it.uuid] }
+            return item?.userData as? ViewNode3D
         }
     }
 }
