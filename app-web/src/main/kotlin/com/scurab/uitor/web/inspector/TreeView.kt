@@ -3,7 +3,10 @@ package com.scurab.uitor.web.inspector
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
+import com.scurab.uitor.web.common.MOUSE_MIDDLE
 import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.model.isIgnoring
+import com.scurab.uitor.web.model.toggleIgnoring
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.pickNodeForNotification
 import com.scurab.uitor.web.util.requireElementById
@@ -14,6 +17,7 @@ import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
+import kotlinx.html.js.onMouseDownFunction
 import kotlinx.html.js.onMouseOutFunction
 import kotlinx.html.js.onMouseOverFunction
 import kotlinx.html.js.table
@@ -23,6 +27,7 @@ import kotlinx.html.tr
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.events.Event
+import org.w3c.dom.events.MouseEvent
 import kotlin.dom.addClass
 import kotlin.dom.clear
 import kotlin.dom.removeClass
@@ -42,30 +47,11 @@ class TreeView(
     private val TAG = "TreeView"
     private val tableRowToViewNodeMap = mutableListOf<ViewNode?>()
     private val styleTemplate: (Int) -> String = { "padding-left: calc(var( --tree-offset-left) * $it);" }
-    private val clickCallback: (Event) -> Unit = {
-        val vn = tableRowToViewNodeMap[it.viewNodeId]
-        dlog(TAG) { "Clicked:${vn?.position}" }
-        val node = pickNodeForNotification(inspectorViewModel.selectedNode.item, vn)
-        inspectorViewModel.selectedNode.post(node)
-    }
-    private val hoverCallBack: (ViewNode?) -> Unit = {
-        dlog(TAG) { "Hover:${it?.position}" }
-        inspectorViewModel.hoveredNode.post(it)
-    }
     private var lastHighlightedItem: ViewNode? = null
         set(value) {
             dlog(TAG) { "set lastHighlightedItem:${value?.position}" }
             field = value
         }
-    private val mouseOverCallBack: (Event) -> Unit = {
-        if (inspectorViewModel.selectedNode.item == null) {
-            val vn = tableRowToViewNodeMap[it.viewNodeId]
-            if (vn != lastHighlightedItem) {
-                hoverCallBack(vn)
-                lastHighlightedItem = vn
-            }
-        }
-    }
 
     override var element: HTMLElement? = null; private set
 
@@ -81,42 +67,46 @@ class TreeView(
     }
 
     private fun bind() {
-        inspectorViewModel.rootNode.observe {
-            rebuildHtml()
-        }
-        inspectorViewModel.selectedNode.observe { selectedNode ->
-            dlog(TAG) { "inspectorViewModel.selectedNode:${selectedNode?.position}, ${lastHighlightedItem?.position}" }
-            lastHighlightedItem?.element { vn ->
-                removeClass(CSS_TREE_SELECTED)
-                addClass(vn.position.evenOddStyle)
+        inspectorViewModel.apply {
+            rootNode.observe {
+                rebuildHtml()
             }
-            selectedNode?.element { vn ->
-                removeClass(vn.position.evenOddStyle)
-                addClass(CSS_TREE_SELECTED)
-                scrollIntoView(scrollIntoViewArgs())
-            }
-            lastHighlightedItem = selectedNode
-            dlog(TAG) { "New LastSelectedItem:${lastHighlightedItem?.position}" }
-        }
-        inspectorViewModel.hoveredNode.observe { hoveredNode ->
-            if (inspectorViewModel.selectedNode.item == null) {
+
+            selectedNode.observe { selectedNode ->
+                dlog(TAG) { "inspectorViewModel.selectedNode:${selectedNode?.position}, ${lastHighlightedItem?.position}" }
                 lastHighlightedItem?.element { vn ->
                     removeClass(CSS_TREE_SELECTED)
                     addClass(vn.position.evenOddStyle)
                 }
-                lastHighlightedItem = hoveredNode?.element { vn ->
+                selectedNode?.element { vn ->
                     removeClass(vn.position.evenOddStyle)
                     addClass(CSS_TREE_SELECTED)
+                    scrollIntoView(scrollIntoViewArgs())
+                }
+                lastHighlightedItem = selectedNode
+                dlog(TAG) { "New LastSelectedItem:${lastHighlightedItem?.position}" }
+            }
+
+            hoveredNode.observe { hoveredNode ->
+                if (inspectorViewModel.selectedNode.item == null) {
+                    lastHighlightedItem?.element { vn ->
+                        removeClass(CSS_TREE_SELECTED)
+                        addClass(vn.position.evenOddStyle)
+                    }
+                    lastHighlightedItem = hoveredNode?.element { vn ->
+                        removeClass(vn.position.evenOddStyle)
+                        addClass(CSS_TREE_SELECTED)
+                    }
                 }
             }
-        }
 
-        inspectorViewModel.ignoredViewNodeChanged.observe {
-            val (node, ignored) = it
-            element.ref
-                .requireElementById<HTMLElement>(node.position.htmlViewNodeId)
-                .requireElementById<HTMLSpanElement>(ID_TYPE_NAME)
-                .className = node.typeNameClasses()
+            ignoredViewNodeChanged.observe {
+                val (node, ignored) = it
+                element.ref
+                    .requireElementById<HTMLElement>(node.position.htmlViewNodeId)
+                    .requireElementById<HTMLSpanElement>(ID_TYPE_NAME)
+                    .className = node.typeNameClasses()
+            }
         }
     }
 
@@ -132,10 +122,10 @@ class TreeView(
                 tr(classes = vn.position.evenOddStyle) {
                     id = vn.position.htmlViewNodeId
                     tableRowToViewNodeMap.add(vn)
-                    onClickFunction = clickCallback
-                    onMouseOverFunction = mouseOverCallBack
-                    onMouseOutFunction = { hoverCallBack(null) }
-
+                    onClickFunction = clickAction
+                    onMouseOverFunction = mouseOverAction
+                    onMouseOutFunction = mouseOutAction
+                    onMouseDownFunction = mouseDownAction
                     td {
                         span { text(" ") }
                     }
@@ -163,10 +153,46 @@ class TreeView(
         }
     }
 
-    private fun ViewNode.typeNameClasses() : String {
+    //region event handlers
+    private val clickAction: (Event) -> Unit = {
+        val vn = tableRowToViewNodeMap[it.viewNodeId]
+        dlog(TAG) { "Clicked:${vn?.position}" }
+        val node = pickNodeForNotification(inspectorViewModel.selectedNode.item, vn)
+        inspectorViewModel.selectedNode.post(node)
+    }
+
+    private val hoverAction: (ViewNode?) -> Unit = {
+        dlog(TAG) { "Hover:${it?.position}" }
+        inspectorViewModel.hoveredNode.post(it)
+    }
+
+    private val mouseOverAction: (Event) -> Unit = {
+        if (inspectorViewModel.selectedNode.item == null) {
+            val vn = tableRowToViewNodeMap[it.viewNodeId]
+            if (vn != lastHighlightedItem) {
+                hoverAction(vn)
+                lastHighlightedItem = vn
+            }
+        }
+    }
+
+    private val mouseOutAction = { ev: Event -> hoverAction(null) }
+
+    private val mouseDownAction = { ev: Event ->
+        val ev = ev as MouseEvent
+        if (ev.button == MOUSE_MIDDLE) {
+            ev.preventDefault()
+            tableRowToViewNodeMap[ev.viewNodeId]?.let { vn ->
+                val ignored = inspectorViewModel.ignoringViewNodeIdsOrPositions.toggleIgnoring(vn)
+                inspectorViewModel.ignoredViewNodeChanged.post(Pair(vn, ignored))
+            }
+        }
+    }
+    //endregion
+
+    private fun ViewNode.typeNameClasses(): String {
         var classes = CSS_TREE_CLASS_NAME
-        val ignores = inspectorViewModel.ignoringViewNodeIdsOrPositions
-        if (ignores.contains(idi) || ignores.contains(position)) {
+        if (inspectorViewModel.ignoringViewNodeIdsOrPositions.isIgnoring(this)) {
             classes += " $CSS_TREE_CLASS_NAME_IGNORED"
         }
         return classes

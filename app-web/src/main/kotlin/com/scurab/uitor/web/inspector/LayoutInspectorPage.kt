@@ -7,6 +7,7 @@ import com.scurab.uitor.web.common.InspectorPage
 import com.scurab.uitor.web.common.ViewPropertiesTableView
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.model.isIgnoring
 import com.scurab.uitor.web.ui.CSS_PROPERTIES_COLOR
 import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
@@ -115,8 +116,7 @@ class LayoutInspectorPage(
         viewName.innerText = "ID:" + (viewNode?.ids ?: "")
         ignoreCheckBox.disabled = viewModel.selectedNode.item == null
         ignoreCheckBox.checked = viewNode?.let {
-            val ignore = viewModel.ignoringViewNodeIdsOrPositions
-            ignore.contains(it.idi) || ignore.contains(it.position)
+            viewModel.ignoringViewNodeIdsOrPositions.isIgnoring(it)
         } ?: false
     }
 
@@ -145,6 +145,9 @@ class LayoutInspectorPage(
 
             hoveredNode.observe {
                 updateStatusBar(null, it ?: viewModel.selectedNode.item)
+            }
+            ignoredViewNodeChanged.observe {
+                updateStatusBar(null, viewModel.selectedNode.item ?: it.first)
             }
         }
         GlobalScope.launch {

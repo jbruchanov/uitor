@@ -8,6 +8,7 @@ import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.clear
+import com.scurab.uitor.web.common.MOUSE_MIDDLE
 import com.scurab.uitor.web.common.addMouseClickListener
 import com.scurab.uitor.web.common.addMouseMoveListener
 import com.scurab.uitor.web.common.addMouseOutListener
@@ -15,6 +16,7 @@ import com.scurab.uitor.web.common.addMouseWheelListener
 import com.scurab.uitor.web.drawCross
 import com.scurab.uitor.web.drawRectangle
 import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.model.toggleIgnoring
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.LoadImageHandler
 import com.scurab.uitor.web.util.pickNodeForNotification
@@ -79,11 +81,7 @@ class CanvasView(
         super.onAttached()
         layers.last().apply {
             addMouseMoveListener {
-                val offsetPoint = it.offsetPoint
-                val viewNode = offsetPoint.viewNode()
-                inspectorViewModel.hoveredNode.post(viewNode)
-                onMouseMove?.invoke(offsetPoint, viewNode)
-                renderMouseCross { offsetPoint }
+                mouseMoveAction(it.offsetPoint)
             }
             addMouseOutListener {
                 inspectorViewModel.hoveredNode.post(null)
@@ -100,6 +98,14 @@ class CanvasView(
                     post(node)
                 }
                 renderScene(it.offsetPoint)
+            }
+            addMouseClickListener(MOUSE_MIDDLE) {
+                it.offsetPoint.viewNode()?.let { vn ->
+                    val ignored = inspectorViewModel.ignoringViewNodeIdsOrPositions.toggleIgnoring(vn)
+                    inspectorViewModel.ignoredViewNodeChanged.post(Pair(vn, ignored))
+                    //simulate like we moved => triggers all the events again to refresh listeners
+                    mouseMoveAction(it.offsetPoint)
+                }
             }
         }
         document.addKeyDownListener { keyboardEvent ->
@@ -123,6 +129,13 @@ class CanvasView(
         inspectorViewModel.hoveredNode.observe {
             renderScene(inspectorViewModel.selectedNode.item ?: it)
         }
+    }
+
+    private val mouseMoveAction = { offsetPoint: Pair<Double, Double> ->
+        val viewNode = offsetPoint.viewNode()
+        inspectorViewModel.hoveredNode.post(viewNode)
+        onMouseMove?.invoke(offsetPoint, viewNode)
+        renderMouseCross { offsetPoint }
     }
 
     private var loadImageHandler: LoadImageHandler? = null

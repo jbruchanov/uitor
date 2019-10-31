@@ -4,6 +4,10 @@ import org.w3c.dom.events.EventTarget
 import org.w3c.dom.events.MouseEvent
 import org.w3c.dom.events.WheelEvent
 
+const val MOUSE_LEFT = 0.toShort()
+const val MOUSE_MIDDLE = 1.toShort()
+const val MOUSE_RIGHT = 2.toShort()
+
 enum class Events {
     click,
     dblclick,
@@ -30,6 +34,15 @@ fun EventTarget.addMouseDownListener(callback: (MouseEvent) -> Unit) =
 
 fun EventTarget.addMouseUpListener(callback: (MouseEvent) -> Unit) =
     addEventListener(Events.mouseup.name, { event -> callback(event as MouseEvent) })
+
+fun EventTarget.addMouseClickListener(button: Short, callback: (MouseEvent) -> Unit): Unit =
+    addEventListener(Events.mousedown.name, { event ->
+        val mouseEvent = event as MouseEvent
+        mouseEvent.preventDefault()
+        if (mouseEvent.button == button) {
+            callback(mouseEvent)
+        }
+    })
 
 fun EventTarget.addMouseMoveListener(callback: (MouseEvent) -> Unit) =
     addEventListener(Events.mousemove.name, { event -> callback(event as MouseEvent) })

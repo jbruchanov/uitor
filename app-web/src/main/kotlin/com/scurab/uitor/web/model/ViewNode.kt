@@ -138,5 +138,24 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
     }
 }
 
+/**
+ * Return true if the set contains ID or Position of view
+ */
+internal fun Set<Int>.isIgnoring(viewNode: ViewNode): Boolean {
+    return contains(viewNode.idi) || contains(viewNode.position)
+}
 
-
+/**
+ * Toggle value, add if missing, remove if exists
+ * Returns new value
+ */
+internal fun MutableSet<Int>.toggleIgnoring(viewNode: ViewNode): Boolean {
+    val ignoring = isIgnoring(viewNode)
+    if (ignoring) {
+        //id is ignored as it's passed only from client now
+        remove(viewNode.position)
+    } else {
+        add(viewNode.position)
+    }
+    return !ignoring
+}
