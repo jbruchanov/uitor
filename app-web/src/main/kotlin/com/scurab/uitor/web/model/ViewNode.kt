@@ -73,7 +73,7 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
             ?.let { Rect(it[0], it[1], it[2] - it[0], it[3] - it[1]) }
     }
 
-    override fun findFrontVisibleView(x: Int, y: Int, ignore: Set<IViewNode>): ViewNode? {
+    override fun findFrontVisibleView(x: Int, y: Int, ignore: Set<Int>): ViewNode? {
         //disabled for now, this makes views inactive actitivies "invisible" for search
         if (false && (data.typed<Int>(ViewNodeFields.InternalVisibility)) != 0) {//not visible
             return null;
@@ -87,7 +87,7 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
                     return candidate
                 }
             }
-            if (ignore.contains(this)) {
+            if (ignore.contains(this.idi)) {
                 return null
             }
             return this

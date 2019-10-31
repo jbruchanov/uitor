@@ -12,5 +12,5 @@ interface IViewNode {
     val owner: String?
 
     val rect: Rect
-    fun findFrontVisibleView(x: Int, y: Int, ignore: Set<IViewNode> = emptySet()): IViewNode?
+    fun findFrontVisibleView(x: Int, y: Int, ignore: Set<Int> = emptySet()): IViewNode?
 }

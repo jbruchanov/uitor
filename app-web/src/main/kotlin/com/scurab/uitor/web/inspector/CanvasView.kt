@@ -222,7 +222,8 @@ class CanvasView(
     private fun Point.viewNode(): ViewNode? {
         return inspectorViewModel.rootNode.item?.findFrontVisibleView(
             first.relativeToScale(scale).roundToInt(),
-            second.relativeToScale(scale).roundToInt()
+            second.relativeToScale(scale).roundToInt(),
+            inspectorViewModel.clientConfig.pointerIgnoreIds
         )
     }
 
