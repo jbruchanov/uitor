@@ -97,8 +97,12 @@ input {
     bottom: 0;
 }
 
+.canvas-status-bar input {
+    vertical-align: inherit;
+}
+
 .canvas-status-bar td:nth-child(1) {
-    min-width: 145px;
+    min-width: 125px;
 }
 
 .canvas-status-bar td:nth-child(2) {
@@ -106,7 +110,7 @@ input {
 }
 
 .canvas-status-bar td:nth-child(3) {
-    min-width: 110px;
+    min-width: 80px;
 }
 
 /*endregion LayoutInspector*/
@@ -146,6 +150,10 @@ tr.tree-odd {
 
 .tree-class-name {
 
+}
+
+.tree-class-name-ignored {
+    opacity: 0.25;
 }
 
 .tree-res-id {
