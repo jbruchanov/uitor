@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.common.render.relativeToScale
+import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.InspectorPage
 import com.scurab.uitor.web.common.ViewPropertiesTableView
@@ -16,14 +17,17 @@ import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.html.checkBoxInput
 import kotlinx.html.id
 import kotlinx.html.js.div
+import kotlinx.html.js.onClickFunction
 import kotlinx.html.span
 import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.tr
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.HTMLTableElement
 import org.w3c.dom.get
@@ -32,10 +36,11 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-private const val ID_COORDS = "canvas-mouse-coordinates"
-private const val ID_COLOR_NAME = "canvas-mouse-color-name"
-private const val ID_COLOR_PREVIEW = "canvas-mouse-color-preview"
-private const val ID_VIEW_NAME = "canvas-mouse-view-name"
+private const val ID_COORDS = "canvas-status-bar-coordinates"
+private const val ID_COLOR_NAME = "canvas-status-bar-color-name"
+private const val ID_COLOR_PREVIEW = "canvas-status-bar-color-preview"
+private const val ID_VIEW_NAME = "canvas-status-view-name"
+private const val ID_IGNORE_CHECKBOX = "canvas-status-bar-ignore"
 private const val CANVAS_STATUS_BAR = "canvas-status-bar"
 
 class LayoutInspectorPage(
@@ -51,6 +56,7 @@ class LayoutInspectorPage(
     private val colorName by lazyLifecycled { element.ref.requireElementById<HTMLElement>(ID_COLOR_NAME) }
     private val colorPreview by lazyLifecycled { element.ref.requireElementById<HTMLElement>(ID_COLOR_PREVIEW) }
     private val viewName by lazyLifecycled { element.ref.requireElementById<HTMLSpanElement>(ID_VIEW_NAME) }
+    private val ignoreCheckBox by lazyLifecycled { element.ref.requireElementById<HTMLInputElement>(ID_IGNORE_CHECKBOX) }
 
     override var element: HTMLElement? = null; private set
     private val tableViewDelegate = TableViewDelegate(
@@ -66,6 +72,16 @@ class LayoutInspectorPage(
                     td { span { id = ID_COORDS } }
                     td { span(classes = CSS_PROPERTIES_COLOR) { id = ID_COLOR_PREVIEW } }
                     td { span { id = ID_COLOR_NAME } }
+                    td {
+                        text("Pointer ignore:")
+                        checkBoxInput {
+                            id = ID_IGNORE_CHECKBOX
+                            disabled = true
+                            onClickFunction = {
+                                onSkipClicked((it.target as HTMLInputElement).checked)
+                            }
+                        }
+                    }
                     td { span { id = ID_VIEW_NAME } }
                 }
             }
@@ -83,7 +99,9 @@ class LayoutInspectorPage(
         propertiesView.attachTo(columnsLayout.right)
         element = columnsLayout.element
 
-        canvasView.onMouseMove = this::updateStatusBar
+        canvasView.onMouseMove = { mouse, viewNode ->
+            updateStatusBar(mouse, viewModel.selectedNode.item ?: viewNode)
+        }
         updateStatusBar(null, null)
     }
 
@@ -93,8 +111,23 @@ class LayoutInspectorPage(
         val color = mouse?.let { canvasView.getColor(it) }
         mouseLocation.innerText = "XY:" + (mouse?.let { "[$x,$y]" } ?: "")
         colorPreview.style.backgroundColor = color?.htmlRGB ?: ""
-        colorName.innerText = "Color:" + (color?.htmlRGB ?: "")
+        colorName.innerText = (color?.htmlRGB ?: "")
         viewName.innerText = "ID:" + (viewNode?.ids ?: "")
+        ignoreCheckBox.disabled = viewModel.selectedNode.item == null
+        ignoreCheckBox.checked = viewNode?.let {
+            val ignore = viewModel.ignoringViewNodeIdsOrPositions
+            ignore.contains(it.idi) || ignore.contains(it.position)
+        } ?: false
+    }
+
+    private fun onSkipClicked(value: Boolean) {
+        val item = viewModel.selectedNode.item ?: ise("Skip checkbox is clicked and no ViewNode selected?!")
+        if (value) {
+            viewModel.ignoringViewNodeIdsOrPositions.add(item.position)
+        } else {
+            viewModel.ignoringViewNodeIdsOrPositions.remove(item.position)
+        }
+        viewModel.ignoredViewNodeChanged.post(Pair(item, value))
     }
 
     override fun onAttached() {
@@ -105,8 +138,13 @@ class LayoutInspectorPage(
                 columnsLayout.initColumnSizes()
             }
 
-            selectedNode.observe {
-                propertiesView.viewNode = it
+            selectedNode.observe {vn ->
+                propertiesView.viewNode = vn
+                updateStatusBar(null, vn)
+            }
+
+            hoveredNode.observe {
+                updateStatusBar(null, it ?: viewModel.selectedNode.item)
             }
         }
         GlobalScope.launch {

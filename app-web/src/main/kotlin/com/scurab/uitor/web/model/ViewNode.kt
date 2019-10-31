@@ -87,7 +87,7 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
                     return candidate
                 }
             }
-            if (ignore.contains(this.idi)) {
+            if (ignore.contains(idi) || ignore.contains(position)) {
                 return null
             }
             return this

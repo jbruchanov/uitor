@@ -2,9 +2,11 @@ package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.dlog
+import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.pickNodeForNotification
+import com.scurab.uitor.web.util.requireElementById
 import com.scurab.uitor.web.util.scrollIntoViewArgs
 import com.scurab.uitor.web.util.styleAttributes
 import com.scurab.uitor.web.util.styleBackgroundColor
@@ -19,6 +21,7 @@ import kotlinx.html.span
 import kotlinx.html.td
 import kotlinx.html.tr
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.events.Event
 import kotlin.dom.addClass
 import kotlin.dom.clear
@@ -27,9 +30,11 @@ import kotlin.dom.removeClass
 const val CSS_TREE = "tree"
 const val CSS_ROW_EVEN = "tree-even"
 const val CSS_ROW_ODD = "tree-odd"
-const val CSS_TREE_CLASS_NAME = "tree-class_name"
+const val CSS_TREE_CLASS_NAME = "tree-class-name"
+const val CSS_TREE_CLASS_NAME_IGNORED = "tree-class-name-ignored"
 const val CSS_TREE_SELECTED = "tree-selected"
 const val CSS_TREE_ID = "tree-res-id"
+const val ID_TYPE_NAME = "tree-class-name"
 
 class TreeView(
     private val inspectorViewModel: InspectorViewModel
@@ -105,6 +110,14 @@ class TreeView(
                 }
             }
         }
+
+        inspectorViewModel.ignoredViewNodeChanged.observe {
+            val (node, ignored) = it
+            element.ref
+                .requireElementById<HTMLElement>(node.position.htmlViewNodeId)
+                .requireElementById<HTMLSpanElement>(ID_TYPE_NAME)
+                .className = node.typeNameClasses()
+        }
     }
 
     private fun rebuildHtml() {
@@ -130,7 +143,8 @@ class TreeView(
                         span {
                             styleAttributes = styleTemplate(vn.level)
                         }
-                        span(classes = CSS_TREE_CLASS_NAME) {
+                        span(classes = vn.typeNameClasses()) {
+                            id = ID_TYPE_NAME
                             vn.typeHighlightColor()?.let {
                                 styleAttributes = it.styleBackgroundColor()
                             }
@@ -147,6 +161,15 @@ class TreeView(
         }.apply {
             parentElement.append(this)
         }
+    }
+
+    private fun ViewNode.typeNameClasses() : String {
+        var classes = CSS_TREE_CLASS_NAME
+        val ignores = inspectorViewModel.ignoringViewNodeIdsOrPositions
+        if (ignores.contains(idi) || ignores.contains(position)) {
+            classes += " $CSS_TREE_CLASS_NAME_IGNORED"
+        }
+        return classes
     }
 
     private val Event.viewNodeId get() = (currentTarget as HTMLElement).id.substringAfter(":").toInt()
