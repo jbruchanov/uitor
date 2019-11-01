@@ -137,6 +137,7 @@ private class ResizableColumnsFeature(
                 draggingIndex = draggingElement?.let { it.parentElement?.children?.indexOf(it) } ?: -1
                 dlog(TAG) { "MouseDown x:$downX draggingIndex:$draggingIndex elem:$draggingElement" }
             }
+            
             sep.addMouseDoubleClickListener { de ->
                 val draggingElement = de.target as? Element
                 val draggingIndex = draggingElement?.let { it.parentElement?.children?.indexOf(it) } ?: -1
@@ -146,6 +147,10 @@ private class ResizableColumnsFeature(
                     "MouseDoubleClick [${de.clientX},${de.clientY}] " +
                             "result:${splitTableView.element.ref.style.getPropertyValue(GRID_TEMPLATE_COLUMNS)}"
                 }
+            }
+
+            document.addWindowResizeListener {
+                resizeColumnsWindowsResize()
             }
 
             document.addMouseLeaveListener {
@@ -185,9 +190,12 @@ private class ResizableColumnsFeature(
         sizes[sizes.size - 1] = widthEstimator.invoke(sizes.size - 1)
         sizes[sizes.size - 3] = widthEstimator.invoke(sizes.size - 3)
         sizes[0] += (sum - sizes.asList().subList(1, sizes.size - 1).sum() - UNKNOWNGAP)
-        resizeActionRef()?.invoke(sizes)
-        val result = sizes.joinToString("px ", postfix = "px")
-        splitTableView.element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
+        sizes.dispatchSizes()
+    }
+
+    private fun resizeColumnsWindowsResize() {
+        refreshColumnsSizes(splitTableView.element.ref.firstElementChild)
+        sizes.dispatchSizes()
     }
 
     private fun refreshColumnsSizes(draggingElement: Element?) {
@@ -205,9 +213,7 @@ private class ResizableColumnsFeature(
             sizes[draggingIndex - 1] += diff
             sizes[draggingIndex + 1] -= diff
         }
-        resizeActionRef()?.invoke(sizes)
-        val result = sizes.joinToString("px ", postfix = "px")
-        splitTableView.element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
+        sizes.dispatchSizes()
     }
 
     private fun resizeColumnsDragging(draggingIndex: Int, diff: Int, sizes: DoubleArray = this.sizes) {
@@ -217,15 +223,35 @@ private class ResizableColumnsFeature(
             if (sizes[draggingIndex - 1] <= 0.0 || sizes[draggingIndex + 1] <= 0.0) {
                 stopDragging()
             }
-            resizeActionRef()?.invoke(sizes)
-            val result = sizes.joinToString("px ", postfix = "px")
-            splitTableView.element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
+            sizes.dispatchSizes()
         }
+    }
+
+    private fun DoubleArray.dispatchSizes() {
+        resizeActionRef()?.invoke(this)
+        //just better UX, keep this first column dynamic for browser,
+        //so window resizing handles that for us automatically
+        val result = gridTemplateWithFirstFlex()
+        dlog(TAG) { "ResizeResult: $result" }
+        splitTableView.element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, result)
     }
 
     private fun stopDragging() {
         dlog(TAG) { "stopDragging" }
         draggingIndex = -1
         draggingElement = null
+    }
+
+    /**
+     * Specific value for window resizing.
+     * Keep the first value with 1fr to let browser keep oll other columns right aligned
+     */
+    private fun DoubleArray.gridTemplateWithFirstFlex() : String {
+        val sb = StringBuilder()
+        sb.append("1fr ")
+        for(i in 1 until size) {
+            sb.append(this[i]).append("px ")
+        }
+        return sb.trim().toString()
     }
 }
