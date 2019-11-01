@@ -12,7 +12,7 @@ class ClientConfig(private val json: Json) {
     val serverVersion by jsonField<Int>(json, ConfigFields.ServerVersion)
     val device = json.getMap(ConfigFields.Device)
     val groovy by jsonField<Boolean>(json, ConfigFields.Groovy)
-    val pointerIgnoreIds : Set<Int> = (json[ConfigFields.PointerIgnoreIds] as Array<Int>).toHashSet()
+    val pointerIgnoreIds: Set<Int> = (json[ConfigFields.PointerIgnoreIds] as? Array<Int> ?: emptyArray()).toHashSet()
 
     val propertyHighlights =
         json.getMap(ConfigFields.PropertyHighlights)
