@@ -164,7 +164,8 @@ private class ResizableColumnsFeature(
 
             document.addMouseMoveListener { me ->
                 val diff = me.clientX - downX
-                if (draggingElement != null) {
+                if (diff != 0 && draggingElement != null) {
+                    refreshColumnsSizes(draggingElement)
                     resizeColumnsDragging(draggingIndex, diff)
                     downX = me.clientX
                     dlog(TAG) {
