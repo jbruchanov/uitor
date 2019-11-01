@@ -97,3 +97,6 @@ fun String.highlightAt(substring: String, hStart: String, hEnd: String = hStart)
     }
     return sb.toString()
 }
+
+fun Char.isUppercase() = this in ('A'..'Z')
+fun Char.isLowercase() = this in ('a'..'z')
