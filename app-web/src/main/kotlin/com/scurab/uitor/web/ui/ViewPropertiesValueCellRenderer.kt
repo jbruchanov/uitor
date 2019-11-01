@@ -44,7 +44,10 @@ class ViewPropertiesValueCellRenderer {
         private fun isNumber(value: String): Boolean = value.toDoubleOrNull()?.isFinite() == true
         private fun htmlLink(value: String, url: String): String = """<a href="$url" target="_blank">$value</a>"""
         private fun googleLink(value: String, highlighted: String) =
-            htmlLink(highlighted, "https://developer.android.com/s/results/?q=${value.substringBefore('@')}")
+            htmlLink(
+                highlighted,
+                "https://developer.android.com/s/results/?q=${value.substringBefore('@').substringBefore('{')}"
+            )
 
         private fun span(css: String, value: String, highlighted: String): String {
             return """<span class="$css">$highlighted</span>"""
