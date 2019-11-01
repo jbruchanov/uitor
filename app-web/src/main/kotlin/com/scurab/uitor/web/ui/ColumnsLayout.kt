@@ -4,7 +4,6 @@ import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.addMouseDoubleClickListener
 import com.scurab.uitor.web.common.addMouseDownListener
-import com.scurab.uitor.web.ui.ColumnsLayout.Companion.UNKNOWNGAP
 import com.scurab.uitor.web.util.DocumentWrapper
 import com.scurab.uitor.web.util.forEachIndexed
 import com.scurab.uitor.web.util.getElementByClass
@@ -27,9 +26,9 @@ private const val CLASS_SEPARATOR = "split-table-separator"
 private const val CLASS_SEPARATOR_DISABLED = "split-table-separator-disabled"
 private const val CLASS_COLUMN = "split-table-column"
 private const val GRID_TEMPLATE_COLUMNS = "grid-template-columns"
+const val SEPARATOR_WIDTH = 5.0//define in css
 
 //TODO:handle window resizing (doesn't change width of columns)
-//TODO:what is this
 class ColumnsLayout(
     private val delegate: IColumnsLayoutDelegate,
     val columns: Int = 3
@@ -101,10 +100,6 @@ class ColumnsLayout(
     fun setGridTemplateColumns(value: String) {
         element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, value)
     }
-
-    companion object {
-        const val UNKNOWNGAP = 4
-    }
 }
 
 interface IColumnsLayoutDelegate {
@@ -137,7 +132,7 @@ private class ResizableColumnsFeature(
                 draggingIndex = draggingElement?.let { it.parentElement?.children?.indexOf(it) } ?: -1
                 dlog(TAG) { "MouseDown x:$downX draggingIndex:$draggingIndex elem:$draggingElement" }
             }
-            
+
             sep.addMouseDoubleClickListener { de ->
                 val draggingElement = de.target as? Element
                 val draggingIndex = draggingElement?.let { it.parentElement?.children?.indexOf(it) } ?: -1
@@ -189,7 +184,7 @@ private class ResizableColumnsFeature(
         val sum = sizes.asList().subList(1, sizes.size - 1).sum()
         sizes[sizes.size - 1] = widthEstimator.invoke(sizes.size - 1)
         sizes[sizes.size - 3] = widthEstimator.invoke(sizes.size - 3)
-        sizes[0] += (sum - sizes.asList().subList(1, sizes.size - 1).sum() - UNKNOWNGAP)
+        sizes[0] += (sum - sizes.asList().subList(1, sizes.size - 1).sum())
         sizes.dispatchSizes()
     }
 

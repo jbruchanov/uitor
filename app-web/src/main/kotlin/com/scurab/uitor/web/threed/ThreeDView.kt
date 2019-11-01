@@ -8,9 +8,7 @@ import com.scurab.uitor.common.util.vlog
 import com.scurab.uitor.web.common.addMouseClickListener
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.ViewNode
-import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.HtmlView
-import com.scurab.uitor.web.util.SCROLL_BAR_WIDTH
 import com.scurab.uitor.web.util.obj
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -19,22 +17,13 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.events.Event
 import org.w3c.dom.events.MouseEvent
-import threejs.BoxBufferGeometry
-import threejs.GridHelper
-import threejs.Mesh
-import threejs.MeshBasicMaterial
-import threejs.PerspectiveCamera
-import threejs.Raycaster
-import threejs.Scene
-import threejs.TrackballControls
-import threejs.Vector2
-import threejs.WebGLRenderer
+import threejs.*
 import kotlin.browser.window
 
 //stop rendering with no events in 5s
 private const val RENDER_PAUSE_TIMEOUT = 5000L
+const val UNKNOWN_GAP = 4
 
 class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     private val TAG = "ThreeD"
@@ -45,15 +34,18 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     private lateinit var scene: Scene
     private lateinit var controls: TrackballControls
     private lateinit var pauseRenderingChannel: Channel<Boolean>
+    private lateinit var resizeWindowChannel: Channel<Unit>
     private val rayCaster = Raycaster()
     private val mouse = Vector2(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
     private var pointingObject: ViewNode3D? = null
     private var pausedRendering = false
+    var renderAreaSizeProvider: () -> Pair<Double, Double> = {
+        Pair(window.innerWidth.toDouble(), window.innerHeight.toDouble())
+    }
 
-    private val resizeAction = { e: Event ->
-        val size = element.ref.getBoundingClientRect()
-        dlog("SIZE") {"${size.width.r2}x${size.height.r2}"}
-        dispatchContainerSizeChanged(size.width, window.innerHeight.toDouble())
+    private val resizeWindowAction = {
+        val (width, height) = renderAreaSizeProvider()
+        dispatchContainerSizeChanged(width, height)
     }
 
     private val requestAnimationFrameAction: () -> Unit = { window.requestAnimationFrame(renderAction) }
@@ -68,10 +60,9 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
 
     private val mouseMoveAction = { event: MouseEvent ->
         resetRenderingPause()
-        //TODO, check this
-        //mouse.x = (event.clientX / window.innerWidth.toDouble()) * 2 - 1
-        mouse.x = (event.clientX / element.ref.getBoundingClientRect().width.toDouble()) * 2 - 1
-        mouse.y = 1 - 2 * (event.clientY / window.innerHeight.toDouble())
+        val (w, h) = renderAreaSizeProvider()
+        mouse.x = (event.clientX / w) * 2 - 1
+        mouse.y = 1 - 2 * (event.clientY / h)
         dlog(TAG) { "MouseMove:${mouse.d}" }
     }
 
@@ -82,7 +73,6 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     override fun onAttached() {
         super.onAttached()
         initControls()
-        document.addWindowResizeListener(resizeAction)
         document.addMouseMoveListener(mouseMoveAction)
         requestAnimationFrameAction()
         viewModel.rootNode.observe {
@@ -98,6 +88,18 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
             }
         }
 
+        resizeWindowChannel = Channel<Unit>().also { channel ->
+            document.addWindowResizeListener {
+                channel.offer(Unit)
+            }
+
+            GlobalScope.launch {
+                channel.consumeAsFlow().debounce(1000).collect {
+                    resizeWindowAction()
+                }
+            }
+        }
+
         element.ref.addMouseClickListener {
             pointingObject?.let {
 //                val node = pickNodeForNotification(viewModel.selectedNode.item, it.viewNode)
@@ -108,9 +110,11 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     }
 
     fun dispatchContainerSizeChanged(width: Double, height: Double) {
+        val height = height - UNKNOWN_GAP//looks like necessary, unclear why 4px
+        dlog(TAG) { "dispatchContainerSizeChanged:${width.r2}x${height.r2}" }
         camera.aspect = width / height
         camera.updateProjectionMatrix()
-        renderer.setSize(width, height - ColumnsLayout.UNKNOWNGAP)
+        renderer.setSize(width, height)
     }
 
     private fun resetRenderingPause() {
@@ -125,6 +129,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     override fun onDetached() {
         controls.dispose()
         pauseRenderingChannel.cancel()
+        resizeWindowChannel.cancel()
         super.onDetached()
     }
 
@@ -141,15 +146,15 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
         renderer = WebGLRenderer(obj {
             antialias = true
         })
-        renderer.setSize(window.innerWidth, window.innerHeight)
         element = renderer.domElement
-
         camera = PerspectiveCamera(
             50,
             window.innerWidth / window.innerHeight.toDouble(),
             1,
             1000000
         )
+        resizeWindowAction()
+
         camera.position.apply {
             x = 3000.0
             y = 1500.0

@@ -9,13 +9,18 @@ import org.w3c.dom.HTMLElement
 import kotlin.browser.window
 import kotlin.math.roundToInt
 
+private const val CSS_CANVAS_CONTAINER = "threed-canvas-container"
 class ThreeDPage(pageViewModel: PageViewModel) : BaseViewPropertiesPage(pageViewModel) {
 
     override var contentElement: HTMLElement? = null; private set
-    private val threeDView = ThreeDView(viewModel)
+    private val threeDView = ThreeDView(viewModel).apply {
+        renderAreaSizeProvider = {
+            Pair(getColumnWidth(0), windowHeight)
+        }
+    }
 
     override fun buildContent() {
-        contentElement = document.create.div()
+        contentElement = document.create.div(classes = CSS_CANVAS_CONTAINER)
         threeDView.buildContent()
         super.buildContent()
     }
@@ -36,6 +41,8 @@ class ThreeDPage(pageViewModel: PageViewModel) : BaseViewPropertiesPage(pageView
     }
 
     override fun onColumnsResize(sizes: DoubleArray) {
-        threeDView.dispatchContainerSizeChanged(sizes[0], window.innerHeight.toDouble())
+        threeDView.dispatchContainerSizeChanged(sizes[0], windowHeight)
     }
+
+    private val windowHeight get() = window.innerHeight.toDouble()
 }
