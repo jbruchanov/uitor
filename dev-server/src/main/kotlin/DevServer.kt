@@ -86,6 +86,7 @@ class DevServer(
 
                 static {
                     files(File("app-web/src/test/resources/v1"))
+                    files(File("app-web/src/main/resources"))
                     files(File("app-web"))
                 }
 
