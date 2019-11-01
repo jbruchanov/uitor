@@ -33,7 +33,10 @@ class DocumentWrapper(document: Document = window.document) {
     private fun addEventListener(event: Events, param: HtmlEventListener) {
         val set = listeners.getOrPut(event) { mutableSetOf() }
         set.add(param)
-        document.addEventListener(event.name, param)
+        when (event) {
+            Events.resize -> window.addEventListener(event.name, param)
+            else -> document.addEventListener(event.name, param)
+        }
     }
 
     fun addMouseLeaveListener(callback: (MouseEvent) -> Unit) {
@@ -56,9 +59,9 @@ class DocumentWrapper(document: Document = window.document) {
         return document.requireElementsByClass(clazz)
     }
 
-    fun addWindowResizeListener(callback: (Event) -> Unit) =
-        window.addEventListener(Events.resize.name, callback)
-
+    fun addWindowResizeListener(callback: (Event) -> Unit) {
+        addEventListener(Events.resize) { event -> callback(event) }
+    }
 
     fun getElementById(id: String): Element? {
         return document.getElementById(id)
