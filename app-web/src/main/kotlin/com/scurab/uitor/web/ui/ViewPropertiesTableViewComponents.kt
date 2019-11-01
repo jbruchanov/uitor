@@ -20,8 +20,8 @@ import kotlinx.html.a
 import kotlinx.html.span
 import kotlinx.html.unsafe
 
-private const val HTML_BOLD_START = "<b>"
-private const val HTML_BOLD_END = "</b>"
+internal const val HTML_BOLD_START = "<b>"
+internal const val HTML_BOLD_END = "</b>"
 const val CSS_PROPERTIES_COLOR = "ui-table-view-properties-color"
 private const val CSS_PROPERTIES_VALUE = "ui-table-view-properties-value"
 
@@ -60,7 +60,7 @@ private class ViewPropertiesTableViewRenderer(
     clientConfig: ClientConfig
 ) : ITableViewRenderer<String> {
     private val propertyHighlights = clientConfig.propertyHighlights
-
+    private val valueRender = ViewPropertiesValueCellRenderer()
     override val header: (TH.(IRenderingContext<String>, String?) -> Unit) = { _, value -> span { text(value ?: "") } }
     override val footer: (TH.(IRenderingContext<String>, String?) -> Unit)? = { _, value -> span { text(value ?: "") } }
 
@@ -95,7 +95,7 @@ private class ViewPropertiesTableViewRenderer(
             }
             INDEX_VALUE -> {
                 span(classes = CSS_PROPERTIES_VALUE) {
-                    unsafe { raw(value.highlightAt(filter, HTML_BOLD_START, HTML_BOLD_END)) }
+                    unsafe { +valueRender.renderValue(key, value, filter) }
                 }
             }
         }

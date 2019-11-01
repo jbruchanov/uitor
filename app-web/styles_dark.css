@@ -11,6 +11,10 @@
     --line-color: #676767;
     --link-color: #4682B4;
     --font-color: #BABABA;
+    --font-code-keyword: #CB772F;
+    --font-code-static-value: #9876AA;
+    --font-code-highlight: #9876AA;
+    --font-code-number: #6897BB;
     --filter-highlight-color: #b44038;
     --font-size: 10pt;
     --font-size-small: 8pt;
@@ -328,3 +332,19 @@ tr.tree-odd {
 }
 
 /*endregion tree node */
+
+.view-property-code-keyword {
+    color: var(--font-code-keyword);
+}
+
+.view-property-code-static-value {
+    color: var(--font-code-static-value);
+}
+
+.view-property-code-highlight {
+    color: var(--font-code-highlight);
+}
+
+.view-property-code-number {
+    color: var(--font-code-number);
+}
