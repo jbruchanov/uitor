@@ -79,7 +79,10 @@ input {
 .canvas-container {
     cursor: crosshair;
     padding: 5px;
+}
 
+.threed-canvas-container {
+    background-color: #000000;
 }
 
 .canvas-container canvas {
