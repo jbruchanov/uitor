@@ -10,6 +10,7 @@ import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.obj
+import com.scurab.uitor.web.util.pickNodeForNotification
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
@@ -54,7 +55,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
             requestAnimationFrameAction()
             renderer.render(scene, camera)
             controls.asDynamic().update()
-            raycastObjects()
+            raycast()
         }
     }
 
@@ -101,11 +102,10 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
         }
 
         element.ref.addMouseClickListener {
-            pointingObject?.let {
-//                val node = pickNodeForNotification(viewModel.selectedNode.item, it.viewNode)
-                viewModel.selectedNode.post(it.viewNode)
-//                resetRenderingPause()
-            }
+            val n = findObject()?.viewNode
+            val node = pickNodeForNotification(viewModel.selectedNode.item, n)
+            viewModel.selectedNode.post(node)
+            resetRenderingPause()
         }
     }
 
@@ -189,18 +189,24 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
         }
     }
 
-    private fun raycastObjects() {
-        rayCaster.setFromCamera(mouse, camera)
-        val intersectObjects = rayCaster.intersectObjects(scene.children)
-        val item = intersectObjects.firstOrNull()?.item
-        val n = ViewNode3D.fromObject(item)
+    private fun raycast() {
+        val n = findObject()
         if (pointingObject != n) {
             pointingObject?.setSelected(false)
             pointingObject = n
             pointingObject?.setSelected(true)
             vlog(TAG) { "Pointing at:ViewNode=${n?.viewNode?.position}" }
         }
+    }
+
+    private fun findObject(mouse: Vector2 = this.mouse): ViewNode3D? {
+        rayCaster.setFromCamera(mouse, camera)
+        val intersectObjects = rayCaster.intersectObjects(scene.children)
+        val item = intersectObjects.firstOrNull()?.item
+        val n = ViewNode3D.fromObject(item)
+
         dlog(TAG) { "raycastObjects:${mouse.d}, children:${scene.children.size} found:${item?.name}" }
+        return n
     }
 
     private fun debugAddOriginBox(scene: Scene) {
