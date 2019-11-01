@@ -348,3 +348,21 @@ tr.tree-odd {
 .view-property-code-number {
     color: var(--font-code-number);
 }
+
+.transparent {
+    background: url(transparent.png) fixed;
+}
+
+.view-property-color-preview-parent {
+    background: url(transparent.png) fixed;
+    display: inline-block;
+    vertical-align: bottom;
+    margin-left: 5px
+}
+.view-property-color-preview {
+    display: block;
+    position: relative;
+    height: 12px;
+    width: 12px;
+    border: solid var(--line-color) var(--properties-color-border-width);
+}

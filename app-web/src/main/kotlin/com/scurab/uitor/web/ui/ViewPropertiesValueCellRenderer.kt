@@ -1,5 +1,6 @@
 package com.scurab.uitor.web.ui
 
+import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.highlightAt
 import com.scurab.uitor.common.util.isUppercase
 
@@ -24,7 +25,7 @@ class ViewPropertiesValueCellRenderer {
 
     companion object {
         val renders = mapOf<String, Renderer>(
-            "Inheritance" to { k, v, h -> h.replace(">", "&gt;<br/>") },
+            "Inheritance" to { k, v, h -> h.replace(" >", " &gt;<br/>") },
             "Context" to { k, v, h -> span(CSS_HIGHLIGHT, v, h) },
             "Owner" to { k, v, h -> span(CSS_HIGHLIGHT, v, h) },
             "IDs" to { k, v, h -> span(CSS_HIGHLIGHT, v, h) }
@@ -35,13 +36,15 @@ class ViewPropertiesValueCellRenderer {
                 isKeyword(v) -> span(CSS_KEYWORD, v, h)
                 isStaticValue(v) -> span(CSS_STATIC_VALUE, v, h)
                 isNumber(v) -> span(CSS_NUMBER, v, h)
-                else -> v
+                isColor(v) -> color(v, h)
+                else -> h
             }
         }
 
         private fun isKeyword(value: String): Boolean = codeValues.binarySearch(value) >= 0
         private fun isStaticValue(value: String): Boolean = value.first().isUppercase() && value.last().isUppercase()
         private fun isNumber(value: String): Boolean = value.toDoubleOrNull()?.isFinite() == true
+        private fun isColor(value: String): Boolean = value.startsWith("#") && value.length in (4..9)
         private fun htmlLink(value: String, url: String): String = """<a href="$url" target="_blank">$value</a>"""
         private fun googleLink(value: String, highlighted: String) =
             htmlLink(
@@ -51,6 +54,13 @@ class ViewPropertiesValueCellRenderer {
 
         private fun span(css: String, value: String, highlighted: String): String {
             return """<span class="$css">$highlighted</span>"""
+        }
+
+        private fun color(value: String, highlighted: String): String {
+            val color = value.toColor()
+            return """<div>${highlighted}<span class="view-property-color-preview-parent">
+                <span class="view-property-color-preview" style="background: ${color.htmlRGBA};">&nbsp;</span>
+                </span></div>""".trimIndent()
         }
     }
 }
