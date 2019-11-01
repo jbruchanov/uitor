@@ -3,12 +3,17 @@ package com.scurab.dev.server
 import java.io.File
 
 fun main() {
+    val osName = System.getProperty("os.name")
+    val gradle = when {
+        osName.contains("windows", ignoreCase = true) -> "gradlew.bat"
+        else -> "./gradlew"
+    }
     DevServer(
         arrayOf(
             File("app-web/src"),
             File("common/src/commonMain")
         ),
-        "gradlew.bat app-web:_createIndexHtml",
+        "$gradle app-web:_createIndexHtml",
         "127.0.0.1:8081"
     ).start()
 }
