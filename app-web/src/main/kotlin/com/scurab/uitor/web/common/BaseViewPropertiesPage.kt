@@ -23,9 +23,9 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
     private val columnsLayoutDelegate = object : IColumnsLayoutDelegate {
         override val innerContentWidthEstimator: (Int) -> Double = { column -> getColumnWidth(column) }
     }
-
-    protected val columnsLayout = ColumnsLayout(columnsLayoutDelegate, COLUMN_COUNT)
     private var expandViewPropsColumn = true
+    private val viewPropertiesWidth = max(VIEW_PROPS_WIDTH, window.innerWidth / 4.0)
+    protected val columnsLayout = ColumnsLayout(columnsLayoutDelegate, COLUMN_COUNT)
 
     override fun onAttachToRoot(rootElement: Element) {
         super.onAttachToRoot(rootElement)
@@ -46,7 +46,7 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
             viewPropertiesTableView.viewNode = it
             if (expandViewPropsColumn) {
                 expandViewPropsColumn = false
-                columnsLayout.setGridTemplateColumns("1fr 5px ${VIEW_PROPS_WIDTH}px")
+                columnsLayout.setGridTemplateColumns("1fr 5px ${viewPropertiesWidth}px")
                 onColumnsResize(doubleArrayOf(getColumnWidth(0), SEPARATOR_WIDTH, getColumnWidth(1)))
             }
         }
@@ -61,7 +61,7 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
 
     protected fun getColumnWidth(column: Int): Double {
         val windowWidth = window.innerWidth
-        val w = if (viewModel.selectedNode.item != null) VIEW_PROPS_WIDTH else 0.0
+        val w = if (viewModel.selectedNode.item != null) viewPropertiesWidth else 0.0
         val expWidth = if (column == 0) windowWidth - w else w
         val separatorWidths = ((COLUMN_COUNT - 1) * SEPARATOR_WIDTH)
         return max(0.0, expWidth - separatorWidths)

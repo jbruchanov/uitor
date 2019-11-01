@@ -110,10 +110,10 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     }
 
     fun dispatchContainerSizeChanged(width: Double, height: Double) {
-        val height = height - UNKNOWN_GAP//looks like necessary, unclear why 4px
         dlog(TAG) { "dispatchContainerSizeChanged:${width.r2}x${height.r2}" }
         camera.aspect = width / height
         camera.updateProjectionMatrix()
+        val height = height - UNKNOWN_GAP//looks like necessary, unclear why 4px
         renderer.setSize(width, height)
     }
 

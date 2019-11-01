@@ -100,6 +100,10 @@ class ColumnsLayout(
     fun setGridTemplateColumns(value: String) {
         element.ref.style.setProperty(GRID_TEMPLATE_COLUMNS, value)
     }
+
+    fun getColumnWidth(column: Int): Double {
+        return resizableColumnsFeature.getColumnWidth(column)
+    }
 }
 
 interface IColumnsLayoutDelegate {
@@ -200,6 +204,11 @@ private class ResizableColumnsFeature(
                 sizes[i] = el.getBoundingClientRect().width
             }
         }
+    }
+
+    fun getColumnWidth(column: Int): Double {
+        refreshColumnsSizes(splitTableView.element.ref.firstElementChild)
+        return sizes[2 * column]//middle separators offset
     }
 
     private fun resizeColumnsDoubleClick(draggingIndex: Int, desiredWidth: Double, sizes: DoubleArray = this.sizes) {

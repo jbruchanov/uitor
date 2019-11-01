@@ -31,6 +31,7 @@ class ThreeDPage(pageViewModel: PageViewModel) : BaseViewPropertiesPage(pageView
     }
 
     override fun onAttached() {
+        //to enable that, needs fix when changing the props width (raycasting broken)
         columnsLayout.isDraggingEnabled = false
         super.onAttached()
     }
