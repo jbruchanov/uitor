@@ -30,6 +30,7 @@ import org.w3c.dom.Image
 import org.w3c.dom.events.MouseEvent
 import kotlin.browser.window
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
@@ -43,6 +44,7 @@ private const val SCALE_MIN = 0.1
 
 private typealias Point = Pair<Double, Double>
 
+private const val HEIGHT_OFFSET = 45.0//status bar
 class CanvasView(
     private val inspectorViewModel: InspectorViewModel
 ) : HtmlView() {
@@ -150,20 +152,14 @@ class CanvasView(
 
     //region scale
     private fun scaleToFit(): Double {
-        var scale = 1.0
         val imageWidth = image.width
         val imageHeight = image.height
         val windowHeight = window.innerHeight
-        val maxH = windowHeight - 45
-        if (imageWidth > imageHeight) {
-            val maxW = element.ref.getBoundingClientRect().width
-            scale = maxW / imageWidth
-            scale = max(SCALE_MIN / 100, scale)
-        } else if (imageHeight > maxH) {
-            scale = maxH / imageHeight.toDouble()
-            scale = max(SCALE_MIN / 100, scale)
-        }
-        return scale
+        val maxH = windowHeight - HEIGHT_OFFSET
+        val maxW = element.ref.getBoundingClientRect().width
+        val scaleW = max(SCALE_MIN / 100, maxW / imageWidth)
+        val scaleH = max(SCALE_MIN / 100, maxH / imageHeight)
+        return min(scaleW, scaleH)
     }
 
     private fun onScaleChange(sign: Int) {
