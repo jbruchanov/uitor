@@ -235,6 +235,19 @@ tr.tree-odd {
 
 .ui-table-view th {
     padding: 3px 10px;
+    width: 100%;
+}
+
+.ui-table-view td {
+    width: 100%;
+}
+
+.ui-table-view tr {
+    display: flex;
+}
+
+.ui-table-view thead {
+    display: block;
 }
 
 .ui-table-view thead tr:hover {
@@ -431,4 +444,29 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
     font-family: var(--font-family);
     margin: 10px;
     font-size: var(--font-size-large);
+}
+
+#resources-items-table {
+    display: block;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+
+.resources-item-content {
+    color: var(--font-color);
+    font-family: var(--font-family);
+    padding: 10px;
+    font-size: var(--font-size);
+    height: calc(100vh - 20px);
+    display: block;
+    overflow: auto;
+}
+
+.resources-item-property-preview {
+    border:solid var(--background) thin;
+}
+
+.resources-item-property-preview:HOVER {
+    /*border:solid var(--font-code-keyword) 2px;*/
 }
