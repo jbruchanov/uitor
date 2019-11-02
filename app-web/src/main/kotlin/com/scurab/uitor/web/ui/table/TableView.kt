@@ -6,7 +6,6 @@ import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
@@ -30,15 +29,6 @@ import kotlinx.html.tr
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import kotlin.dom.clear
-
-private const val CSS_TABLE_VIEW = "ui-table-view"
-private const val CSS_TABLE_VIEW_FILTER = "ui-table-view-filter"
-private const val CSS_TABLE_VIEW_FILTER_INPUT = "ui-table-view-filter-input"
-private const val CSS_TABLE_VIEW_HEADER = "ui-table-view-header"
-private const val CSS_TABLE_VIEW_FOOTER = "ui-table-view-footer"
-private const val CSS_TABLE_VIEW_ROW_ODD = "ui-table-view-row-odd"
-private const val CSS_TABLE_VIEW_ROW_EVEN = "ui-table-view-row-even"
-private const val ID_TABLE_CONTAINER = "ui-table-view-container"
 
 private class RenderingContext<V>(
     override var column: Int = 0,
@@ -96,9 +86,10 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
         filterChannel.close()
     }
 
-    protected open fun refreshContent() {
+    open fun refreshContent() {
         tableViewContainer.ref.clear()
         document.create.table(classes = CSS_TABLE_VIEW) {
+            delegate.elementId?.let { id = it }
             header()
             body()
             footer()
@@ -137,7 +128,7 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
                                 renderingContext(filterValue, Int.MIN_VALUE, col),
                                 delegate.data.headerCell(col)
                             )
-                            onClickFunction = { onHeaderClick(col) }
+                            onClickFunction = { if (delegate.enableSorting) onHeaderClick(col) }
                         }
                     }
                 }
@@ -185,6 +176,17 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
             this.filter = filter
             set(row, column)
         }
+    }
+
+    companion object {
+        const val CSS_TABLE_VIEW = "ui-table-view"
+        const val CSS_TABLE_VIEW_FILTER = "ui-table-view-filter"
+        const val CSS_TABLE_VIEW_FILTER_INPUT = "ui-table-view-filter-input"
+        const val CSS_TABLE_VIEW_HEADER = "ui-table-view-header"
+        const val CSS_TABLE_VIEW_FOOTER = "ui-table-view-footer"
+        const val CSS_TABLE_VIEW_ROW_ODD = "ui-table-view-row-odd"
+        const val CSS_TABLE_VIEW_ROW_EVEN = "ui-table-view-row-even"
+        const val ID_TABLE_CONTAINER = "ui-table-view-container"
     }
 }
 

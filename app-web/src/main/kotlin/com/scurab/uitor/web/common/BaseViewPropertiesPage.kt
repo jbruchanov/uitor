@@ -21,7 +21,7 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
 
     private var viewPropertiesTableView = ViewPropertiesTableView(
         viewModel.clientConfig,
-        TableViewDelegate.default(viewModel.clientConfig),
+        TableViewDelegate.defaultViewProperties(viewModel.clientConfig),
         viewModel.screenIndex
     )
     private val columnsLayoutDelegate = object : IColumnsLayoutDelegate {

@@ -22,7 +22,7 @@ open class TableData<T : Comparable<T>> constructor(
     }
 
     override val rows: Int get() = elements.size
-    override val columns: Int = elements.firstOrNull()?.size ?: 0
+    override val columns: Int = elements.firstOrNull()?.size ?: headers.size
     override fun headerCell(column: Int): String? = headers.getOrNull(column)
     override fun cell(row: Int, column: Int): T = elements[row][column]
     override fun footerCell(column: Int): String? = footers.getOrNull(column)

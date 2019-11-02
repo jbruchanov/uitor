@@ -8,6 +8,7 @@ import com.scurab.uitor.web.common.ServerApi
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
+import com.scurab.uitor.web.resources.ResourcesPage
 import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
 import com.scurab.uitor.web.util.removeAll
@@ -54,6 +55,7 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
                 createButton("Layout Inspector") { LayoutInspectorPage(PageViewModel(selectedScreenIndex)) }
                 createButton("3D Inspector") { ThreeDPage(PageViewModel(selectedScreenIndex)) }
                 createButton("View Hierarchy") { TidyTreePage(PageViewModel(selectedScreenIndex)) }
+                createButton("Resources") { ResourcesPage(PageViewModel(selectedScreenIndex)) }
             }
         }
     }
