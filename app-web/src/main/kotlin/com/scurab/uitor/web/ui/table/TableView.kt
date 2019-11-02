@@ -28,7 +28,9 @@ import kotlinx.html.thead
 import kotlinx.html.tr
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
+import kotlin.dom.addClass
 import kotlin.dom.clear
+import kotlin.dom.removeClass
 
 private class RenderingContext<V>(
     override var column: Int = 0,
@@ -52,11 +54,12 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
     private var filterChannel = ConflatedBroadcastChannel("")
     private val invalidRow = InvalidRow<V>()
     private val renderingContext = RenderingContext<V>()
+    private var selectedElement: HTMLElement? = null
 
     override fun buildContent() {
         _element = document.create.div {
             div {
-                if (delegate.enableFilter) {
+                if (delegate.filtering) {
                     table(classes = CSS_TABLE_VIEW_FILTER) {
                         tr { td { filterInput() } }
                     }
@@ -128,7 +131,7 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
                                 renderingContext(filterValue, Int.MIN_VALUE, col),
                                 delegate.data.headerCell(col)
                             )
-                            onClickFunction = { if (delegate.enableSorting) onHeaderClick(col) }
+                            onClickFunction = { if (delegate.sorting) onHeaderClick(col) }
                         }
                     }
                 }
@@ -147,6 +150,7 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
                             renderingContext(filterValue, row, col),
                             delegate.data.cell(row, col)
                         )
+                        onClickFunction = { ev -> onRowClick(ev.target as HTMLElement) }
                     }
                 }
             }
@@ -178,6 +182,14 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
         }
     }
 
+    private fun onRowClick(element: HTMLElement) {
+        if (delegate.selecting) {
+            selectedElement?.removeClass(CSS_TABLE_VIEW_ROW_SELECTED)
+            element.addClass(CSS_TABLE_VIEW_ROW_SELECTED)
+            selectedElement = element
+        }
+    }
+
     companion object {
         const val CSS_TABLE_VIEW = "ui-table-view"
         const val CSS_TABLE_VIEW_FILTER = "ui-table-view-filter"
@@ -186,6 +198,7 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
         const val CSS_TABLE_VIEW_FOOTER = "ui-table-view-footer"
         const val CSS_TABLE_VIEW_ROW_ODD = "ui-table-view-row-odd"
         const val CSS_TABLE_VIEW_ROW_EVEN = "ui-table-view-row-even"
+        const val CSS_TABLE_VIEW_ROW_SELECTED = "ui-table-view-row-selected"
         const val ID_TABLE_CONTAINER = "ui-table-view-container"
     }
 }

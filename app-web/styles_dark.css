@@ -165,7 +165,7 @@ tr.tree-odd {
     background-color: var(--odd-background);
 }
 
-.tree-selected {
+.tree-selected, .ui-table-view-row-selected {
     background-color: var(--selected-background);
 }
 

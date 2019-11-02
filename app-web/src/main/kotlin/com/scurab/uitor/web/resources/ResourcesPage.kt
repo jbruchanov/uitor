@@ -120,8 +120,9 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
     private fun tableViewDelegate(id: String, clickAction: (String) -> Unit): TableViewDelegate<String> {
         return TableViewDelegate(TableData.empty(), tableRenderer(clickAction)).apply {
             elementId = id
-            enableSorting = false
-            enableFilter = false
+            sorting = false
+            filtering = false
+            selecting = true
         }
     }
 
