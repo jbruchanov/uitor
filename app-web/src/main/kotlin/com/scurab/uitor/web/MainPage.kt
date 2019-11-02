@@ -51,8 +51,8 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
             }
             table {
                 style = "margin-left:auto;margin-right:auto;"
-                createButton("LayoutInspector") { LayoutInspectorPage(PageViewModel(selectedScreenIndex)) }
-                createButton("3D Preview") { ThreeDPage(PageViewModel(selectedScreenIndex)) }
+                createButton("Layout Inspector") { LayoutInspectorPage(PageViewModel(selectedScreenIndex)) }
+                createButton("3D Inspector") { ThreeDPage(PageViewModel(selectedScreenIndex)) }
                 createButton("View Hierarchy") { TidyTreePage(PageViewModel(selectedScreenIndex)) }
             }
         }
