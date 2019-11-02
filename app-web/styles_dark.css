@@ -19,7 +19,7 @@
     --font-size-large: 14pt;
     --font-size: 10pt;
     --font-size-small: 8pt;
-    --font-family: /*"Lucida Console", Monaco,*/ monospace, sans-serif;
+    --font-family: monospace, sans-serif, "Lucida Console", Monaco;
 
     --properties-color-border-width: 0.5pt;
     --tree-node-fill: var(--background);
