@@ -7,7 +7,7 @@ import com.scurab.uitor.web.common.InspectorPage
 import com.scurab.uitor.web.common.ViewPropertiesTableView
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.model.ViewNode
-import com.scurab.uitor.web.model.isIgnoring
+import com.scurab.uitor.web.model.isIgnored
 import com.scurab.uitor.web.ui.CSS_PROPERTIES_COLOR
 import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
@@ -116,9 +116,7 @@ class LayoutInspectorPage(
         colorName.innerText = (color?.htmlRGB ?: "")
         viewName.innerText = "ID:" + (viewNode?.ids ?: "")
         ignoreCheckBox.disabled = viewModel.selectedNode.item == null
-        ignoreCheckBox.checked = viewNode?.let {
-            viewModel.ignoringViewNodeIdsOrPositions.isIgnoring(it)
-        } ?: false
+        ignoreCheckBox.checked = viewNode?.isIgnored(viewModel.ignoringViewNodeIdsOrPositions) ?: false
     }
 
     private fun onSkipClicked(value: Boolean) {

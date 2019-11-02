@@ -16,7 +16,7 @@ import com.scurab.uitor.web.common.addMouseWheelListener
 import com.scurab.uitor.web.drawCross
 import com.scurab.uitor.web.drawRectangle
 import com.scurab.uitor.web.model.ViewNode
-import com.scurab.uitor.web.model.toggleIgnoring
+import com.scurab.uitor.web.model.toggleIgnored
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.LoadImageHandler
 import com.scurab.uitor.web.util.pickNodeForNotification
@@ -101,7 +101,7 @@ class CanvasView(
             }
             addMouseClickListener(MOUSE_MIDDLE) {
                 it.offsetPoint.viewNode()?.let { vn ->
-                    val ignored = inspectorViewModel.ignoringViewNodeIdsOrPositions.toggleIgnoring(vn)
+                    val ignored = vn.toggleIgnored(inspectorViewModel.ignoringViewNodeIdsOrPositions)
                     inspectorViewModel.ignoredViewNodeChanged.post(Pair(vn, ignored))
                     //simulate like we moved => triggers all the events again to refresh listeners
                     mouseMoveAction(it.offsetPoint)

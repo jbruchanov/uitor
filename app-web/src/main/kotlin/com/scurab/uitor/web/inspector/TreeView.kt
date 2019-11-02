@@ -5,8 +5,8 @@ import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.MOUSE_MIDDLE
 import com.scurab.uitor.web.model.ViewNode
-import com.scurab.uitor.web.model.isIgnoring
-import com.scurab.uitor.web.model.toggleIgnoring
+import com.scurab.uitor.web.model.isIgnored
+import com.scurab.uitor.web.model.toggleIgnored
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.pickNodeForNotification
 import com.scurab.uitor.web.util.requireElementById
@@ -183,7 +183,7 @@ class TreeView(
         if (ev.button == MOUSE_MIDDLE) {
             ev.preventDefault()
             tableRowToViewNodeMap[ev.viewNodeId]?.let { vn ->
-                val ignored = inspectorViewModel.ignoringViewNodeIdsOrPositions.toggleIgnoring(vn)
+                val ignored = vn.toggleIgnored(inspectorViewModel.ignoringViewNodeIdsOrPositions)
                 inspectorViewModel.ignoredViewNodeChanged.post(Pair(vn, ignored))
             }
         }
@@ -192,7 +192,7 @@ class TreeView(
 
     private fun ViewNode.typeNameClasses(): String {
         var classes = CSS_TREE_CLASS_NAME
-        if (inspectorViewModel.ignoringViewNodeIdsOrPositions.isIgnoring(this)) {
+        if (isIgnored(inspectorViewModel.ignoringViewNodeIdsOrPositions)) {
             classes += " $CSS_TREE_CLASS_NAME_IGNORED"
         }
         return classes
