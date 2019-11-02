@@ -446,7 +446,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
     function mousedown( event ) {
 
-        if ( _this.enabled === false ) return;
+        if (_this.enabled === false || event.button === 3/*back*/) return;
 
         event.preventDefault();
         event.stopPropagation();
