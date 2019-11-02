@@ -14,6 +14,7 @@ import com.scurab.uitor.web.ui.table.IRenderingContext
 import com.scurab.uitor.web.ui.table.ITableViewRenderer
 import com.scurab.uitor.web.util.styleAttributes
 import com.scurab.uitor.web.util.styleBackgroundColor
+import com.scurab.uitor.web.util.toPropertyHighlightColor
 import kotlinx.html.TD
 import kotlinx.html.TH
 import kotlinx.html.a
@@ -57,7 +58,7 @@ object ViewPropertiesTableViewComponents {
 }
 
 private class ViewPropertiesTableViewRenderer(
-    clientConfig: ClientConfig
+    private val clientConfig: ClientConfig
 ) : ITableViewRenderer<String> {
     private val propertyHighlights = clientConfig.propertyHighlights
     private val valueRender = ViewPropertiesValueCellRenderer()
@@ -73,7 +74,7 @@ private class ViewPropertiesTableViewRenderer(
         val keyRaw = rowData[INDEX_KEY]
         val key = rowData[INDEX_KEY].substringBefore(":")
         when (column) {
-            INDEX_COLOR -> key.toPropertyHighlightColor()
+            INDEX_COLOR -> key.toPropertyHighlightColor(clientConfig.propertyHighlights)
                 ?.let {
                     span(classes = CSS_PROPERTIES_COLOR) {
                         styleAttributes = it.styleBackgroundColor()
@@ -99,15 +100,5 @@ private class ViewPropertiesTableViewRenderer(
                 }
             }
         }
-    }
-
-    private fun String.toPropertyHighlightColor(): Color? {
-        val v = this.toLowerCase()
-        propertyHighlights.forEach { (r, c) ->
-            if (r.matches(v)) {
-                return c
-            }
-        }
-        return null
     }
 }
