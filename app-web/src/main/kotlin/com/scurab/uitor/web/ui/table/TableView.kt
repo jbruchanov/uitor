@@ -82,7 +82,7 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
     override fun onAttached() {
         super.onAttached()
         filterChannel = ConflatedBroadcastChannel("")
-        GlobalScope.launch {
+        launch {
             filterChannel.asFlow().debounce(200).collect {
                 delegate.data.filter(it)
                 filterValue = it

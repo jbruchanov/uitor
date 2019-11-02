@@ -59,7 +59,7 @@ class MainPage : Page() {
     override fun stateDescription(): String? = null
 
     private fun reloadScreens() {
-        GlobalScope.launch {
+        launch {
             screensSelect.disabled = true
             screensSelect.options.removeAll()
             val activeScreens = serverApi.activeScreens()

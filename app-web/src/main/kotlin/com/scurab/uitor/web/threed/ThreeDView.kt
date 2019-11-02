@@ -81,7 +81,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
         }
 
         pauseRenderingChannel = Channel<Boolean>().also { channel ->
-            GlobalScope.launch {
+            launch {
                 channel.consumeAsFlow().debounce(RENDER_PAUSE_TIMEOUT).collect {
                     vlog(TAG) { "Rendering Paused" }
                     pausedRendering = true
@@ -94,7 +94,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
                 channel.offer(Unit)
             }
 
-            GlobalScope.launch {
+            launch {
                 channel.consumeAsFlow().debounce(1000).collect {
                     resizeWindowAction()
                 }

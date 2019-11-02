@@ -149,7 +149,7 @@ class LayoutInspectorPage(
                 updateStatusBar(null, viewModel.selectedNode.item ?: it.first)
             }
         }
-        GlobalScope.launch {
+        launch {
             canvasView.loadImage(viewModel.screenPreviewUrl)
         }
     }

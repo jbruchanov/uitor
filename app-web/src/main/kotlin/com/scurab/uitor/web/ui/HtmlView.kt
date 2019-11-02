@@ -5,13 +5,20 @@ import com.scurab.uitor.common.util.IObservable
 import com.scurab.uitor.common.util.Observable
 import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.web.util.DocumentWrapper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import kotlin.browser.window
+import kotlin.coroutines.CoroutineContext
 import kotlin.dom.clear
 
-abstract class HtmlView : HasLifecycle {
+abstract class HtmlView : HasLifecycle, CoroutineScope {
     abstract val element: HTMLElement?
+
+    private val coroutineJob = Job()
+    final override val coroutineContext: CoroutineContext = (Dispatchers.Main + coroutineJob)
 
     @Suppress("MemberVisibilityCanBePrivate")
     protected var parentElement: Element? = null
@@ -50,6 +57,7 @@ abstract class HtmlView : HasLifecycle {
 
 
     open fun onDetached() {
+        coroutineJob.cancel()
         //let subclass to do something
     }
 

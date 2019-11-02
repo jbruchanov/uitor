@@ -1,5 +1,7 @@
 package com.scurab.uitor.common.util
 
-interface HasLifecycle {
+import kotlinx.coroutines.CoroutineScope
+
+interface HasLifecycle : CoroutineScope {
     val onDetachObservable: Observable<HasLifecycle>
 }

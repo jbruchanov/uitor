@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 abstract class InspectorPage(protected val viewModel: InspectorViewModel) : Page() {
 
     init {
-        GlobalScope.launch {
+        launch {
             try {
                 viewModel.load()
             } catch (e: Exception) {
