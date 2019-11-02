@@ -19,7 +19,11 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
 
     abstract val contentElement: HTMLElement?
 
-    private var viewPropertiesTableView = ViewPropertiesTableView(TableViewDelegate.default(viewModel.clientConfig), viewModel.screenIndex)
+    private var viewPropertiesTableView = ViewPropertiesTableView(
+        viewModel.clientConfig,
+        TableViewDelegate.default(viewModel.clientConfig),
+        viewModel.screenIndex
+    )
     private val columnsLayoutDelegate = object : IColumnsLayoutDelegate {
         override val innerContentWidthEstimator: (Int) -> Double = { column -> getColumnWidth(column) }
     }

@@ -1,5 +1,6 @@
 package com.scurab.uitor.web.common
 
+import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
 import com.scurab.uitor.web.ui.table.IRenderingContext
@@ -7,6 +8,7 @@ import com.scurab.uitor.web.ui.table.ITableViewDelegate
 import com.scurab.uitor.web.ui.table.Row
 import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableView
+import com.scurab.uitor.web.util.toPropertyHighlightColor
 import kotlin.dom.clear
 
 class PropertiesViewRenderingContext : IRenderingContext<String> {
@@ -19,6 +21,7 @@ class PropertiesViewRenderingContext : IRenderingContext<String> {
 }
 
 class ViewPropertiesTableView(
+    private val clientConfig: ClientConfig,
     private val delegate: ITableViewDelegate<String>,
     private val screenIndex: Int
 ) : TableView<String>(delegate) {
@@ -28,12 +31,18 @@ class ViewPropertiesTableView(
         set(value) {
             field = value
             delegate.data = TableData(
-                arrayOf("", "Name", "Value"),
+                arrayOf("T", "Name", "Value"),
                 value?.data
                     ?.entries
                     ?.filter { it.value != null }
                     ?.sortedBy { ViewNode.orderKey(it.key) }
-                    ?.map { entry -> arrayOf("", entry.key, entry.value.toString()) } ?: emptyList()
+                    ?.map { entry ->
+                        arrayOf(
+                            entry.key.toPropertyHighlightColor(clientConfig.propertyHighlights)?.htmlRGB ?: "",
+                            entry.key,
+                            entry.value.toString()
+                        )
+                    } ?: emptyList()
             ).apply {
                 filterAction = ViewPropertiesTableViewComponents.filterAction
                 if (value != null) {

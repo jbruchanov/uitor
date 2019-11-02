@@ -90,7 +90,7 @@ class LayoutInspectorPage(
         }
         canvasView = CanvasView(viewModel)
         treeView = TreeView(viewModel)
-        propertiesView = ViewPropertiesTableView(tableViewDelegate, viewModel.screenIndex)
+        propertiesView = ViewPropertiesTableView(viewModel.clientConfig, tableViewDelegate, viewModel.screenIndex)
     }
 
     override fun onAttachToRoot(rootElement: Element) {
