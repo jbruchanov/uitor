@@ -58,7 +58,8 @@ class ViewPropertiesValueCellRenderer {
 
         private fun color(value: String, highlighted: String): String {
             val color = value.toColor()
-            return """<div>${highlighted}<span class="view-property-color-preview-parent">
+            val value = span(CSS_STATIC_VALUE, value, highlighted)
+            return """<div>$value<span class="view-property-color-preview-parent">
                 <span class="view-property-color-preview" style="background: ${color.htmlRGBA};">&nbsp;</span>
                 </span></div>""".trimIndent()
         }
