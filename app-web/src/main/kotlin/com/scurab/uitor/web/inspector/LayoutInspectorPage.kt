@@ -12,6 +12,7 @@ import com.scurab.uitor.web.ui.CSS_PROPERTIES_COLOR
 import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
+import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableViewDelegate
 import com.scurab.uitor.web.util.SCROLL_BAR_WIDTH
@@ -149,7 +150,7 @@ class LayoutInspectorPage(
                 updateStatusBar(null, viewModel.selectedNode.item ?: it.first)
             }
         }
-        launch {
+        launchWithProgressBar {
             canvasView.loadImage(viewModel.screenPreviewUrl)
         }
     }

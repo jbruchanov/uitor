@@ -10,6 +10,7 @@
     --props-header-titles: calc(100% - 5px);
     --line-color: #676767;
     --link-color: #4682B4;
+    --link-color: #4682B4;
     --font-color: #BABABA;
     --font-code-keyword: #CB772F;
     --font-code-static-value: #9876AA;
@@ -365,4 +366,21 @@ tr.tree-odd {
     height: 12px;
     width: 12px;
     border: solid var(--line-color) var(--properties-color-border-width);
+}
+
+.window-progress-bar {
+    position: absolute;
+    margin: auto;
+    right: 0;
+    left: 0;
+    width: 43px;
+    height: 11px;
+    z-index: 9999999;
+}
+
+.window-progress-bar img {
+    position: fixed;
+    top: 100px;
+    /*https://codepen.io/sosuke/pen/Pjoqqp*/
+    filter: invert(85%) sepia(0%) saturate(1851%) hue-rotate(359deg) brightness(117%) contrast(107%);
 }

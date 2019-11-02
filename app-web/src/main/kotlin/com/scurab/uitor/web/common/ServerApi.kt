@@ -3,6 +3,7 @@ package com.scurab.uitor.web.common
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.ViewNode
 import kotlinx.coroutines.asDeferred
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import kotlin.browser.window
 import kotlin.js.Json
