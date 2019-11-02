@@ -47,7 +47,7 @@ object App {
             "TidyTreePage" -> TidyTreePage(PageViewModel(screenIndex, clientConfig, serverApi))
             "LayoutInspectorPage" -> LayoutInspectorPage(PageViewModel(screenIndex, clientConfig, serverApi))
             "ThreeDPage" -> ThreeDPage(PageViewModel(screenIndex, clientConfig, serverApi))
-            else -> MainPage()
+            else -> MainPage(clientConfig)
         }
         Navigation.open(page)
     }

@@ -20,4 +20,11 @@ class ClientConfig(private val json: Json) {
 
     val typeHighlights = json.getMap(ConfigFields.TypeHighlights)
         .map({ it }, { it.toString().toColor() })
+
+    val deviceInfo: String by lazy {
+        val man = device["MANUFACTURER"]?.toString() ?: ""
+        val model = device["MODEL"]?.toString() ?: ""
+        val api = device["API"]?.toString()?.toIntOrNull()?.let { "API:$it" } ?: ""
+        arrayOf(man, model, api).filter { it.isNotEmpty() }.joinToString(" ")
+    }
 }

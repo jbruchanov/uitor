@@ -16,6 +16,7 @@
     --font-code-highlight: #9876AA;
     --font-code-number: #6897BB;
     --filter-highlight-color: #b44038;
+    --font-size-large: 14pt;
     --font-size: 10pt;
     --font-size-small: 8pt;
     --font-family: /*"Lucida Console", Monaco,*/ monospace, sans-serif;
@@ -423,4 +424,11 @@ button:active, select:hover {
 }
 button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disabled), [type="submit"]:not(:disabled) {
     cursor: pointer;
+}
+
+.main-screen-device-info {
+    color: var(--font-color);
+    font-family: var(--font-family);
+    margin: 10px;
+    font-size: var(--font-size-large);
 }

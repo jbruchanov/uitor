@@ -6,6 +6,7 @@ import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.common.ServerApi
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
+import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
@@ -27,8 +28,9 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSelectElement
 
 private const val ID_SCREEN_INDEX = "main-screen-index"
+private const val DEVICE_INFO = "main-screen-device-info"
 
-class MainPage : Page() {
+class MainPage(private val clientConfig: ClientConfig) : Page() {
 
     override var element: HTMLElement? = null
         private set
@@ -41,6 +43,9 @@ class MainPage : Page() {
     override fun buildContent() {
         element = document.create.div {
             style = "text-align: center; padding:10px;"
+            div(classes = DEVICE_INFO) {
+                text(clientConfig.deviceInfo)
+            }
             select {
                 id = ID_SCREEN_INDEX
             }
