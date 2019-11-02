@@ -103,8 +103,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
 
         element.ref.addMouseClickListener {
             val n = findObject()?.viewNode
-            val node = pickNodeForNotification(viewModel.selectedNode.item, n)
-            viewModel.selectedNode.post(node)
+            viewModel.selectedNode.post(n)
             resetRenderingPause()
         }
     }
