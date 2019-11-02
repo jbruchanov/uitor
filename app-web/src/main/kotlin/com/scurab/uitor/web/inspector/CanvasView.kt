@@ -7,14 +7,14 @@ import com.scurab.uitor.common.render.relativeToScale
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
-import com.scurab.uitor.web.clear
+import com.scurab.uitor.web.util.clear
 import com.scurab.uitor.web.common.MOUSE_MIDDLE
 import com.scurab.uitor.web.common.addMouseClickListener
 import com.scurab.uitor.web.common.addMouseMoveListener
 import com.scurab.uitor.web.common.addMouseOutListener
 import com.scurab.uitor.web.common.addMouseWheelListener
-import com.scurab.uitor.web.drawCross
-import com.scurab.uitor.web.drawRectangle
+import com.scurab.uitor.web.util.drawCross
+import com.scurab.uitor.web.util.drawRectangle
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.model.toggleIgnored
 import com.scurab.uitor.web.ui.HtmlView

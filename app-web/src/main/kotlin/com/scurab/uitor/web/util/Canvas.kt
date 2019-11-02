@@ -1,4 +1,4 @@
-package com.scurab.uitor.web
+package com.scurab.uitor.web.util
 
 import com.scurab.uitor.common.render.IRectangleRenderContext
 import com.scurab.uitor.common.render.Rect
