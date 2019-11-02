@@ -1,6 +1,5 @@
 package com.scurab.uitor.web.ui
 
-import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.highlightAt
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.matchingIndexes
@@ -49,6 +48,8 @@ object ViewPropertiesTableViewComponents {
                 }
             } ?: elements
         }
+
+    val sortingMapper: (String) -> String = { it.toLowerCase() }
 
     fun columnRenderer(
         clientConfig: ClientConfig

@@ -7,7 +7,14 @@ open class TableData<T : Comparable<T>> constructor(
 ) : ITableData<T> {
 
     private var elements: List<Array<T>> = initElements
+    /**
+     * Specific sorting action
+     */
     var filterAction: IFilterAction<T> = stringContainsFilterAction()
+    /**
+     * Convert value during sorting to something else
+     */
+    var sortingMapper: (T) -> T = { it }
 
     init {
         val sizes = elements.groupBy { it.size }
@@ -22,11 +29,11 @@ open class TableData<T : Comparable<T>> constructor(
     override fun row(row: Int): Row<T> = ArrayRow(elements[row])
 
     override fun sortedBy(column: Int) {
-        elements = sortingKeys(column).sortedBy { it.first }.sortedResult()
+        elements = sortingKeys(column).sortedBy { sortingMapper(it.first) }.sortedResult()
     }
 
     override fun sortedByDescending(column: Int) {
-        elements = sortingKeys(column).sortedByDescending { it.first }.sortedResult()
+        elements = sortingKeys(column).sortedByDescending { sortingMapper(it.first) }.sortedResult()
     }
 
     override fun filter(key: String?) {

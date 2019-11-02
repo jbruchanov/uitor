@@ -45,6 +45,7 @@ class ViewPropertiesTableView(
                     } ?: emptyList()
             ).apply {
                 filterAction = ViewPropertiesTableViewComponents.filterAction
+                sortingMapper = ViewPropertiesTableViewComponents.sortingMapper
                 if (value != null) {
                     filter(filterValue)
                 }
