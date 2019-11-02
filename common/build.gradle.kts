@@ -15,11 +15,14 @@ kotlin {
         browser {}
     }
 
+    val coroutinesVersion = "1.3.2"
+
 
     sourceSets {
         commonMain {
             dependencies {
                 implementation(kotlin("stdlib-common"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutinesVersion")
             }
         }
         commonTest {
@@ -44,6 +47,7 @@ kotlin {
         named("jsMain") {
             dependencies {
                 implementation(kotlin("stdlib-js"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$coroutinesVersion")
             }
         }
         named("jsTest") {
