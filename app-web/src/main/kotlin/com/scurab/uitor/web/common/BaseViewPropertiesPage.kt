@@ -50,7 +50,7 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
             viewPropertiesTableView.viewNode = it
             if (expandViewPropsColumn) {
                 expandViewPropsColumn = false
-                columnsLayout.setGridTemplateColumns("1fr 5px ${viewPropertiesWidth}px")
+                columnsLayout.setGridTemplateColumns("1fr ${SEPARATOR_WIDTH}px ${viewPropertiesWidth}px")
                 onColumnsResize(doubleArrayOf(getColumnWidth(0), SEPARATOR_WIDTH, getColumnWidth(1)))
             }
         }
