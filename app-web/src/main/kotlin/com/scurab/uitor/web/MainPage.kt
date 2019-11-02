@@ -11,8 +11,8 @@ import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
 import com.scurab.uitor.web.util.removeAll
 import com.scurab.uitor.web.util.requireElementById
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.html.BUTTON
 import kotlinx.html.TABLE
 import kotlinx.html.button
 import kotlinx.html.div
@@ -20,11 +20,13 @@ import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.option
 import kotlinx.html.select
+import kotlinx.html.style
 import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.tr
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSelectElement
+import org.w3c.dom.css.StyleSheet
 
 private const val ID_SCREEN_INDEX = "main-screen-index"
 
@@ -40,10 +42,10 @@ class MainPage : Page() {
 
     override fun buildContent() {
         element = document.create.div {
+            select {
+                id = ID_SCREEN_INDEX
+            }
             table {
-                select {
-                    id = ID_SCREEN_INDEX
-                }
                 createButton("LayoutInspector") { LayoutInspectorPage(PageViewModel(selectedScreenIndex)) }
                 createButton("3D Preview") { ThreeDPage(PageViewModel(selectedScreenIndex)) }
                 createButton("View Hierarchy") { TidyTreePage(PageViewModel(selectedScreenIndex)) }
@@ -75,6 +77,7 @@ class MainPage : Page() {
         tr {
             td {
                 button {
+                    style = "width:100%"
                     text(title)
                     onClickFunction = {
                         try {
