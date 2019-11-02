@@ -102,8 +102,10 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
         }
 
         element.ref.addMouseClickListener {
-            val n = findObject()?.viewNode
-            viewModel.selectedNode.post(n)
+            findObject()?.viewNode?.let {
+                //ignore clicking outside, just keep selected the last one
+                viewModel.selectedNode.post(it)
+            }
             resetRenderingPause()
         }
     }
