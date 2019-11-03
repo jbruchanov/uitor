@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.resources
 
 import com.scurab.uitor.common.render.toColor
+import com.scurab.uitor.web.model.IResourceItem
 import com.scurab.uitor.web.model.ResourceItem
 import kotlinx.html.DIV
 import kotlinx.html.div
@@ -18,7 +19,7 @@ private const val CSS_PRETTY_PRINT_NONE = "prettyprint prettyprinted"
 
 class ResourcesContentGenerator {
 
-    fun buildContent(item: ResourceItem): HTMLElement {
+    fun buildFullDescriptionContent(item: ResourceItem): HTMLElement {
         return document.create.div(classes = CSS_RESOURCES) {
             div { text("ID:${item.id}") }
             div { text("Name:${item.name}") }
@@ -29,8 +30,15 @@ class ResourcesContentGenerator {
         }
     }
 
-    private fun DIV.buildDataContent(item: ResourceItem) {
+    fun buildContent(item: IResourceItem): HTMLElement {
+        return document.create.div(classes = CSS_RESOURCES) {
+            buildDataContent(item)
+        }
+    }
+
+    private fun DIV.buildDataContent(item: IResourceItem) {
         when (item.dataType) {
+            null -> {/*nothing*/}
             "xml" -> pre(classes = CSS_PRETTY_PRINT) { text(item.dataString()) }
             "string", "boolean", "number", "int" -> pre(classes = CSS_PRETTY_PRINT_NONE) { text(item.dataString()) }
             "string[]", "int[]" -> {
@@ -47,7 +55,7 @@ class ResourcesContentGenerator {
         }
     }
 
-    private fun DIV.color(item: ResourceItem) {
+    private fun DIV.color(item: IResourceItem) {
         val c = item.dataString()
         val color = c.toColor()
         div { text(c) }
@@ -59,7 +67,7 @@ class ResourcesContentGenerator {
         }
     }
 
-    private fun DIV.image(item: ResourceItem) {
+    private fun DIV.image(item: IResourceItem) {
         div {
             div { text(item.context ?: "") }
             img(classes = "transparent resources-item-property-preview") {

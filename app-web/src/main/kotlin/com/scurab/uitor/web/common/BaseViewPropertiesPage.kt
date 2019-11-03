@@ -78,8 +78,8 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
     }
 
     companion object {
-        private fun defaultViewProperties(clientConfig: ClientConfig) = TableViewDelegate(
-            ViewPropertiesTableViewComponents.columnRenderer(clientConfig)
+        fun defaultViewProperties(clientConfig: ClientConfig) = TableViewDelegate(
+            ViewPropertiesTableViewComponents.columnRenderer(clientConfig, true)
         ).apply {
             sorting = true
             filtering = true

@@ -5,6 +5,7 @@ import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.matchingIndexes
 import com.scurab.uitor.common.util.npe
+import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.PropertiesViewRenderingContext
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_COLOR
@@ -35,7 +36,7 @@ object ViewPropertiesTableViewComponents {
     /**
      * Filter data based on smart property filter and property value contains
      */
-    val filterAction: ((filter: String?, elements: List<ViewNodePropertyTableItem>) -> List<ViewNodePropertyTableItem>) =
+    val filterAction: ((filter: String?, elements: List<IViewPropertyTableItem>) -> List<IViewPropertyTableItem>) =
         { filter, elements ->
             filter?.let {
                 elements.filter { item ->
@@ -53,18 +54,22 @@ object ViewPropertiesTableViewComponents {
 
     val sortingMapper: (Any) -> String = { it.toString().toLowerCase() }
 
-    fun columnRenderer(
-        clientConfig: ClientConfig
-    ): ITableViewRenderer<ViewNodePropertyTableItem> {
-        return ViewPropertiesTableViewRenderer(clientConfig)
+    fun columnRenderer(clientConfig: ClientConfig, considerLinks: Boolean): ITableViewRenderer<IViewPropertyTableItem> {
+        return ViewPropertiesTableViewRenderer(clientConfig, considerLinks)
     }
 }
 
-class ViewNodePropertyTableItem(
-    val color: String,
-    val name: String,
+interface IViewPropertyTableItem : ITableDataItem {
+    val color: String
+    val name: String
     val value: String
-) : ITableDataItem {
+}
+
+class ViewNodePropertyTableItem(
+    override val color: String,
+    override val name: String,
+    override val value: String
+) : IViewPropertyTableItem {
     override val tableColumns: Int = 3
     override fun get(column: Int): Any {
         return when (column) {
@@ -76,17 +81,16 @@ class ViewNodePropertyTableItem(
     }
 }
 
-private class ViewPropertiesTableViewRenderer(clientConfig: ClientConfig) : ITableViewRenderer<ViewNodePropertyTableItem> {
+private class ViewPropertiesTableViewRenderer(clientConfig: ClientConfig, private val considerLinks: Boolean) :
+    ITableViewRenderer<IViewPropertyTableItem> {
     private val propertyHighlights = clientConfig.propertyHighlights
     private val valueRender = ViewPropertiesValueCellRenderer()
-    override val header: (TH.(IRenderingContext<ViewNodePropertyTableItem>, String?) -> Unit) = { _, value -> span { text(value ?: "") } }
-    override val footer: (TH.(IRenderingContext<ViewNodePropertyTableItem>, String?) -> Unit)? = { _, value -> span { text(value ?: "") } }
+    override val header: (TH.(IRenderingContext<IViewPropertyTableItem>, String?) -> Unit) = { _, value -> span { text(value ?: "") } }
+    override val footer: (TH.(IRenderingContext<IViewPropertyTableItem>, String?) -> Unit)? = { _, value -> span { text(value ?: "") } }
 
     @Suppress("NAME_SHADOWING")
-    override val cell: TD.(IRenderingContext<ViewNodePropertyTableItem>, Any) -> Unit = { context, value ->
+    override val cell: TD.(IRenderingContext<IViewPropertyTableItem>, Any) -> Unit = { context, value ->
         val (_, _, row, column) = context
-        val context =
-            context as? PropertiesViewRenderingContext ?: ise("rendering context is not PropertiesViewRenderingContext")
         val item = context.item ?: npe("Item hasn't been set for Cell[$row, $column]")
         val filter = context.filter ?: ""
         val keyRaw = item.name
@@ -101,10 +105,17 @@ private class ViewPropertiesTableViewRenderer(clientConfig: ClientConfig) : ITab
             INDEX_KEY -> {
                 val link = keyRaw.endsWith(":")
                 val matchingIndexes = key.matchingIndexes(filter)
-                if (link) {
+                if (considerLinks && link) {
+                    val context =
+                        context as? PropertiesViewRenderingContext ?: ise("rendering context is not PropertiesViewRenderingContext")
                     val position = context.viewNode?.position ?: npe("viewNode has to be set!")
                     val screenIndex = context.screenIndex
-                    val url = "#ViewProperty?property=$key&screenIndex=${screenIndex}&position=${position}"
+                    val url = Navigation.buildUrl(
+                        "ViewPropertyPage",
+                        "property" to key,
+                        "screenIndex" to screenIndex,
+                        "position" to position
+                    )
                     a(href = url, target = "_blank") {
                         span { unsafe { raw(key.highlightAt(matchingIndexes, HTML_BOLD_START, HTML_BOLD_END)) } }
                     }

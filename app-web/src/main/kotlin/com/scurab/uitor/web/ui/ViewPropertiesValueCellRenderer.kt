@@ -42,7 +42,8 @@ class ViewPropertiesValueCellRenderer {
         }
 
         private fun isKeyword(value: String): Boolean = codeValues.binarySearch(value) >= 0
-        private fun isStaticValue(value: String): Boolean = value.first().isUppercase() && value.last().isUppercase()
+        private fun isStaticValue(value: String): Boolean =
+            value.length >= 2 && value.first().isUppercase() && value.last().isUppercase()
         private fun isNumber(value: String): Boolean = value.toDoubleOrNull()?.isFinite() == true
         private fun isColor(value: String): Boolean = value.startsWith("#") && value.length in (4..9)
         private fun htmlLink(value: String, url: String): String = """<a href="$url" target="_blank">$value</a>"""

@@ -60,7 +60,7 @@ class LayoutInspectorPage(
 
     override var element: HTMLElement? = null; private set
     private val tableViewDelegate = TableViewDelegate(
-        render = ViewPropertiesTableViewComponents.columnRenderer(pageViewModel.clientConfig)
+        render = ViewPropertiesTableViewComponents.columnRenderer(pageViewModel.clientConfig, true)
     ).apply {
         sorting = true
         filtering = true
