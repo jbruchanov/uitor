@@ -235,19 +235,6 @@ tr.tree-odd {
 
 .ui-table-view th {
     padding: 3px 10px;
-    width: 100%;
-}
-
-.ui-table-view td {
-    width: 100%;
-}
-
-.ui-table-view tr {
-    display: flex;
-}
-
-.ui-table-view thead {
-    display: block;
 }
 
 .ui-table-view thead tr:hover {
@@ -446,10 +433,12 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
     font-size: var(--font-size-large);
 }
 
+/*region resources*/
 #resources-items-table {
     display: block;
     height: 100vh;
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 
@@ -470,3 +459,26 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
 .resources-item-property-preview:HOVER {
     /*border:solid var(--font-code-keyword) 2px;*/
 }
+
+
+#resources-groups-container .ui-table-view th,
+#resources-items-container .ui-table-view th {
+     padding: 3px 10px;
+     width: 100%;
+ }
+
+#resources-groups-container .ui-table-view th,
+#resources-items-container .ui-table-view tr {
+    display: flex;
+}
+
+#resources-groups-container .ui-table-view th,
+#resources-items-container .ui-table-view thead {
+    display: block;
+}
+
+#resources-groups-container .ui-table-view th,
+#resources-items-container .ui-table-view td {
+    width: 100%;
+}
+/*endregion resources*/
