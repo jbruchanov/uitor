@@ -146,7 +146,7 @@ open class TableView<T : ITableDataItem>(
                             renderingContext(filterValue, data.rowItem(row), row, col),
                             data.cell(row, col)
                         )
-                        onClickFunction = { ev -> onRowClick(ev.target as HTMLElement) }
+                        onClickFunction = { ev -> onRowClick(ev.target as HTMLElement, row, col) }
                     }
                 }
             }
@@ -178,12 +178,13 @@ open class TableView<T : ITableDataItem>(
         }
     }
 
-    private fun onRowClick(element: HTMLElement) {
+    private fun onRowClick(element: HTMLElement, row: Int, col: Int) {
         if (delegate.selecting) {
             selectedElement?.removeClass(CSS_TABLE_VIEW_ROW_SELECTED)
             element.addClass(CSS_TABLE_VIEW_ROW_SELECTED)
             selectedElement = element
         }
+        delegate.cellClickListener?.invoke(data.rowItem(row), row, col)
     }
 
     companion object {

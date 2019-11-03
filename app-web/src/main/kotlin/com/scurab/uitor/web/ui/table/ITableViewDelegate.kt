@@ -28,6 +28,11 @@ interface ITableViewDelegate<T> {
      * Enable selection mode
      */
     var selecting: Boolean
+
+    /**
+     * Default cellClickListener
+     */
+    var cellClickListener: ((item: T, row: Int, column: Int) -> Unit)?
 }
 
 /**
@@ -42,4 +47,5 @@ open class TableViewDelegate<T>(
     override var selecting: Boolean = false
     override var filterDebounce: Int = 200
     override var elementId: String? = null
+    override var cellClickListener: ((item: T, row: Int, column: Int) -> Unit)? = null
 }
