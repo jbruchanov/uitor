@@ -52,4 +52,20 @@ object Navigation {
         val state = stateDescription()?.let { "${HashToken.DELIMITER}$it" } ?: ""
         return "${HashToken.HASH}${pageId}$state"
     }
+
+
+    fun buildUrl(page: String, vararg keyvalue: Pair<String, Any>): String {
+        return StringBuilder()
+            .append(HashToken.HASH)
+            .append(page)
+            .apply {
+                keyvalue.forEach { (key, value) ->
+                    append(HashToken.DELIMITER)
+                    append(key)
+                    append("=")
+                    append(value)
+                }
+            }
+            .toString()
+    }
 }

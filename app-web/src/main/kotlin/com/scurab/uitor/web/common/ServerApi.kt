@@ -5,6 +5,7 @@ import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.FSItem
 import com.scurab.uitor.web.model.ResourceItem
 import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.model.ViewPropertyItem
 import com.scurab.uitor.web.util.keys
 import com.scurab.uitor.web.util.requireTypedListOf
 import kotlinx.coroutines.asDeferred
@@ -52,6 +53,19 @@ class ServerApi {
     suspend fun loadFileStorage(path: String = ""): List<FSItem> {
         val items = load<Array<Json>>("storage.json?path=$path")
         return items.map { FSItem(it) }
+    }
+
+    suspend fun loadViewProperty(screenIndex: Int, position: Int, property: String): ViewPropertyItem {
+        val json = load<Json>(viewPropertyUrl(screenIndex, position, property))
+        return ViewPropertyItem(json)
+    }
+
+    fun viewPropertyUrl(screenIndex: Int, position: Int, property: String, maxDepth: Int = 0): String {
+        var url = "viewproperty.json?screenIndex=$screenIndex&position=$position&property=$property"
+        if (maxDepth > 0) {
+            url += "&maxDepth=$maxDepth"
+        }
+        return url
     }
 
     private suspend fun <T> load(url: String, timeOut: Long = 2000): T {

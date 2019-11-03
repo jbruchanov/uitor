@@ -4,9 +4,9 @@ import com.scurab.uitor.common.util.usingKey
 
 class HashToken(private val token: String) {
     val pageId: String
-    private val args = mutableMapOf<String, String>()
-    val type: String? by args.usingKey(TYPE) { null }
-    val screenIndex: String? by args.usingKey(SCREEN_INDEX) { null }
+    val arguments = mutableMapOf<String, String>()
+    val type: String? by arguments.usingKey(TYPE) { null }
+    val screenIndex: String? by arguments.usingKey(SCREEN_INDEX) { null }
 
     init {
         val value = token.substringAfter(HASH, "")
@@ -15,18 +15,18 @@ class HashToken(private val token: String) {
         for (i in (1 until items.size)) {
             val arg = items[i].split(KEY_VALUE_DELIMITER)
             if (arg.size == 2) {
-                args[arg[0]] = arg[1]
+                arguments[arg[0]] = arg[1]
             }
         }
     }
 
     fun append(key: String, value: String): HashToken {
-        args[key] = value
+        arguments[key] = value
         return this
     }
 
     override fun toString(): String {
-        val args = args.entries.joinToString(separator = DELIMITER) { (k, v) -> "$k$KEY_VALUE_DELIMITER${v}" }
+        val args = arguments.entries.joinToString(separator = DELIMITER) { (k, v) -> "$k$KEY_VALUE_DELIMITER${v}" }
         return "$HASH${pageId}" + args.takeIf { it.isNotEmpty() }?.let { DELIMITER + it } ?: ""
     }
 

@@ -1,11 +1,14 @@
 package com.scurab.uitor.web
 
 import com.scurab.uitor.common.util.elog
+import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.ServerApi
 import com.scurab.uitor.web.filebrowser.FileBrowserPage
+import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
+import com.scurab.uitor.web.inspector.ViewPropertyPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.resources.ResourcesPage
@@ -44,12 +47,18 @@ object App {
     fun openPageBaseOnUrl() {
         val token = HashToken(window.location.hash)
         val screenIndex = token.screenIndex?.toInt() ?: 0
+        val pageViewModel = PageViewModel(screenIndex, clientConfig, serverApi)
         val page = when (token.pageId) {
-            "TidyTreePage" -> TidyTreePage(PageViewModel(screenIndex, clientConfig, serverApi))
-            "LayoutInspectorPage" -> LayoutInspectorPage(PageViewModel(screenIndex, clientConfig, serverApi))
-            "ThreeDPage" -> ThreeDPage(PageViewModel(screenIndex, clientConfig, serverApi))
-            "ResourcesPage" -> ResourcesPage(PageViewModel(screenIndex, clientConfig, serverApi))
-            "FileBrowserPage" -> FileBrowserPage(PageViewModel(screenIndex, clientConfig, serverApi))
+            "TidyTreePage" -> TidyTreePage(pageViewModel)
+            "LayoutInspectorPage" -> LayoutInspectorPage(pageViewModel)
+            "ThreeDPage" -> ThreeDPage(pageViewModel)
+            "ResourcesPage" -> ResourcesPage(pageViewModel)
+            "FileBrowserPage" -> FileBrowserPage(pageViewModel)
+            "ViewPropertyPage" -> {
+                val position = token.arguments["position"]?.toIntOrNull() ?: iae("Missing 'position' arg")
+                val property = token.arguments["property"] ?: iae("Missing 'property' arg")
+                ViewPropertyPage(position, property, InspectorViewModel(pageViewModel))
+            }
             else -> MainPage(clientConfig)
         }
         Navigation.open(page)

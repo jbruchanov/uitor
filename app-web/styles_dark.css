@@ -498,5 +498,14 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
     padding: 5px;
 }
 
-
 /*endregion file browser*/
+
+#view-property-container {
+    display: grid;
+    grid-template-columns: 700px 1fr;
+    overflow: auto;
+}
+
+#view-property-container .resources-item-content {
+    height: auto;
+}
