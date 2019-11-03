@@ -48,9 +48,9 @@ object PageProgressBar : HtmlView() {
     }
 }
 
-fun CoroutineScope.launchWithProgressBar(delay: Long = DEFAULT_DELAY, block: suspend CoroutineScope.() -> Unit) {
+fun CoroutineScope.launchWithProgressBar(delay: Long = DEFAULT_DELAY, block: suspend CoroutineScope.() -> Unit): Job {
     PageProgressBar.show(delay)
-    this.launch { block(this) }.invokeOnCompletion {
-        PageProgressBar.hide()
-    }
+    val job = launch(block = block)
+    job.invokeOnCompletion { PageProgressBar.hide() }
+    return job
 }

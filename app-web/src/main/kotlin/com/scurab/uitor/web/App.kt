@@ -1,5 +1,6 @@
 package com.scurab.uitor.web
 
+import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.ServerApi
@@ -13,7 +14,6 @@ import com.scurab.uitor.web.ui.PageProgressBar
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.util.HashToken
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlin.browser.document
 import kotlin.browser.window
 
@@ -29,15 +29,14 @@ object App {
         document.body.ref.firstElementChild.ref.let {
             PageProgressBar.attachTo(it)
         }
-        try {
-            GlobalScope.launch {
-                launchWithProgressBar {
-                    clientConfig = serverApi.clientConfiguration()
-                    openPageBaseOnUrl()
-                }
+        GlobalScope.launchWithProgressBar {
+            try {
+                clientConfig = serverApi.clientConfiguration()
+                openPageBaseOnUrl()
+            } catch (e: Throwable) {
+                window.alert("Unable to load client configuration")
+                elog("App") { e.message ?: "Null message" }
             }
-        } catch (e: Throwable) {
-            window.alert("Unable to load client configuration\n${e.message}")
         }
     }
 
