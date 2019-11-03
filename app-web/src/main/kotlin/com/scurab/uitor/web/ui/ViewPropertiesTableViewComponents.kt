@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.ui
 
 import com.scurab.uitor.common.util.highlightAt
+import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.matchingIndexes
 import com.scurab.uitor.common.util.npe
@@ -10,6 +11,7 @@ import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_COLOR
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_KEY
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_VALUE
 import com.scurab.uitor.web.ui.table.IRenderingContext
+import com.scurab.uitor.web.ui.table.ITableDataItem
 import com.scurab.uitor.web.ui.table.ITableViewRenderer
 import com.scurab.uitor.web.util.styleAttributes
 import com.scurab.uitor.web.util.styleBackgroundColor
@@ -33,12 +35,12 @@ object ViewPropertiesTableViewComponents {
     /**
      * Filter data based on smart property filter and property value contains
      */
-    val filterAction: ((filter: String?, elements: List<Array<String>>) -> List<Array<String>>) =
+    val filterAction: ((filter: String?, elements: List<ViewNodePropertyTableItem>) -> List<ViewNodePropertyTableItem>) =
         { filter, elements ->
             filter?.let {
-                elements.filter { cols ->
-                    val key = cols[INDEX_KEY].substringBefore(":")
-                    val value = cols[INDEX_VALUE]
+                elements.filter { item ->
+                    val key = item.name.substringBefore(":")
+                    val value = item.value
 
                     val matchingIndexes = key.matchingIndexes(filter)
                     val matchingFilter = (filter.isEmpty()
@@ -49,31 +51,46 @@ object ViewPropertiesTableViewComponents {
             } ?: elements
         }
 
-    val sortingMapper: (String) -> String = { it.toLowerCase() }
+    val sortingMapper: (Any) -> String = { it.toString().toLowerCase() }
 
     fun columnRenderer(
         clientConfig: ClientConfig
-    ): ITableViewRenderer<String> {
+    ): ITableViewRenderer<ViewNodePropertyTableItem> {
         return ViewPropertiesTableViewRenderer(clientConfig)
     }
 }
 
-private class ViewPropertiesTableViewRenderer(
-    private val clientConfig: ClientConfig
-) : ITableViewRenderer<String> {
+class ViewNodePropertyTableItem(
+    val color: String,
+    val name: String,
+    val value: String
+) : ITableDataItem {
+    override val tableColumns: Int = 3
+    override fun get(column: Int): Any {
+        return when (column) {
+            0 -> color
+            1 -> name
+            2 -> value
+            else -> iae("Invalid column:${column}, this object represents only $tableColumns")
+        }
+    }
+}
+
+private class ViewPropertiesTableViewRenderer(clientConfig: ClientConfig) : ITableViewRenderer<ViewNodePropertyTableItem> {
     private val propertyHighlights = clientConfig.propertyHighlights
     private val valueRender = ViewPropertiesValueCellRenderer()
-    override val header: (TH.(IRenderingContext<String>, String?) -> Unit) = { _, value -> span { text(value ?: "") } }
-    override val footer: (TH.(IRenderingContext<String>, String?) -> Unit)? = { _, value -> span { text(value ?: "") } }
+    override val header: (TH.(IRenderingContext<ViewNodePropertyTableItem>, String?) -> Unit) = { _, value -> span { text(value ?: "") } }
+    override val footer: (TH.(IRenderingContext<ViewNodePropertyTableItem>, String?) -> Unit)? = { _, value -> span { text(value ?: "") } }
 
-    override val cell: TD.(IRenderingContext<String>, String) -> Unit = { context, value ->
-        val (_, row, column) = context
+    @Suppress("NAME_SHADOWING")
+    override val cell: TD.(IRenderingContext<ViewNodePropertyTableItem>, Any) -> Unit = { context, value ->
+        val (_, _, row, column) = context
         val context =
             context as? PropertiesViewRenderingContext ?: ise("rendering context is not PropertiesViewRenderingContext")
-        val rowData = context.rowData ?: npe("RowData hasn't been set for Cell[$row, $column]")
+        val item = context.item ?: npe("Item hasn't been set for Cell[$row, $column]")
         val filter = context.filter ?: ""
-        val keyRaw = rowData[INDEX_KEY]
-        val key = rowData[INDEX_KEY].substringBefore(":")
+        val keyRaw = item.name
+        val key = item.name.substringBefore(":")
         when (column) {
             INDEX_COLOR -> key.toPropertyHighlightColor(clientConfig.propertyHighlights)
                 ?.let {
@@ -97,7 +114,7 @@ private class ViewPropertiesTableViewRenderer(
             }
             INDEX_VALUE -> {
                 span(classes = CSS_PROPERTIES_VALUE) {
-                    unsafe { +valueRender.renderValue(key, value, filter) }
+                    unsafe { +valueRender.renderValue(key, value.toString(), filter) }
                 }
             }
         }

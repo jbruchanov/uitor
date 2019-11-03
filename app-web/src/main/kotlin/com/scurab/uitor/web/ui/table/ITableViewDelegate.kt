@@ -1,20 +1,40 @@
 package com.scurab.uitor.web.ui.table
 
-import com.scurab.uitor.web.model.ClientConfig
-import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
-
+/**
+ * Configuration for tableview
+ */
 interface ITableViewDelegate<T> {
-    var data: ITableData<T>
+    /**
+     * Specific Column Renderer
+     */
     var render: ITableViewRenderer<T>
+    /**
+     * Enable/Disable sorting of items via header cell click
+     */
     var sorting: Boolean
+    /**
+     * Enable filtering of elements
+     */
     var filtering: Boolean
+    /**
+     * Pass a value for debounce of filter typing
+     */
     var filterDebounce: Int
+    /**
+     * Explicit html id for the table HtmlElement
+     */
     var elementId: String?
+    /**
+     * Enable selection mode
+     */
     var selecting: Boolean
 }
 
+/**
+ * Default implementation of [ITableViewDelegate] using [TextTableViewRenderer]
+ * for cell rendering
+ */
 open class TableViewDelegate<T>(
-    override var data: ITableData<T>,
     override var render: ITableViewRenderer<T> = TextTableViewRenderer()
 ) : ITableViewDelegate<T> {
     override var sorting: Boolean = true
@@ -22,11 +42,4 @@ open class TableViewDelegate<T>(
     override var selecting: Boolean = false
     override var filterDebounce: Int = 200
     override var elementId: String? = null
-
-    companion object {
-        fun defaultViewProperties(clientConfig: ClientConfig) = TableViewDelegate(
-            TableData.empty(),
-            ViewPropertiesTableViewComponents.columnRenderer(clientConfig)
-        )
-    }
 }

@@ -18,8 +18,6 @@ import com.scurab.uitor.web.ui.table.TableViewDelegate
 import com.scurab.uitor.web.util.SCROLL_BAR_WIDTH
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.html.checkBoxInput
 import kotlinx.html.id
 import kotlinx.html.js.div
@@ -63,7 +61,6 @@ class LayoutInspectorPage(
 
     override var element: HTMLElement? = null; private set
     private val tableViewDelegate = TableViewDelegate(
-        data = TableData.empty(),
         render = ViewPropertiesTableViewComponents.columnRenderer(pageViewModel.clientConfig)
     )
 
@@ -91,7 +88,11 @@ class LayoutInspectorPage(
         }
         canvasView = CanvasView(viewModel)
         treeView = TreeView(viewModel)
-        propertiesView = ViewPropertiesTableView(viewModel.clientConfig, tableViewDelegate, viewModel.screenIndex)
+        propertiesView = ViewPropertiesTableView(
+            viewModel.clientConfig,
+            tableViewDelegate,
+            viewModel.screenIndex
+        )
     }
 
     override fun onAttachToRoot(rootElement: Element) {

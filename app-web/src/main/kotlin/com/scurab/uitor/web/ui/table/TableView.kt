@@ -32,28 +32,24 @@ import kotlin.dom.addClass
 import kotlin.dom.clear
 import kotlin.dom.removeClass
 
-private class RenderingContext<V>(
-    override var column: Int = 0,
-    override var row: Int = 0,
-    override var filter: String? = null
-) : IRenderingContext<V> {
-    fun set(row: Int, column: Int): RenderingContext<V> {
-        this.row = row
-        this.column = column
-        return this
-    }
-}
-
-open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView() {
+open class TableView<T : ITableDataItem>(
+    data: ITableData<T> = TableData.empty(),
+    private val delegate: ITableViewDelegate<T> = TableViewDelegate()
+) : HtmlView() {
+    var data: ITableData<T> = data
+        set(value) {
+            field = value
+            refreshContent()
+        }
     override val element: HTMLElement? get() = _element
+
     protected val tableViewContainer by lazyLifecycled { _element.ref.requireElementById<HTMLElement>(ID_TABLE_CONTAINER) }
-    protected var sorting: Sorted? = null; private set
+    protected var sorting: Sorting? = null; private set
     protected var filterValue: String? = null; private set
 
     private var _element: HTMLElement? = null
     private var filterChannel = ConflatedBroadcastChannel("")
-    private val invalidRow = InvalidRow<V>()
-    private val renderingContext = RenderingContext<V>()
+    private val renderingContext = RenderingContext<T>()
     private var selectedElement: HTMLElement? = null
 
     override fun buildContent() {
@@ -77,7 +73,7 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
         filterChannel = ConflatedBroadcastChannel("")
         launch {
             filterChannel.asFlow().debounce(200).collect {
-                delegate.data.filter(it)
+                data.filter(it)
                 filterValue = it
                 refreshContent()
             }
@@ -102,8 +98,8 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
     }
 
     protected open fun onHeaderClick(column: Int) {
-        sorting = Sorted.toggleSort(column, sorting).apply {
-            sort(delegate.data)
+        sorting = Sorting.toggleSort(column, sorting).apply {
+            sort(data)
         }
         refreshContent()
     }
@@ -124,12 +120,12 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
         delegate.render.header?.let { renderer ->
             thead {
                 tr {
-                    for (col in 0 until delegate.data.columns) {
+                    for (col in 0 until data.columns) {
                         th(classes = CSS_TABLE_VIEW_HEADER) {
                             renderer(
                                 this,
-                                renderingContext(filterValue, Int.MIN_VALUE, col),
-                                delegate.data.headerCell(col)
+                                renderingContext(filterValue, null, Int.MIN_VALUE, col),
+                                data.headerCell(col)
                             )
                             onClickFunction = { if (delegate.sorting) onHeaderClick(col) }
                         }
@@ -140,15 +136,15 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
     }
 
     private fun TABLE.body() {
-        for (row in 0 until delegate.data.rows) {
+        for (row in 0 until data.rows) {
             val classes = if (row % 2 == 0) CSS_TABLE_VIEW_ROW_EVEN else CSS_TABLE_VIEW_ROW_ODD
             tr(classes = classes) {
-                for (col in 0 until delegate.data.columns) {
+                for (col in 0 until data.columns) {
                     td {
                         delegate.render.cell(
                             this,
-                            renderingContext(filterValue, row, col),
-                            delegate.data.cell(row, col)
+                            renderingContext(filterValue, data.rowItem(row), row, col),
+                            data.cell(row, col)
                         )
                         onClickFunction = { ev -> onRowClick(ev.target as HTMLElement) }
                     }
@@ -161,12 +157,12 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
         delegate.render.footer?.let { renderer ->
             tfoot {
                 tr {
-                    for (col in 0 until delegate.data.columns) {
+                    for (col in 0 until data.columns) {
                         th(classes = CSS_TABLE_VIEW_FOOTER) {
                             renderer(
                                 this,
-                                renderingContext(filterValue, Int.MAX_VALUE, col),
-                                delegate.data.footerCell(col)
+                                renderingContext(filterValue, null, Int.MAX_VALUE, col),
+                                data.footerCell(col)
                             )
                         }
                     }
@@ -175,10 +171,10 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
         }
     }
 
-    protected open fun renderingContext(filter: String?, row: Int, column: Int): IRenderingContext<V> {
+    protected open fun renderingContext(filter: String?, item: T?, row: Int, column: Int): IRenderingContext<T> {
         return renderingContext.apply {
             this.filter = filter
-            set(row, column)
+            set(item, row, column)
         }
     }
 
@@ -200,31 +196,5 @@ open class TableView<V>(private val delegate: ITableViewDelegate<V>) : HtmlView(
         const val CSS_TABLE_VIEW_ROW_EVEN = "ui-table-view-row-even"
         const val CSS_TABLE_VIEW_ROW_SELECTED = "ui-table-view-row-selected"
         const val ID_TABLE_CONTAINER = "ui-table-view-container"
-    }
-}
-
-sealed class Sorted(internal val column: Int) {
-    class Ascending(column: Int) : Sorted(column) {
-        override fun sort(data: ITableData<*>) {
-            data.sortedByDescending(column)
-        }
-    }
-
-    class Descending(column: Int) : Sorted(column) {
-        override fun sort(data: ITableData<*>) {
-            data.sortedBy(column)
-        }
-    }
-
-    abstract fun sort(data: ITableData<*>)
-
-    companion object {
-        fun toggleSort(column: Int, knownSorted: Sorted?): Sorted {
-            return when {
-                column == knownSorted?.column && knownSorted is Ascending -> Descending(column)
-                column == knownSorted?.column && knownSorted is Descending -> Ascending(column)
-                else -> Ascending(column)
-            }
-        }
     }
 }

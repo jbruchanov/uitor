@@ -1,54 +1,67 @@
 package com.scurab.uitor.web.ui.table
 
-open class TableData<T : Comparable<T>> constructor(
-    private val headers: Array<String>,
-    private val initElements: List<Array<T>>,
-    private val footers: Array<String> = emptyArray()
-) : ITableData<T> {
+interface ITableDataItem {
+    operator fun get(column: Int): Any
+    val tableColumns: Int
+}
 
-    private var elements: List<Array<T>> = initElements
+/**
+ * Basic implementation of [ITableData]
+ */
+open class TableData<T : ITableDataItem> constructor(
+    private val headers: Array<String>,
+    private val initElements: List<T>,
+    private val footers: Array<String> = emptyArray(),
+    override val columns: Int = headers.size
+) : ITableData<T> {
+    private var elements: List<T> = initElements
     /**
      * Specific sorting action
      */
     var filterAction: IFilterAction<T> = stringContainsFilterAction()
     /**
-     * Convert value during sorting to something else
+     * Convert value field during sorting to String so it's easily comparable
      */
-    var sortingMapper: (T) -> T = { it }
-
-    init {
-        val sizes = elements.groupBy { it.size }
-        check(sizes.size <= 1) { "Different sizes of columns:${sizes.keys}" }
-    }
+    var sortingMapper: (Any) -> String = { it.toString() }
 
     override val rows: Int get() = elements.size
-    override val columns: Int = elements.firstOrNull()?.size ?: headers.size
     override fun headerCell(column: Int): String? = headers.getOrNull(column)
-    override fun cell(row: Int, column: Int): T = elements[row][column]
     override fun footerCell(column: Int): String? = footers.getOrNull(column)
-    override fun row(row: Int): Row<T> = ArrayRow(elements[row])
+    override fun rowItem(row: Int) = elements[row]
+    override fun cell(row: Int, column: Int): Any = elements[row][column]
 
     override fun sortedBy(column: Int) {
-        elements = sortingKeys(column).sortedBy { sortingMapper(it.first) }.sortedResult()
+        elements = sortingKeys(column).sortedBy { it.first }.sortedResult()
     }
 
     override fun sortedByDescending(column: Int) {
-        elements = sortingKeys(column).sortedByDescending { sortingMapper(it.first) }.sortedResult()
+        elements = sortingKeys(column).sortedByDescending { it.first }.sortedResult()
     }
 
     override fun filter(key: String?) {
         elements = filterAction(key, initElements)
     }
 
-    private fun sortingKeys(column: Int) = elements.mapIndexed { i, array -> Pair(array[column], i) }
-    private fun List<Pair<*, Int>>.sortedResult(): List<Array<T>> = map { (_, i) -> elements[i] }
+    private fun sortingKeys(column: Int): List<Pair<String, Int>> =
+        elements.mapIndexed { i, item -> Pair(sortingMapper(item[column]), i) }
+
+    private fun List<Pair<*, Int>>.sortedResult(): List<T> = map { (_, i) -> elements[i] }
 
     companion object {
-        fun <T : Comparable<T>> empty(): TableData<T> = TableData(emptyArray(), emptyList())
-        fun <T> stringContainsFilterAction(): IFilterAction<T> = { key, rows ->
+        fun <T : ITableDataItem> empty() = TableData(emptyArray(), emptyList<T>())
+        fun <T : ITableDataItem> stringContainsFilterAction(): IFilterAction<T> = { key, rows ->
             key?.let {
-                rows.filter { row -> row.any { col -> col.toString().contains(key, true) } }
+                rows.filter { item -> item.any(it) }
             } ?: rows
+        }
+
+        private fun ITableDataItem.any(filter: String): Boolean {
+            for (i in (0 until tableColumns)) {
+                if (get(i).toString().contains(filter, true)) {
+                    return true
+                }
+            }
+            return false
         }
     }
 }

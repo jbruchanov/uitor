@@ -8,6 +8,7 @@ import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.ui.table.IRenderingContext
+import com.scurab.uitor.web.ui.table.ITableDataItem
 import com.scurab.uitor.web.ui.table.ITableViewRenderer
 import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableView
@@ -40,10 +41,8 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
     override fun stateDescription(): String? = null
 
     override var element: HTMLElement? = null; private set
-    private val groupTableDelegate = tableViewDelegate(ID_GROUPS_TABLE, this::onGroupSelected)
-    private val itemsTableDelegate = tableViewDelegate(ID_ITEMS_TABLE, this::onItemSelected)
-    private val groupTable = TableView(groupTableDelegate)
-    private val itemsTable = TableView(itemsTableDelegate)
+    private val groupTable = TableView(delegate = tableViewDelegate(ID_GROUPS_TABLE, this::onGroupSelected))
+    private val itemsTable = TableView(delegate = tableViewDelegate(ID_ITEMS_TABLE, this::onItemSelected))
     private val contentContainer by lazyLifecycled { element.ref.requireElementById<HTMLElement>(ID_CONTENT_CONTAINER) }
     private val resources = Observable<Map<String, List<Triple<Int, String, String?>>>>()
     private val resourcesContentPage = ResourcesContentGenerator()
@@ -85,9 +84,9 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
                 val v = it.second
                 idNamesToResIds[v] = it
             }
-            groupTableDelegate.data = TableData(
+            groupTable.data = TableData(
                 arrayOf("Group"),
-                resources.keys.sorted().map { arrayOf(it) }
+                resources.keys.sorted().map { ResourceTableItem(it) }
             )
         }
     }
@@ -95,11 +94,11 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
     private fun onGroupSelected(group: String) {
         dlog(TAG) { "Group:$group" }
         val list = resources.item.ref[group] ?: iae("Unable to find group:'${group}'?!")
-        itemsTableDelegate.data = TableData(
+        itemsTable.data = TableData(
             arrayOf("Item"),
-            list.map { arrayOf(it.second) }
+            list.map { ResourceTableItem(it.second) }
         )
-        itemsTable.refreshContent()
+//        itemsTable.refreshContent()
     }
 
     private fun onItemSelected(item: String) {
@@ -117,8 +116,8 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
         }
     }
 
-    private fun tableViewDelegate(id: String, clickAction: (String) -> Unit): TableViewDelegate<String> {
-        return TableViewDelegate(TableData.empty(), tableRenderer(clickAction)).apply {
+    private fun tableViewDelegate(id: String, clickAction: (String) -> Unit): TableViewDelegate<ResourceTableItem> {
+        return TableViewDelegate(tableRenderer(clickAction)).apply {
             elementId = id
             sorting = false
             filtering = false
@@ -126,17 +125,22 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
         }
     }
 
-    private fun tableRenderer(clickAction: (String) -> Unit): ITableViewRenderer<String> =
-        object : TextTableViewRenderer<String>() {
-            override val cell: TD.(IRenderingContext<String>, String) -> Unit = { _, value ->
+    private fun tableRenderer(clickAction: (String) -> Unit): ITableViewRenderer<ResourceTableItem> =
+        object : TextTableViewRenderer<ResourceTableItem>() {
+            override val cell: TD.(IRenderingContext<ResourceTableItem>, Any) -> Unit = { _, value ->
                 span {
                     style = "cursor: pointer; display: block; padding: 2px 5px"
                     onClickFunction = { ev ->
                         val innerText = (ev.target as? HTMLSpanElement).ref.innerText
                         clickAction(innerText)
                     }
-                    text(value)
+                    text(value.toString())
                 }
             }
         }
+}
+
+class ResourceTableItem(private val value: String) : ITableDataItem {
+    override fun get(column: Int): Any = value
+    override val tableColumns: Int = 1
 }

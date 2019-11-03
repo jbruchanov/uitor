@@ -1,33 +1,54 @@
 package com.scurab.uitor.web.ui.table
 
-typealias IFilterAction<T> = ((filter: String?, elements: List<Array<T>>) -> List<Array<T>>)
+typealias IFilterAction<T> = ((filter: String?, elements: List<T>) -> List<T>)
 
+/**
+ * Interface to represent TableData.
+ * Basic implementation via [TableData]
+ */
 interface ITableData<T> {
+    /**
+     * Number of rows
+     */
     val rows: Int
+    /**
+     * Number of columns
+     */
     val columns: Int
-    fun row(row: Int): Row<T>
+
+    /**
+     * Get an element representing whole row. Usually your 1 piece of data
+     */
+    fun rowItem(row: Int): T
+
+    /**
+     * Get a header string value for particular column
+     */
     fun headerCell(column: Int): String?
-    fun cell(row: Int, column: Int): T
+
+    /**
+     * Get a value to render in particular cell
+     * This is then passed to [ITableViewRenderer]
+     */
+    fun cell(row: Int, column: Int): Any
+
+    /**
+     * Get a footer string value for particular column
+     */
     fun footerCell(column: Int): String?
+
+    /**
+     * Sort data by a column in Asceding order
+     */
     fun sortedBy(column: Int)
+
+    /**
+     * Sort data by a column in Descending order
+     */
     fun sortedByDescending(column: Int)
+
+    /**
+     * Filter data
+     */
     fun filter(key: String?)
-}
-
-interface Row<T> {
-    operator fun get(column: Int): T
-}
-
-class InvalidRow<T> : Row<T> {
-    override fun get(column: Int): T {
-        throw UnsupportedOperationException("InvalidRowSelection can't be used as row source")
-    }
-}
-
-class ArrayRow<T>(private val array: Array<T>) : Row<T> {
-    override fun get(column: Int): T = array[column]
-}
-
-class ListRow<T>(private val list: List<T>) : Row<T> {
-    override fun get(column: Int): T = list[column]
 }
