@@ -5,6 +5,7 @@ import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.common.ServerApi
+import com.scurab.uitor.web.filebrowser.FileBrowserPage
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
@@ -56,6 +57,7 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
                 createButton("3D Inspector") { ThreeDPage(PageViewModel(selectedScreenIndex)) }
                 createButton("View Hierarchy") { TidyTreePage(PageViewModel(selectedScreenIndex)) }
                 createButton("Resources") { ResourcesPage(PageViewModel(selectedScreenIndex)) }
+                createButton("File Browser") { FileBrowserPage(PageViewModel(selectedScreenIndex)) }
             }
         }
     }

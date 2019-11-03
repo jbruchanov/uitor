@@ -37,6 +37,7 @@ body {
     margin: 0;
     background-color: var(--background);
     color: var(--font-color);
+    font-family: var(--font-family);
 }
 
 
@@ -482,3 +483,20 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
     width: 100%;
 }
 /*endregion resources*/
+
+/*region file browser*/
+#file-browser-container .ui-table-view {
+    width: 600px;
+}
+
+#file-browser-container .ui-table-view tr {
+    width: 600px;
+    cursor: pointer;
+}
+
+#file-browser-container .ui-table-view td {
+    padding: 5px;
+}
+
+
+/*endregion file browser*/

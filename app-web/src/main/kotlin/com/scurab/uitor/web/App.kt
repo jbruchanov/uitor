@@ -4,6 +4,7 @@ import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.ServerApi
+import com.scurab.uitor.web.filebrowser.FileBrowserPage
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
@@ -48,6 +49,7 @@ object App {
             "LayoutInspectorPage" -> LayoutInspectorPage(PageViewModel(screenIndex, clientConfig, serverApi))
             "ThreeDPage" -> ThreeDPage(PageViewModel(screenIndex, clientConfig, serverApi))
             "ResourcesPage" -> ResourcesPage(PageViewModel(screenIndex, clientConfig, serverApi))
+            "FileBrowserPage" -> FileBrowserPage(PageViewModel(screenIndex, clientConfig, serverApi))
             else -> MainPage(clientConfig)
         }
         Navigation.open(page)
