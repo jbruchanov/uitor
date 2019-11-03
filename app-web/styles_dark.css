@@ -27,9 +27,9 @@
     --tree-node-circle-selected: var(--link-color);
     --tree-node-link: #414141;
 
-    --button-backgroud-default:#555;
-    --button-backgroud-pressed:#444;
-    --button-backgroud-focused:#666;
+    --button-backgroud-default: #555;
+    --button-backgroud-pressed: #444;
+    --button-backgroud-focused: #666;
 
 }
 
@@ -366,6 +366,7 @@ tr.tree-odd {
     vertical-align: bottom;
     margin-left: 5px
 }
+
 .view-property-color-preview {
     display: block;
     position: relative;
@@ -404,7 +405,7 @@ button, select {
     /*background-color: transparent;*/
     border: 1px solid transparent;
     padding: 0.175rem 1rem;
-    margin:1px;
+    margin: 1px;
     font-size: 0.875rem;
     line-height: 1.5;
     border-radius: 0.25rem;
@@ -423,6 +424,7 @@ button:hover, select:hover {
 button:active, select:hover {
     background-color: var(--button-backgroud-pressed);
 }
+
 button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disabled), [type="submit"]:not(:disabled) {
     cursor: pointer;
 }
@@ -454,7 +456,7 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
 }
 
 .resources-item-property-preview {
-    border:solid var(--background) thin;
+    border: solid var(--background) thin;
 }
 
 .resources-item-property-preview:HOVER {
@@ -464,9 +466,9 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
 
 #resources-groups-container .ui-table-view th,
 #resources-items-container .ui-table-view th {
-     padding: 3px 10px;
-     width: 100%;
- }
+    padding: 3px 10px;
+    width: 100%;
+}
 
 #resources-groups-container .ui-table-view th,
 #resources-items-container .ui-table-view tr {
@@ -482,6 +484,7 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
 #resources-items-container .ui-table-view td {
     width: 100%;
 }
+
 /*endregion resources*/
 
 /*region file browser*/
@@ -503,7 +506,6 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
 #view-property-container {
     display: grid;
     grid-template-columns: 700px 1fr;
-    overflow: auto;
 }
 
 #view-property-container .resources-item-content {
