@@ -37,8 +37,8 @@ interface ITableViewDelegate<T> {
 open class TableViewDelegate<T>(
     override var render: ITableViewRenderer<T> = TextTableViewRenderer()
 ) : ITableViewDelegate<T> {
-    override var sorting: Boolean = true
-    override var filtering: Boolean = true
+    override var sorting: Boolean = false
+    override var filtering: Boolean = false
     override var selecting: Boolean = false
     override var filterDebounce: Int = 200
     override var elementId: String? = null

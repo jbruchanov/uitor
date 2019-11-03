@@ -13,7 +13,6 @@ import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
 import com.scurab.uitor.web.ui.launchWithProgressBar
-import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableViewDelegate
 import com.scurab.uitor.web.util.SCROLL_BAR_WIDTH
 import com.scurab.uitor.web.util.lazyLifecycled
@@ -62,7 +61,10 @@ class LayoutInspectorPage(
     override var element: HTMLElement? = null; private set
     private val tableViewDelegate = TableViewDelegate(
         render = ViewPropertiesTableViewComponents.columnRenderer(pageViewModel.clientConfig)
-    )
+    ).apply {
+        sorting = true
+        filtering = true
+    }
 
     override fun buildContent() {
         columnsLayout = ColumnsLayout(ColumnsLayoutDelegate(this))

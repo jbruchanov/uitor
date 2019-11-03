@@ -7,7 +7,6 @@ import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
 import com.scurab.uitor.web.ui.SEPARATOR_WIDTH
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
-import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableViewDelegate
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
@@ -81,6 +80,9 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
     companion object {
         private fun defaultViewProperties(clientConfig: ClientConfig) = TableViewDelegate(
             ViewPropertiesTableViewComponents.columnRenderer(clientConfig)
-        )
+        ).apply {
+            sorting = true
+            filtering = true
+        }
     }
 }
