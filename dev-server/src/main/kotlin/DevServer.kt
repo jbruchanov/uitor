@@ -3,6 +3,10 @@ package com.scurab.dev.server
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
+import io.ktor.client.request.post
 import io.ktor.features.CallLogging
 import io.ktor.features.DefaultHeaders
 import io.ktor.http.ContentType
@@ -11,11 +15,14 @@ import io.ktor.http.cio.websocket.readText
 import io.ktor.http.content.URIFileContent
 import io.ktor.http.content.files
 import io.ktor.http.content.static
+import io.ktor.http.contentType
+import io.ktor.request.receiveText
 import io.ktor.request.uri
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import io.ktor.routing.get
+import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -129,7 +136,8 @@ class DevServer(
                 }
                 uri += s
             }
-            call.respond(URIFileContent(URL("http://$localDeviceIp/${uri}")))
+            val result = HttpClient(CIO).get<ByteArray>("http://$localDeviceIp/${uri}")
+            call.respond(result)
         }
 
         get("/{data}.json", response)
@@ -137,6 +145,13 @@ class DevServer(
         get("/view.png", response)
         get("/screencomponents.html", response)
         get("/logcat.txt", response)
+        post("/groovy") {
+            val requestText = call.receiveText()
+            val result = HttpClient(CIO).post<String>("http://$localDeviceIp/groovy") {
+                body = requestText
+            }
+            call.respond(result)
+        }
     }
 
     private fun executeRebuildCommand(): Boolean {
