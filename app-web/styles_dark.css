@@ -94,6 +94,7 @@ input {
 
 .threed-canvas-container {
     background-color: #000000;
+    overflow: hidden;
 }
 
 .canvas-container canvas {
