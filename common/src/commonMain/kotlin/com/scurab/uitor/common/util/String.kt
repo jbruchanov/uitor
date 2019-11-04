@@ -54,6 +54,17 @@ fun String.matchingIndexes(expr: String, ignoreCase: Boolean = true): IntArray {
         } ?: EMPTY
 }
 
+/**
+ * Ellipsize a middle of a string
+ */
+fun String.ellipsizeMid(maxLength: Int): String {
+    if (maxLength > this.length) {
+        return this
+    }
+    val size = maxLength / 2
+    return substring(0, size) + "…" + substring(length - size)
+}
+
 fun String.highlightAt(array: IntArray, hStart: String, hEnd: String = hStart): String {
     if (array.isEmpty()) {
         return this

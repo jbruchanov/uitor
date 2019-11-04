@@ -2,11 +2,11 @@ package com.scurab.uitor.web.tree
 
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
+import com.scurab.uitor.common.util.ellipsizeMid
 import com.scurab.uitor.web.model.ViewNode
 import d3.Node
 import d3.classes
 import d3.dy
-import d3.fill
 import d3.group
 import d3.height
 import d3.onClick
@@ -107,7 +107,6 @@ class TidyTree {
             .textAnchor { d: Node<*> -> d.textAnchor(config) }
             .text { d: Node<*> -> config.nodeTitleSelector(d) }
             .clone(true).lower()
-            .stroke("#FFF".toColor())
 
         if (config.showViewIds) {
             node.append("text")
@@ -119,7 +118,6 @@ class TidyTree {
                     d.item.ids ?: ""
                 }
                 .clone(true).lower()
-                .stroke("#FFF".toColor())
         }
         return svg.node()
     }
@@ -143,13 +141,21 @@ class TreeConfig(
     val nodeTitleSelector: (Node<*>) -> String
 ) : LayoutRenderDelegate by delegate {
     companion object {
+        private const val DENSE_COLS = 4
         val defaultTidyTree: TreeConfig = TreeConfig(
             "default",
             175.0, 30.0, 5.0,
             showViewIds = true,
             viewGroupAnchorEnd = false,
-            delegate = HorizontalDelegate(4)
-        ) { it.item.typeSimple }
+            delegate = HorizontalDelegate(DENSE_COLS)
+        ) {
+            val typeSimple = it.item.typeSimple
+            if(it.depth < DENSE_COLS && typeSimple.length > 11) {
+                typeSimple.ellipsizeMid(10)
+            } else {
+                typeSimple.ellipsizeMid(21)
+            }
+        }
 
         val shortTypesTidyTree = TreeConfig(
             "shortTypes",
