@@ -6,6 +6,7 @@ import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.ServerApi
 import com.scurab.uitor.web.filebrowser.FileBrowserPage
+import com.scurab.uitor.web.groovy.GroovyPage
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.inspector.ViewPropertyPage
@@ -33,13 +34,18 @@ object App {
         document.body.ref.firstElementChild.ref.let {
             PageProgressBar.attachTo(it)
         }
-        GlobalScope.launchWithProgressBar {
+        val job = GlobalScope.launchWithProgressBar {
             try {
                 clientConfig = serverApi.clientConfiguration()
-                openPageBaseOnUrl()
             } catch (e: Throwable) {
                 window.alert("Unable to load client configuration")
                 elog("App") { e.message ?: "Null message" }
+            }
+            try {
+                check(clientConfig.pages.isNotEmpty()) { "ClientConfig.pages is empty!" }
+                openPageBaseOnUrl()
+            } catch (e: Exception) {
+                window.alert(e.message ?: "Null message")
             }
         }
     }
@@ -59,6 +65,7 @@ object App {
                 val property = token.arguments["property"] ?: iae("Missing 'property' arg")
                 ViewPropertyPage(position, property, InspectorViewModel(pageViewModel))
             }
+            "GroovyPage" -> GroovyPage(PageViewModel(0), token.arguments["position"]?.toIntOrNull())
             else -> MainPage(clientConfig)
         }
         Navigation.open(page)

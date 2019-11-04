@@ -8,6 +8,7 @@ import com.scurab.uitor.common.util.npe
 import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.PropertiesViewRenderingContext
 import com.scurab.uitor.web.model.ClientConfig
+import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.GROOVY_NAME
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_COLOR
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_KEY
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_VALUE
@@ -32,6 +33,14 @@ object ViewPropertiesTableViewComponents {
     const val INDEX_COLOR = 0
     const val INDEX_KEY = 1
     const val INDEX_VALUE = 2
+    const val GROOVY_NAME = "Groovy Console:"
+        /*
+        Navigation.buildUrl(
+                    "GroovyPage",
+                    "screenIndex" to screenIndex,
+                    "position" to position
+                )
+         */
 
     /**
      * Filter data based on smart property filter and property value contains
@@ -110,12 +119,16 @@ private class ViewPropertiesTableViewRenderer(clientConfig: ClientConfig, privat
                         context as? PropertiesViewRenderingContext ?: ise("rendering context is not PropertiesViewRenderingContext")
                     val position = context.viewNode?.position ?: npe("viewNode has to be set!")
                     val screenIndex = context.screenIndex
-                    val url = Navigation.buildUrl(
-                        "ViewPropertyPage",
-                        "property" to key,
-                        "screenIndex" to screenIndex,
-                        "position" to position
-                    )
+                    val url = if(GROOVY_NAME == keyRaw) {
+                        Navigation.buildUrl("GroovyPage", "screenIndex" to screenIndex, "position" to position)
+                    } else {
+                        Navigation.buildUrl(
+                            "ViewPropertyPage",
+                            "property" to key,
+                            "screenIndex" to screenIndex,
+                            "position" to position
+                        )
+                    }
                     a(href = url, target = "_blank") {
                         span { unsafe { raw(key.highlightAt(matchingIndexes, HTML_BOLD_START, HTML_BOLD_END)) } }
                     }

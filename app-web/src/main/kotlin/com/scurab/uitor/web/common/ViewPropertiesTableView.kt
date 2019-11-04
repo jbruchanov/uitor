@@ -34,6 +34,7 @@ class ViewPropertiesTableView(
             data = TableData(
                 arrayOf("T", "Name", "Value"),
                 value?.data
+                    ?.addGroovyConsoleProperty(value.position)
                     ?.entries
                     ?.filter { it.value != null }
                     ?.sortedBy { ViewNode.orderKey(it.key) }
@@ -75,5 +76,15 @@ class ViewPropertiesTableView(
             this.viewNode = this@ViewPropertiesTableView.viewNode
             this.screenIndex = this@ViewPropertiesTableView.screenIndex
         }
+    }
+
+    private fun Map<String, Any?>.addGroovyConsoleProperty(position: Int): Map<String, Any?> {
+        var result = this
+        if (clientConfig.groovy) {
+            result = toMutableMap().apply {
+                this[ViewPropertiesTableViewComponents.GROOVY_NAME] = position
+            }
+        }
+        return result
     }
 }

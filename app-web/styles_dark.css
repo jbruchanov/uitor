@@ -512,3 +512,19 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
 #view-property-container .resources-item-content {
     height: auto;
 }
+
+.code-editor-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.code-editor-container #editor {
+    height: calc(100vh * 2/3);
+}
+
+.code-editor-container #result {
+    background: var(--odd-background);
+    height: calc((100vh / 3) - 36px);
+    font-size: var(--font-size-small);
+    overflow-y: auto;
+}

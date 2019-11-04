@@ -8,6 +8,8 @@ import com.scurab.uitor.common.render.Rect
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.forEachReversed
 import com.scurab.uitor.common.util.usingKey
+import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
+import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.GROOVY_NAME
 import com.scurab.uitor.web.util.getMap
 import com.scurab.uitor.web.util.getTypedListOf
 import com.scurab.uitor.web.util.jsonField
@@ -116,18 +118,18 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
     companion object {
         private val orderMap = mapOf(
             // @formatter:off
-                Pair(ViewNodeFields.Type,       "001"),
-                Pair(ViewNodeFields.IDi,        "002"),
-                Pair(ViewNodeFields.IDs,        "003"),
-                Pair(ViewNodeFields.Level,      "004"),
-                Pair(ViewNodeFields.Position,   "005"),
-                Pair("Groovy Console",          "006"),
-                Pair(ViewNodeFields.Owner,      "007"),
-                Pair("Inheritance",             "008"),
-                Pair("Context:",                "009"),
-                Pair("Extractor",               "010"),
-                Pair("StringValue",             "011")
-                // @formatter:on
+            Pair(ViewNodeFields.Type,       "001"),
+            Pair(ViewNodeFields.IDi,        "002"),
+            Pair(ViewNodeFields.IDs,        "003"),
+            Pair(ViewNodeFields.Level,      "004"),
+            Pair(ViewNodeFields.Position,   "005"),
+            Pair(GROOVY_NAME,               "006"),
+            Pair(ViewNodeFields.Owner,      "007"),
+            Pair("Inheritance",             "008"),
+            Pair("Context:",                "009"),
+            Pair("Extractor",               "010"),
+            Pair("StringValue",             "011")
+            // @formatter:on
         )
         fun orderKey(value: String): String = (orderMap[value] ?: "999") + value
 

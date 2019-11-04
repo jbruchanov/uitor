@@ -36,7 +36,7 @@ class HashToken(private val token: String) {
         const val SCREEN_INDEX = "screenIndex"
         const val TYPE = "type"
         private const val KEY_VALUE_DELIMITER = "="
-        fun state(vararg pairs: Pair<String, String>): String {
+        fun state(vararg pairs: Pair<String, Any>): String {
             return pairs.joinToString(separator = DELIMITER) { (k, v) -> "$k$KEY_VALUE_DELIMITER$v" }
         }
     }

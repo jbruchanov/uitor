@@ -6,6 +6,7 @@ import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.common.ServerApi
 import com.scurab.uitor.web.filebrowser.FileBrowserPage
+import com.scurab.uitor.web.groovy.GroovyPage
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
@@ -68,7 +69,7 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
                 createLinkButton("WindowsDetailedPage", "Windows Detailed") { "/screenstructure.json" }
                 createLinkButton("ScreenshotPage", "Screenshot") { "/screen.png?screenIndex=${selectedScreenIndex}" }
                 createLinkButton("LogCatPage", "LogCat") { "/logcat.txt" }
-                createPageButton("GroovyPage", "Groovy") { FileBrowserPage(PageViewModel(selectedScreenIndex)) }
+                createPageButton("GroovyPage", "Groovy") { GroovyPage(PageViewModel(selectedScreenIndex), null) }
             }
         }
     }

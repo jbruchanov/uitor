@@ -10,6 +10,10 @@ import com.scurab.uitor.web.util.keys
 import com.scurab.uitor.web.util.requireTypedListOf
 import kotlinx.coroutines.asDeferred
 import kotlinx.coroutines.withTimeout
+import org.w3c.fetch.Headers
+import org.w3c.fetch.NO_CACHE
+import org.w3c.fetch.RequestCache
+import org.w3c.fetch.RequestInit
 import kotlin.browser.window
 import kotlin.js.Json
 
@@ -66,6 +70,23 @@ class ServerApi {
             url += "&maxDepth=$maxDepth"
         }
         return url
+    }
+
+    suspend fun executeGroovyCode(code: String): String {
+        return withTimeout(15000) {
+            val response = window.fetch(
+                "groovy", RequestInit(
+                    method = "POST",
+                    cache = RequestCache.NO_CACHE,
+                    headers = Headers().apply {
+                        append("Content-Length", code.length.toString())
+                    },
+                    body = code
+                )
+            ).asDeferred().await()
+            check(response.status == 200.toShort()) { "[${response.status}]${response.statusText}" }
+            response.text().asDeferred().await()
+        }
     }
 
     private suspend fun <T> load(url: String, timeOut: Long = 2000): T {
