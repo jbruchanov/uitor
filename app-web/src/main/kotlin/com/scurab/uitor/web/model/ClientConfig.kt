@@ -3,6 +3,7 @@ package com.scurab.uitor.web.model
 import com.scurab.uitor.common.model.ConfigFields
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.map
+import com.scurab.uitor.common.util.npe
 import com.scurab.uitor.web.util.getMap
 import com.scurab.uitor.web.util.jsonField
 import kotlin.js.Json
@@ -13,6 +14,7 @@ class ClientConfig(private val json: Json) {
     val device = json.getMap(ConfigFields.Device)
     val groovy by jsonField<Boolean>(json, ConfigFields.Groovy)
     val pointerIgnoreIds: Set<Int> = (json[ConfigFields.PointerIgnoreIds] as? Array<Int> ?: emptyArray()).toHashSet()
+    val pages: Array<String> = json["Pages"] as? Array<String> ?: npe("Undefined field 'Pages'")
 
     val propertyHighlights =
         json.getMap(ConfigFields.PropertyHighlights)

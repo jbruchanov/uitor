@@ -28,6 +28,7 @@ import kotlinx.html.td
 import kotlinx.html.tr
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSelectElement
+import kotlin.browser.window
 
 private const val ID_SCREEN_INDEX = "main-screen-index"
 private const val DEVICE_INFO = "main-screen-device-info"
@@ -53,11 +54,21 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
             }
             table {
                 style = "margin-left:auto;margin-right:auto;"
-                createButton("Layout Inspector") { LayoutInspectorPage(PageViewModel(selectedScreenIndex)) }
-                createButton("3D Inspector") { ThreeDPage(PageViewModel(selectedScreenIndex)) }
-                createButton("View Hierarchy") { TidyTreePage(PageViewModel(selectedScreenIndex)) }
-                createButton("Resources") { ResourcesPage(PageViewModel(selectedScreenIndex)) }
-                createButton("File Browser") { FileBrowserPage(PageViewModel(selectedScreenIndex)) }
+                createPageButton("LayoutInspectorPage", "Layout Inspector")
+                { LayoutInspectorPage(PageViewModel(selectedScreenIndex)) }
+                createPageButton("ThreeDPage", "3D Inspector")
+                { ThreeDPage(PageViewModel(selectedScreenIndex)) }
+                createPageButton("TidyTreePage", "View Hierarchy")
+                { TidyTreePage(PageViewModel(selectedScreenIndex)) }
+                createPageButton("ResourcesPage", "Resources")
+                { ResourcesPage(PageViewModel(selectedScreenIndex)) }
+                createPageButton("FileBrowserPage", "File Browser")
+                { FileBrowserPage(PageViewModel(selectedScreenIndex)) }
+                createLinkButton("WindowsPage", "Windows") { "/screencomponents.html" }
+                createLinkButton("WindowsDetailedPage", "Windows Detailed") { "/screenstructure.json" }
+                createLinkButton("ScreenshotPage", "Screenshot") { "/screen.png?screenIndex=${selectedScreenIndex}" }
+                createLinkButton("LogCatPage", "LogCat") { "/logcat.txt" }
+                createPageButton("GroovyPage", "Groovy") { FileBrowserPage(PageViewModel(selectedScreenIndex)) }
             }
         }
     }
@@ -82,19 +93,32 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
         }
     }
 
-    private fun TABLE.createButton(title: String, block: () -> Page) {
+    private fun TABLE.createPageButton(key: String, title: String, block: () -> Page) {
+        createButton(key, title) {
+            try {
+                Navigation.open(block())
+            } catch (e: Throwable) {
+                alert(e)
+            }
+        }
+    }
+
+    private fun TABLE.createLinkButton(key: String, title: String, block: () -> String) {
+        createButton(key, title) {
+            window.open(block(), "_blank", "")
+        }
+    }
+
+    private fun TABLE.createButton(key: String, title: String, clickAction: () -> Unit) {
+        if (!clientConfig.pages.contains(key)) {
+            return
+        }
         tr {
             td {
                 button {
                     style = "width:100%"
                     text(title)
-                    onClickFunction = {
-                        try {
-                            Navigation.open(block())
-                        } catch (e: Throwable) {
-                            alert(e)
-                        }
-                    }
+                    onClickFunction = { clickAction() }
                 }
             }
         }
