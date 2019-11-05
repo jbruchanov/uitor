@@ -4,6 +4,7 @@ import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.util.HashToken
+import kotlinx.coroutines.CancellationException
 
 abstract class InspectorPage(protected val viewModel: InspectorViewModel) : Page() {
 
@@ -12,7 +13,9 @@ abstract class InspectorPage(protected val viewModel: InspectorViewModel) : Page
             try {
                 viewModel.load()
             } catch (e: Exception) {
-                alert(e)
+                if (e !is CancellationException) {
+                    alert(e)
+                }
                 elog { e.message ?: "Null message" }
             }
         }
