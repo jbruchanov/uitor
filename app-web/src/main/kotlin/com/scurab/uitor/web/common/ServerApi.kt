@@ -89,7 +89,7 @@ class ServerApi {
         }
     }
 
-    private suspend fun <T> load(url: String, timeOut: Long = 2000): T {
+    private suspend fun <T> load(url: String, timeOut: Long = 10000): T {
         return withTimeout(timeOut) {
             val response = window.fetch(url).asDeferred().await()
             check(response.status == 200.toShort()) { "[${response.status}]${response.statusText}" }
