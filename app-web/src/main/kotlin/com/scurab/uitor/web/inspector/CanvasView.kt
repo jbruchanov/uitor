@@ -37,7 +37,6 @@ import kotlin.math.sign
 private const val CSS_CANVAS_CONTAINER = "canvas-container"
 private const val LAYER_IMAGE = 0
 private const val LAYER_DRAWING = 1
-private const val CURSOR_CROSS_HAIR = "crosshair"
 private const val SCALE_STEP = 0.05
 private const val SCALE_MAX = 3.0
 private const val SCALE_MIN = 0.1

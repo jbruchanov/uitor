@@ -2,6 +2,7 @@ package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.common.util.iae
+import com.scurab.uitor.common.util.messageSafe
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.resources.ResourcesContentGenerator
 import com.scurab.uitor.web.ui.IViewPropertyTableItem
@@ -89,7 +90,7 @@ class ViewPropertyPage(
                 contentContainer.append(resourcesContentGenerator.buildContent(item))
             } catch (e: Throwable) {
                 alert("Unable to load view property:${property}")
-                elog(TAG) { e.message ?: "Null message" }
+                elog(TAG) { e.messageSafe }
             }
         }
     }

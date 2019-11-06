@@ -4,6 +4,7 @@ import com.scurab.uitor.common.util.HasLifecycle
 import com.scurab.uitor.common.util.IObservable
 import com.scurab.uitor.common.util.Observable
 import com.scurab.uitor.common.util.elog
+import com.scurab.uitor.common.util.messageSafe
 import com.scurab.uitor.web.util.DocumentWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,13 +63,13 @@ abstract class HtmlView : HasLifecycle, CoroutineScope {
     }
 
     fun alert(e: Throwable) {
-        val msg = e.message ?: "Null Exception"
+        val msg = e.messageSafe
         elog { msg }
         alert(msg)
     }
 
-    fun alert(msg: String?) {
-        window.alert(msg ?: "Null message")
+    fun alert(msg: String) {
+        window.alert(msg)
     }
 
     fun <T> IObservable<T>.observe(observer: (T) -> Unit) {

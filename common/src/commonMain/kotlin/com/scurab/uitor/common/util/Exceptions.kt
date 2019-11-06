@@ -11,3 +11,5 @@ val <T> T?.ref: T
         }
         return this
     }
+
+val Throwable.messageSafe : String get() = message ?: "Null Message"

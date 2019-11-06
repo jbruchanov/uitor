@@ -2,6 +2,7 @@ package com.scurab.uitor.web
 
 import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.common.util.iae
+import com.scurab.uitor.common.util.messageSafe
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Navigation
 import com.scurab.uitor.web.common.ServerApi
@@ -39,13 +40,13 @@ object App {
                 clientConfig = serverApi.clientConfiguration()
             } catch (e: Throwable) {
                 window.alert("Unable to load client configuration")
-                elog("App") { e.message ?: "Null message" }
+                elog("App") { e.messageSafe }
             }
             try {
                 check(clientConfig.pages.isNotEmpty()) { "ClientConfig.pages is empty!" }
                 openPageBaseOnUrl()
             } catch (e: Exception) {
-                window.alert(e.message ?: "Null message")
+                window.alert(e.messageSafe)
             }
         }
     }

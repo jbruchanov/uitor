@@ -56,8 +56,6 @@ fun String.toColor(): Color {
     return result ?: throw IllegalArgumentException("Invalid format of string color:'$this'")
 }
 
-//rgba(255, 0, 255, 0.15)
-//rgb(255, 0, 255)
 private fun String.parseFromCss(): Color? {
     return CSS_COLOR_REGEX.find(this)?.groupValues
         ?.takeIf { it.size == 2 }

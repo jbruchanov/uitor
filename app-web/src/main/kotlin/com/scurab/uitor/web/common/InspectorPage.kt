@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.common
 
 import com.scurab.uitor.common.util.elog
+import com.scurab.uitor.common.util.messageSafe
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.util.HashToken
@@ -16,7 +17,7 @@ abstract class InspectorPage(protected val viewModel: InspectorViewModel) : Page
                 if (e !is CancellationException) {
                     alert(e)
                 }
-                elog { e.message ?: "Null message" }
+                elog { e.messageSafe }
             }
         }
     }
