@@ -98,7 +98,6 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
             arrayOf("Item"),
             list.map { ResourceTableItem(it.second) }
         )
-//        itemsTable.refreshContent()
     }
 
     private fun onItemSelected(item: String) {
