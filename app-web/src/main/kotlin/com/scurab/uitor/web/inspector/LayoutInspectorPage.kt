@@ -167,12 +167,16 @@ class LayoutInspectorPage(
 
     class ColumnsLayoutDelegate(val page: LayoutInspectorPage) : IColumnsLayoutDelegate {
         override val innerContentWidthEstimator: (Int) -> Double = { column ->
-            when(column) {
-                2 -> {
-                    SCROLL_BAR_WIDTH + ((page.treeView.element as? HTMLTableElement)?.rows?.get(0)?.getBoundingClientRect()?.width
-                        ?: window.innerWidth / 4.0)
+            if (window.innerWidth < 1280) {
+                window.innerWidth / 3.0
+            } else {
+                when (column) {
+                    2 -> {
+                        SCROLL_BAR_WIDTH + ((page.treeView.element as? HTMLTableElement)?.rows?.get(0)?.getBoundingClientRect()?.width
+                            ?: window.innerWidth / 4.0)
+                    }
+                    else -> max(500.0, min(window.innerWidth, window.screen.width) / 3.0)
                 }
-                else -> max(500.0, min(window.innerWidth, window.screen.width) / 3.0)
             }
         }
     }
