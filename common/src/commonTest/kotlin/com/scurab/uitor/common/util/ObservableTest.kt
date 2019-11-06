@@ -1,5 +1,7 @@
 package com.scurab.uitor.common.util
 
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,6 +17,7 @@ class ObservableTest {
     fun setUp() {
         observable = Observable()
         lifecycleOwner = object : HasLifecycle {
+            override val coroutineContext: CoroutineContext = EmptyCoroutineContext
             override val onDetachObservable: Observable<HasLifecycle> = Observable()
         }
     }
