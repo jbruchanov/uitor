@@ -18,6 +18,7 @@ import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
 import com.scurab.uitor.web.ui.PageProgressBar
 import com.scurab.uitor.web.ui.launchWithProgressBar
+import com.scurab.uitor.web.util.DocumentWrapper
 import com.scurab.uitor.web.util.HashToken
 import kotlinx.coroutines.GlobalScope
 import kotlin.browser.document
@@ -30,10 +31,18 @@ fun main() {
 object App {
     val serverApi = ServerApi()
     lateinit var clientConfig: ClientConfig; private set
+    private var theme: String = ""
 
     fun start() {
+        switchTheme()
         document.body.ref.firstElementChild.ref.let {
             PageProgressBar.attachTo(it)
+        }
+        DocumentWrapper().addKeyUpListener {
+            println(it.keyCode)
+            if (it.keyCode == 84/*t*/) {
+                switchTheme()
+            }
         }
         val job = GlobalScope.launchWithProgressBar {
             try {
@@ -49,6 +58,15 @@ object App {
                 window.alert(e.messageSafe)
             }
         }
+    }
+
+    private fun switchTheme() {
+        theme = if (theme == "dark") {
+            "light"
+        } else {
+            "dark"
+        }
+        document.documentElement.ref.setAttribute("data-theme", theme)
     }
 
     fun openPageBaseOnUrl() {
