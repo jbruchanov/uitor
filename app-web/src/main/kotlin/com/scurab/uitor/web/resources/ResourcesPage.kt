@@ -110,7 +110,7 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
                 item.source = resTuple.third
                 val element = resourcesContentPage.buildFullDescriptionContent(item)
                 contentContainer.append(element)
-                pr.prettyPrint()
+                js.pr.prettyPrint()
             }
         }
     }

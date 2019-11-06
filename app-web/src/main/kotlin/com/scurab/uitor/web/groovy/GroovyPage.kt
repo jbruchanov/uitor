@@ -1,6 +1,6 @@
 package com.scurab.uitor.web.groovy
 
-import ace.Editor
+import js.ace.Editor
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.model.PageViewModel
@@ -92,9 +92,9 @@ class GroovyPage(private val viewModel: PageViewModel, private val position: Int
 
     override fun onAttachToRoot(rootElement: Element) {
         super.onAttachToRoot(rootElement)
-        editor = ace.edit(ID_EDITOR).apply {
-            setTheme("ace/theme/monokai")
-            session.setMode("ace/mode/groovy")
+        editor = js.ace.edit(ID_EDITOR).apply {
+            setTheme("/theme/monokai")
+            session.setMode("/mode/groovy")
         }
 
         document.addKeyUpListener {

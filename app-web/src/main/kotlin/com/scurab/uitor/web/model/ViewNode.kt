@@ -8,13 +8,12 @@ import com.scurab.uitor.common.render.Rect
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.forEachReversed
 import com.scurab.uitor.common.util.usingKey
-import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.GROOVY_NAME
 import com.scurab.uitor.web.util.getMap
 import com.scurab.uitor.web.util.getTypedListOf
 import com.scurab.uitor.web.util.jsonField
 import com.scurab.uitor.web.util.optJsonField
-import d3.ITreeItem
+import js.d3.ITreeItem
 import kotlin.js.Json
 
 class ViewNode(json: Json) : IViewNode, ITreeItem {

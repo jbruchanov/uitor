@@ -10,8 +10,6 @@ import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView
 import com.scurab.uitor.web.util.obj
-import com.scurab.uitor.web.util.pickNodeForNotification
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -19,7 +17,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.MouseEvent
-import threejs.*
+import js.threejs.*
 import kotlin.browser.window
 
 //stop rendering with no events in 5s

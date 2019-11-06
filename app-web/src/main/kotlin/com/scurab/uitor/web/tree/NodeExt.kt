@@ -1,7 +1,7 @@
 package com.scurab.uitor.web.tree
 
 import com.scurab.uitor.web.model.ViewNode
-import d3.Node
+import js.d3.Node
 import org.w3c.dom.get
 import org.w3c.dom.svg.SVGCircleElement
 import kotlin.browser.document

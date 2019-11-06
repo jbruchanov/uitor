@@ -1,26 +1,24 @@
 package com.scurab.uitor.web.tree
 
-import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ellipsizeMid
 import com.scurab.uitor.web.model.ViewNode
-import d3.Node
-import d3.classes
-import d3.dy
-import d3.group
-import d3.height
-import d3.onClick
-import d3.onMouseLeave
-import d3.onMouseOver
-import d3.radius
-import d3.stroke
-import d3.strokeLineJoin
-import d3.strokeWidth
-import d3.style
-import d3.textAnchor
-import d3.transform
-import d3.width
-import d3.x
+import js.d3.Node
+import js.d3.classes
+import js.d3.dy
+import js.d3.group
+import js.d3.height
+import js.d3.onClick
+import js.d3.onMouseLeave
+import js.d3.onMouseOver
+import js.d3.radius
+import js.d3.strokeLineJoin
+import js.d3.strokeWidth
+import js.d3.style
+import js.d3.textAnchor
+import js.d3.transform
+import js.d3.width
+import js.d3.x
 import org.w3c.dom.svg.SVGCircleElement
 import org.w3c.dom.svg.SVGElement
 
@@ -47,7 +45,7 @@ class TidyTree {
     ): SVGElement {
         val (root, width, height, x0) = config.layout(data, config)
 
-        val svg = d3.svg()
+        val svg = js.d3.svg()
             //.viewBox(Rect(0, 0, width, (x1 - x0 + root.dx * 2).roundToInt()))
             //custom size (scrollable)
             .style("overflow-x: auto; overflow-y: auto")

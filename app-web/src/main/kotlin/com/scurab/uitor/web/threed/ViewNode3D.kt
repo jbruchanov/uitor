@@ -3,18 +3,18 @@ package com.scurab.uitor.web.threed
 import com.scurab.uitor.common.model.IViewNode
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.util.obj
-import threejs.BackSide
-import threejs.BoxGeometry
-import threejs.Color
-import threejs.EdgesGeometry
-import threejs.FrontSide
-import threejs.LineSegments
-import threejs.Mesh
-import threejs.MeshBasicMaterial
-import threejs.Object3D
-import threejs.Scene
-import threejs.Side
-import threejs.TextureLoader
+import js.threejs.BackSide
+import js.threejs.BoxGeometry
+import js.threejs.Color
+import js.threejs.EdgesGeometry
+import js.threejs.FrontSide
+import js.threejs.LineSegments
+import js.threejs.Mesh
+import js.threejs.MeshBasicMaterial
+import js.threejs.Object3D
+import js.threejs.Scene
+import js.threejs.Side
+import js.threejs.TextureLoader
 
 private const val DEPTH = 1
 private const val HALF = 0.5
@@ -29,7 +29,7 @@ class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int) : IViewNo
     override val rect = viewNode.renderAreaRelative?.let { viewNode.rect.addRelative(it) } ?: viewNode.rect
     private val hasCustomRenderArea = rect != viewNode.rect
     private val geometry = BoxGeometry(rect.width, rect.height, DEPTH)
-    private val lineMaterial = threejs.LineBasicMaterial(obj {
+    private val lineMaterial = js.threejs.LineBasicMaterial(obj {
         color = viewNode.edgeColor(false)
     })
 
@@ -144,12 +144,12 @@ private fun MeshBasicMaterial.withTexture(viewNode: ViewNode, side: Side, screen
     if (viewNode.shouldRender) {
         //this expects to server handle the hammering
         map = ViewNode3D.textureLoader.load("view.png?position=${viewNode.position}&screenIndex=$screenIndex").apply {
-            minFilter = threejs.LinearFilter
-            magFilter = threejs.LinearFilter
+            minFilter = js.threejs.LinearFilter
+            magFilter = js.threejs.LinearFilter
             transparent = true
             opacity = 1
             premultiplyAlpha = true
-            wrapS = threejs.RepeatWrapping;
+            wrapS = js.threejs.RepeatWrapping;
             repeat.x = when (side) {
                 BackSide -> -1
                 else -> 1
