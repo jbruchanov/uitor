@@ -20,6 +20,7 @@ enum class Events {
     mousewheel,
     wheel,
     keydown,
+    keyup,
     resize,
 }
 

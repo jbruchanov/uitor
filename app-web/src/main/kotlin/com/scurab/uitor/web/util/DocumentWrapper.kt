@@ -55,6 +55,9 @@ class DocumentWrapper(document: Document = window.document) {
     fun addKeyDownListener(callback: (KeyboardEvent) -> Unit) =
         addEventListener(Events.keydown) { event -> callback(event as KeyboardEvent) }
 
+    fun addKeyUpListener(callback: (KeyboardEvent) -> Unit) =
+        addEventListener(Events.keyup) { event -> callback(event as KeyboardEvent) }
+
     fun requireElementsByClass(clazz: String): Array<Element> {
         return document.requireElementsByClass(clazz)
     }

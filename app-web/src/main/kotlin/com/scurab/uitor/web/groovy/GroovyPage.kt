@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.groovy
 
 import ace.Editor
+import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.ui.launchWithProgressBar
@@ -27,6 +28,7 @@ class GroovyPage(private val viewModel: PageViewModel, private val position: Int
     override var element: HTMLElement? = null; private set
 
     private val result by lazyLifecycled { requireElementById<HTMLElement>(ID_RESULT) }
+    private var waitingForResponse = false
 
     override fun buildContent() {
         element = document.create.div(classes = CSS_CODE_EDITOR_CONTAINER) {
@@ -59,20 +61,11 @@ class GroovyPage(private val viewModel: PageViewModel, private val position: Int
             div {
                 button {
                     text("Execute")
-                    onClickFunction = {
-                        launchWithProgressBar {
-                            val response = viewModel.serverApi.executeGroovyCode(editor.getValue())
-                            val now = Date().toLocaleString()
-                            result.innerText = "$now\n$response\n---------------------------------\n" +
-                                    result.innerText
-                        }
-                    }
+                    onClickFunction = { executeCode() }
                 }
                 button {
                     text("Clear Result")
-                    onClickFunction = {
-                        result.innerText = ""
-                    }
+                    onClickFunction = { clearResult() }
                 }
             }
             div {
@@ -81,11 +74,38 @@ class GroovyPage(private val viewModel: PageViewModel, private val position: Int
         }
     }
 
+    private fun executeCode() {
+        if (waitingForResponse) return
+        waitingForResponse = true
+        launchWithProgressBar {
+            val response = viewModel.serverApi.executeGroovyCode(editor.getValue())
+            val now = Date().toLocaleString()
+            result.innerText = "$now\n$response\n---------------------------------\n" +
+                    result.innerText
+            waitingForResponse = false
+        }
+    }
+
+    private fun clearResult() {
+        result.innerText = ""
+    }
+
     override fun onAttachToRoot(rootElement: Element) {
         super.onAttachToRoot(rootElement)
         editor = ace.edit(ID_EDITOR).apply {
             setTheme("ace/theme/monokai")
             session.setMode("ace/mode/groovy")
+        }
+
+        document.addKeyUpListener {
+            dlog { "U" + it.keyCode.toString() + "shift:${it.shiftKey}" }
+            if (it.keyCode == 13 /*enter*/) {
+                if (it.ctrlKey) {
+                    executeCode()
+                } else if (it.altKey) {
+                    clearResult()
+                }
+            }
         }
     }
 }
