@@ -1,0 +1,8 @@
+{
+  "name": "app-web",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "uglify-js": "3.6.8"
+  }
+}

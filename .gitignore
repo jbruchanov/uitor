@@ -2,3 +2,5 @@
 .idea/
 build/
 app-web/index.html
+app-web/node_modules/
+app-web/package-lock.json
