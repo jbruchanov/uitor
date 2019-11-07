@@ -6,6 +6,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.html.img
 import kotlinx.html.js.div
+import kotlinx.html.span
 import org.w3c.dom.HTMLElement
 
 private const val CSS_PBAR = "window-progress-bar"
@@ -14,6 +15,7 @@ object PageProgressBar : HtmlView() {
     private val TAG = "PageProgressBar"
     private var job: Job? = null
     override val element: HTMLElement = document.create.div(classes = CSS_PBAR) {
+        span()
         img(src = "loader.gif")
     }.apply {
         hidden = true

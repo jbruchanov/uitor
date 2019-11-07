@@ -1,9 +1,18 @@
+:root {
+    --font-size-large: 14pt;
+    --font-size: 10pt;
+    --font-size-small: 8pt;
+    --font-family: monospace, sans-serif, "Lucida Console", Monaco;
+    --properties-color-border-width: 0.5pt;
+}
+
 [data-theme="dark"] {
     --background: #2B2B2B;
     --tree-offset-left: 15pt;
     --even-background: #37393b;
     --odd-background: #313335;
     --selected-background: #3d6064;
+    --progress-background:#000;
     --column-height: calc(100vh);
     /* Filter height - 28px, TODO handle it based on flag*/
     --column-height-properties: calc(100vh - 28px);
@@ -17,12 +26,7 @@
     --font-code-number: #6897BB;
     --font-shadow: var(--link-color);
     --filter-highlight-color: #b44038;
-    --font-size-large: 14pt;
-    --font-size: 10pt;
-    --font-size-small: 8pt;
-    --font-family: monospace, sans-serif, "Lucida Console", Monaco;
 
-    --properties-color-border-width: 0.5pt;
     --tree-node-fill: var(--background);
     --tree-node-circle: #b44038;
     --tree-node-circle-selected: var(--link-color);
@@ -39,6 +43,7 @@
     --even-background: #FAFAFA;
     --odd-background: #ecf6fb;
     --selected-background: #b6dafb;
+    --progress-background:#000;
     --column-height: calc(100vh);
     --column-height-properties: calc(100vh - 28px);
     --props-header-titles: calc(100% - 5px);
@@ -51,12 +56,7 @@
     --font-code-number: #6897BB;
     --font-shadow: #DADADA;
     --filter-highlight-color: #ff8900;
-    --font-size-large: 14pt;
-    --font-size: 10pt;
-    --font-size-small: 8pt;
-    --font-family: monospace, sans-serif, "Lucida Console", Monaco;
 
-    --properties-color-border-width: 0.5pt;
     --tree-node-fill: var(--background);
     --tree-node-circle-selected: var(--link-color);
     --tree-node-link: #CCC;
@@ -409,7 +409,7 @@ tr.tree-odd {
 }
 
 .window-progress-bar {
-    position: absolute;
+    position: fixed;
     margin: auto;
     right: 0;
     left: 0;
@@ -418,7 +418,19 @@ tr.tree-odd {
     z-index: 9999999;
 }
 
+.window-progress-bar span {
+    background-color: var(--progress-background);
+    padding: 20px;
+    width: 43px;
+    height: 11px;
+    border-radius: 0.25rem;
+    opacity: 0.75;
+    position: fixed;
+    top: 100px;
+}
+
 .window-progress-bar img {
+    padding: 20px;
     position: fixed;
     top: 100px;
     /*https://codepen.io/sosuke/pen/Pjoqqp*/
