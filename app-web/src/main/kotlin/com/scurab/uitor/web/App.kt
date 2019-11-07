@@ -21,6 +21,7 @@ import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.util.DocumentWrapper
 import com.scurab.uitor.web.util.HashToken
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlin.browser.document
 import kotlin.browser.window
 
@@ -40,8 +41,9 @@ object App {
         }
         DocumentWrapper().addKeyUpListener {
             println(it.keyCode)
-            if (it.keyCode == 84/*t*/) {
-                switchTheme()
+            when(it.keyCode) {
+                84/*t*/ -> switchTheme()
+                82/*r*/ -> reloadTimer()
             }
         }
         val job = GlobalScope.launchWithProgressBar {
@@ -67,6 +69,11 @@ object App {
             "dark"
         }
         document.documentElement.ref.setAttribute("data-theme", theme)
+    }
+
+    private fun reloadTimer() = GlobalScope.launchWithProgressBar(0) {
+        delay(5000)
+        window.location.reload()
     }
 
     fun openPageBaseOnUrl() {
