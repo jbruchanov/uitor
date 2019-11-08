@@ -9,7 +9,20 @@ import com.scurab.uitor.web.common.addMouseClickListener
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.HtmlView
+import com.scurab.uitor.web.ui.PageProgressBar
 import com.scurab.uitor.web.util.obj
+import js.threejs.BoxBufferGeometry
+import js.threejs.GridHelper
+import js.threejs.LoadingManager
+import js.threejs.Mesh
+import js.threejs.MeshBasicMaterial
+import js.threejs.PerspectiveCamera
+import js.threejs.Raycaster
+import js.threejs.Scene
+import js.threejs.TextureLoader
+import js.threejs.TrackballControls
+import js.threejs.Vector2
+import js.threejs.WebGLRenderer
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -17,11 +30,10 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.MouseEvent
-import js.threejs.*
 import kotlin.browser.window
 
 //stop rendering with no events in 5s
-private const val RENDER_PAUSE_TIMEOUT = 5000L
+private const val RENDER_PAUSE_TIMEOUT = 2000L
 const val UNKNOWN_GAP = 4
 
 class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
@@ -133,8 +145,14 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
     }
 
     private fun buildLayout(root: ViewNode, scene: Scene) {
+        val token = PageProgressBar.show()
+        val textureLoader = TextureLoader(manager = LoadingManager(
+            onLoad = { PageProgressBar.hide(token) },
+            onProgress = { _, _, _ -> resetRenderingPause() },
+            onError = { PageProgressBar.hide(token) }
+        ))
         root.all()
-            .map { ViewNode3D(it, viewModel.screenIndex) }
+            .map { ViewNode3D(it, viewModel.screenIndex, textureLoader) }
             .forEach {
                 it.add(scene)
             }

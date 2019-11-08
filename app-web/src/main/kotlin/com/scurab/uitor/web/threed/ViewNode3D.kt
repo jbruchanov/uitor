@@ -24,7 +24,7 @@ private const val COLOR_TEXTURE_SELECTED = "#808080"
 /**
  * Help class to compose ViewNode related threejs objects
  */
-class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int) : IViewNode by viewNode {
+class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int, private val textureLoader: TextureLoader) : IViewNode by viewNode {
 
     override val rect = viewNode.renderAreaRelative?.let { viewNode.rect.addRelative(it) } ?: viewNode.rect
     private val hasCustomRenderArea = rect != viewNode.rect
@@ -49,8 +49,8 @@ class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int) : IViewNo
         textureSideMaterial,//left
         textureSideMaterial,//top
         textureSideMaterial,//bottom
-        viewTexture(FrontSide),//front
-        viewTexture(BackSide)//back
+        viewTexture(FrontSide, textureLoader),//front
+        viewTexture(BackSide, textureLoader)//back
     )
 
     private val mesh = Mesh(geometry, textures)
@@ -81,14 +81,14 @@ class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int) : IViewNo
         }
     }
 
-    private fun viewTexture(side: Side): MeshBasicMaterial {
+    private fun viewTexture(side: Side, textureLoader: TextureLoader): MeshBasicMaterial {
         return MeshBasicMaterial(obj {
             transparent = true
             opacity = 1
             color = COLOR_TEXTURE_DEFAULT
             depthWrite = false
             this.side = FrontSide
-        }).withTexture(viewNode, side, screenIndex)
+        }).withTexture(viewNode, side, screenIndex, textureLoader)
     }
 
     private fun ViewNode.edgeColor(selected: Boolean): Color {
@@ -99,7 +99,7 @@ class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int) : IViewNo
     }
 
     companion object {
-        internal val textureLoader = TextureLoader()
+        //internal val textureLoader = TextureLoader()
         private val colorMatcher = mutableMapOf<StateMatcher, Color>(
             StateMatcher(isLeaf = false, selected = false, hasCustomRenderArea = false) to "#5B0000".threeColor,
             StateMatcher(isLeaf = false, selected = true, hasCustomRenderArea = false) to "#FF0000".threeColor,
@@ -139,11 +139,11 @@ private fun <T : Object3D> T.withName(name: String): T {
     return this
 }
 
-private fun MeshBasicMaterial.withTexture(viewNode: ViewNode, side: Side, screenIndex: Int): MeshBasicMaterial {
+private fun MeshBasicMaterial.withTexture(viewNode: ViewNode, side: Side, screenIndex: Int, textureLoader: TextureLoader): MeshBasicMaterial {
     transparent = !viewNode.shouldRender
     if (viewNode.shouldRender) {
         //this expects to server handle the hammering
-        map = ViewNode3D.textureLoader.load("view.png?position=${viewNode.position}&screenIndex=$screenIndex").apply {
+        map = textureLoader.load("view.png?position=${viewNode.position}&screenIndex=$screenIndex").apply {
             minFilter = js.threejs.LinearFilter
             magFilter = js.threejs.LinearFilter
             transparent = true

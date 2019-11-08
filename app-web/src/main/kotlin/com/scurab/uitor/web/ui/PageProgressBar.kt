@@ -14,6 +14,7 @@ private const val DEFAULT_DELAY = 400L
 object PageProgressBar : HtmlView() {
     private val TAG = "PageProgressBar"
     private var job: Job? = null
+    private var counter = 0
     override val element: HTMLElement = document.create.div(classes = CSS_PBAR) {
         span()
         img(src = "loader.gif")
@@ -23,36 +24,39 @@ object PageProgressBar : HtmlView() {
 
     override fun buildContent() {}
 
-    fun show(delay: Long = 400) {
+    fun show(delay: Long = 400): Int = show(delay, true)
+
+    private fun show(delay: Long, incCounter: Boolean): Int {
         dlog(TAG) { "show:delay:$delay" }
         job?.cancel()
+        job = null
         if (delay == 0L) {
             element.hidden = false
         } else {
             job = launch {
                 kotlinx.coroutines.delay(delay)
-                show(0)
+                show(0, false)
             }
         }
+        if (incCounter) {
+            counter++
+        }
+        return counter
     }
 
-    fun hide() {
-        dlog(TAG) { "hide" }
-        job?.cancel()
-        job = null
-        element.hidden = true
-    }
-
-    fun withProgressBar(delay: Long = DEFAULT_DELAY, block: () -> Unit) {
-        show(delay)
-        block()
-        hide()
+    fun hide(counter: Int/* = -1*/) {
+        dlog(TAG) { "hide sameToken:${counter == this.counter}" }
+        if (counter == -1 || counter == this.counter) {
+            job?.cancel()
+            job = null
+            element.hidden = true
+        }
     }
 }
 
 fun CoroutineScope.launchWithProgressBar(delay: Long = DEFAULT_DELAY, block: suspend CoroutineScope.() -> Unit): Job {
-    PageProgressBar.show(delay)
+    val token = PageProgressBar.show(delay)
     val job = launch(block = block)
-    job.invokeOnCompletion { PageProgressBar.hide() }
+    job.invokeOnCompletion { PageProgressBar.hide(token) }
     return job
 }
