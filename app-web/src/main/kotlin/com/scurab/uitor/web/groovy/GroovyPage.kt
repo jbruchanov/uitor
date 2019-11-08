@@ -93,8 +93,8 @@ class GroovyPage(private val viewModel: PageViewModel, private val position: Int
     override fun onAttachToRoot(rootElement: Element) {
         super.onAttachToRoot(rootElement)
         editor = js.ace.edit(ID_EDITOR).apply {
-            setTheme("/theme/monokai")
-            session.setMode("/mode/groovy")
+            setTheme("ace/theme/monokai")
+            session.setMode("ace/mode/groovy")
         }
 
         document.addKeyUpListener {
