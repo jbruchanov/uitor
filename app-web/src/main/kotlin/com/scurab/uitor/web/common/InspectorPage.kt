@@ -15,7 +15,11 @@ abstract class InspectorPage(protected val viewModel: InspectorViewModel) : Page
                 viewModel.load()
             } catch (e: Exception) {
                 if (e !is CancellationException) {
-                    alert(e)
+                    alert(
+                        "${e.message ?: ""}\n" +
+                                "Unable to load view hierarchy, screenIndex:${viewModel.screenIndex}\n" +
+                                "Is your selected activity running?"
+                    )
                 }
                 elog { e.messageSafe }
             }

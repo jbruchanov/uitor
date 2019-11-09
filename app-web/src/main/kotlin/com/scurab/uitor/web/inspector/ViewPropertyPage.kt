@@ -89,7 +89,10 @@ class ViewPropertyPage(
                 }
                 contentContainer.append(resourcesContentGenerator.buildContent(item))
             } catch (e: Throwable) {
-                alert("Unable to load view property:${property}")
+                alert(
+                    "Unable to load view property:${property}, screenIndex:${viewModel.screenIndex}\n" +
+                            "Is your selected activity running?"
+                )
                 elog(TAG) { e.messageSafe }
             }
         }

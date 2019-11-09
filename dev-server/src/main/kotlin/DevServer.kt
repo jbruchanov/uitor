@@ -5,17 +5,17 @@ import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.features.ResponseException
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.features.CallLogging
 import io.ktor.features.DefaultHeaders
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.readText
-import io.ktor.http.content.URIFileContent
 import io.ktor.http.content.files
 import io.ktor.http.content.static
-import io.ktor.http.contentType
 import io.ktor.request.receiveText
 import io.ktor.request.uri
 import io.ktor.response.respond
@@ -35,7 +35,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.slf4j.event.Level
 import java.io.File
-import java.net.URL
 import java.nio.charset.Charset
 
 
@@ -137,8 +136,14 @@ class DevServer(
                 }
                 uri += s
             }
-            val result = httpClient.get<ByteArray>("http://$localDeviceIp/${uri}")
-            call.respond(result)
+            try {
+                val result = httpClient.get<ByteArray>("http://$localDeviceIp/${uri}")
+                call.respond(result)
+            } catch (e: ResponseException) {
+                call.respond(e.response.status, e.response)
+            } catch (e: Throwable) {
+                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Null exception message")
+            }
         }
 
         get("/{data}.json", response)
