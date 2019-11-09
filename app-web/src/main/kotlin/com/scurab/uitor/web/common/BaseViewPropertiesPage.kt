@@ -21,11 +21,7 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
 
     abstract val contentElement: HTMLElement?
 
-    private var viewPropertiesTableView = ViewPropertiesTableView(
-        viewModel.clientConfig,
-        defaultViewProperties(viewModel.clientConfig),
-        viewModel.screenIndex
-    )
+    private val viewPropertiesStatsView = ViewPropsStatsView(viewModel)
     private val columnsLayoutDelegate = object : IColumnsLayoutDelegate {
         override val innerContentWidthEstimator: (Int) -> Double = { column -> getColumnWidth(column) }
     }
@@ -36,12 +32,12 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
     override fun onAttachToRoot(rootElement: Element) {
         super.onAttachToRoot(rootElement)
         columnsLayout.left.append(contentElement)
-        viewPropertiesTableView.attachTo(columnsLayout.right)
+        viewPropertiesStatsView.attachTo(columnsLayout.right)
     }
 
     override fun buildContent() {
         columnsLayout.buildContent()
-        viewPropertiesTableView.buildContent()
+        viewPropertiesStatsView.buildContent()
         element = columnsLayout.element
     }
 
@@ -49,7 +45,6 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
         super.onAttached()
         columnsLayout.onAttached()
         viewModel.selectedNode.observe {
-            viewPropertiesTableView.viewNode = it
             if (expandViewPropsColumn) {
                 expandViewPropsColumn = false
                 columnsLayout.setGridTemplateColumns("1fr ${SEPARATOR_WIDTH}px ${viewPropertiesWidth}px")

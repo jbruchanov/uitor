@@ -17,7 +17,6 @@ import com.scurab.uitor.web.tree.TidyTreePage
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.util.removeAll
 import com.scurab.uitor.web.util.requireElementById
-import kotlinx.coroutines.launch
 import kotlinx.html.TABLE
 import kotlinx.html.button
 import kotlinx.html.div
