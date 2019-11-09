@@ -1,6 +1,23 @@
 val kotlinDceOutputDir = file("${project.buildDir}/kotlin-js-min/main")
 val artifactOutputDir = file("${project.buildDir}/out")
+val resFolder = file("${project.projectDir}/src/main/resources")
+val releaseFileName = "uitor.js"
+val releaseMinFileName = "uitor.min.js"
 
+fun generateHtmlDeps() : String {
+    return resFolder
+        .listFiles()
+        .filter { it.name.endsWith(".js") || it.name.endsWith(".css") }
+        .map { it.name }
+        .sortedBy { it.substringAfterLast(".") }
+        .joinToString("\n\t") { fileName ->
+            when {
+                fileName.endsWith(".js") -> "<script src=\"$fileName\"></script>"
+                fileName.endsWith(".css") -> "<link rel=\"stylesheet\" href=\"$fileName\">"
+                else -> ""
+            }
+        }
+}
 /**
  * Task to go through all javascript files generated in DCE
  * And order them to load them based on dependencies between them and update the index_template.html
@@ -13,6 +30,7 @@ val createDevIndexHtmlTask = task("createDevIndexHtml") {
         val depsOrdered = getOrderedDeps()
         val exclude = "uitor-app-web.js"
         var text = indexHtmlTemplate.readText()
+        text = text.replace("<!--%HEADER_DEPS%-->", generateHtmlDeps())
         text = text.replace("<!--%SCRIPTS%-->",
             depsOrdered
                 .filter { it.name != exclude }
@@ -44,7 +62,7 @@ val generateSingleArtifact = task("createSingleArtifact") {
     group = "custom build"
     doLast {
         artifactOutputDir.mkdirs()
-        val outputFile = File(artifactOutputDir, "release.js")
+        val outputFile = File(artifactOutputDir, releaseFileName)
         if (outputFile.exists()) {
             check(outputFile.delete()) { "Unable to delete release file:${outputFile}" }
         }
@@ -104,8 +122,8 @@ val installNpmTask = tasks.register<Exec>("installNpm") {
 val uglifyjsReleaseArtifactTask = tasks.create<Exec>("uglifyjsReleaseArtifact") {
     group = "custom build"
     workingDir = project.projectDir
-    val outputFile = File(artifactOutputDir, "release.js")
-    val outputMinFile = File(artifactOutputDir, "release.min.js")
+    val outputFile = File(artifactOutputDir, releaseFileName)
+    val outputMinFile = File(artifactOutputDir, releaseMinFileName)
     val cmd = "uglifyjs -m -c -o \"$outputMinFile\" \"$outputFile\""
     commandLine = listOf("cmd", "/c") + cmd.split(" ")
 }
@@ -117,20 +135,20 @@ val createReleaseIndexHtmlTask = task("createReleaseIndexHtml") {
     group = "custom build"
     doLast {
         val indexHtmlTemplate = file("index_template.html")
-        val outputMinFile = File(artifactOutputDir, "release.min.js")
+        val outputMinFile = File(artifactOutputDir, releaseMinFileName)
         var text = indexHtmlTemplate.readText()
+        text = text.replace("<!--%HEADER_DEPS%-->", generateHtmlDeps())
         text = text.replace("<!--%SCRIPTS%-->", "")
-        val app = outputMinFile.relativeTo(project.projectDir).toString().replace("\\", "/")
         text += """
             <script>
                 window.onload = function() {
                     let script = document.createElement('script');
-                    script.src = "$app";
+                    script.src = "$releaseMinFileName";
                     document.head.appendChild(script)
                 };
             </script>
         """.trimIndent()
-        file("index.html").apply {
+        File(artifactOutputDir, "index.html").apply {
             delete()
             writeText(text)
         }
