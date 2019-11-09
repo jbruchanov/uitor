@@ -1,5 +1,6 @@
 val kotlinDceOutputDir = file("${project.buildDir}/kotlin-js-min/main")
 val artifactOutputDir = file("${project.buildDir}/out")
+val zipArtifactOutputDir = file("${project.buildDir}/artifact")
 val resFolder = file("${project.projectDir}/src/main/resources")
 val releaseFileName = "uitor.js"
 val releaseMinFileName = "uitor.min.js"
@@ -54,9 +55,8 @@ val createDevIndexHtmlTask = task("createDevIndexHtml") {
             writeText(text)
         }
     }
+    dependsOn("runDceKotlin")
 }
-
-createDevIndexHtmlTask.dependsOn("runDceKotlin")
 
 val generateSingleArtifact = task("createSingleArtifact") {
     group = "custom build"
@@ -72,6 +72,7 @@ val generateSingleArtifact = task("createSingleArtifact") {
             outputFile.appendText(f.readText())
         }
     }
+    dependsOn(createDevIndexHtmlTask)
 }
 
 fun getOrderedDeps(): List<File> {
@@ -110,7 +111,6 @@ fun getOrderedDeps(): List<File> {
     }
     return depsOrdered
 }
-generateSingleArtifact.dependsOn(createDevIndexHtmlTask)
 
 val installNpmTask = tasks.register<Exec>("installNpm") {
     group = "custom build"
@@ -126,9 +126,8 @@ val uglifyjsReleaseArtifactTask = tasks.create<Exec>("uglifyjsReleaseArtifact") 
     val outputMinFile = File(artifactOutputDir, releaseMinFileName)
     val cmd = "uglifyjs -m -c -o \"$outputMinFile\" \"$outputFile\""
     commandLine = listOf("cmd", "/c") + cmd.split(" ")
+    dependsOn(installNpmTask, generateSingleArtifact)
 }
-uglifyjsReleaseArtifactTask.dependsOn(installNpmTask, generateSingleArtifact)
-
 
 //release html
 val createReleaseIndexHtmlTask = task("createReleaseIndexHtml") {
@@ -153,6 +152,16 @@ val createReleaseIndexHtmlTask = task("createReleaseIndexHtml") {
             writeText(text)
         }
     }
+    dependsOn(uglifyjsReleaseArtifactTask)
 }
 
-createReleaseIndexHtmlTask.dependsOn(uglifyjsReleaseArtifactTask)
+val assembleReleaseZipArtifactTask = tasks.create<Zip>("assembleReleaseZipArtifact") {
+    group = "custom build"
+    archiveFileName.set("anuitor.zip")
+    destinationDirectory.set(zipArtifactOutputDir)
+    from(resFolder.absolutePath)
+    from(artifactOutputDir.absolutePath) {
+        exclude(releaseFileName)
+    }
+    dependsOn(createReleaseIndexHtmlTask)
+}
