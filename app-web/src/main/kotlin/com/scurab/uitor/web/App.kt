@@ -41,9 +41,11 @@ object App {
         }
         DocumentWrapper().addKeyUpListener {
             println(it.keyCode)
-            when(it.keyCode) {
-                84/*t*/ -> switchTheme()
-                82/*r*/ -> reloadTimer()
+            if (it.altKey) {
+                when (it.keyCode) {
+                    84/*t*/ -> switchTheme()
+                    82/*r*/ -> reloadTimer()
+                }
             }
         }
         out@ kotlin.run {
