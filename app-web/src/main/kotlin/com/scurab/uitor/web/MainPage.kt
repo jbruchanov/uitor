@@ -84,7 +84,7 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
     override fun stateDescription(): String? = null
 
     private fun reloadScreens() {
-        launch {
+        launchWithProgressBar {
             screensSelect.disabled = true
             screensSelect.options.removeAll()
             val activeScreens = serverApi.activeScreens()
