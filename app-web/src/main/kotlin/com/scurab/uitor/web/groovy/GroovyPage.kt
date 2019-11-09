@@ -80,8 +80,7 @@ class GroovyPage(private val viewModel: PageViewModel, private val position: Int
         launchWithProgressBar {
             val response = viewModel.serverApi.executeGroovyCode(editor.getValue())
             val now = Date().toLocaleString()
-            result.innerText = "$now\n$response\n---------------------------------\n" +
-                    result.innerText
+            result.innerHTML = "$now<br/>$response<br/><hr/>" + result.innerHTML
             waitingForResponse = false
         }
     }
