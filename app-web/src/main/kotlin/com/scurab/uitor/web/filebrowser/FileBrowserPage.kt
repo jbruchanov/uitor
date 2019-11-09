@@ -55,7 +55,7 @@ class FileBrowserPage(private val pageViewModel: PageViewModel) : Page() {
         }
 
     override fun buildContent() {
-        element = document.create.div() {
+        element = document.create.div {
             id = ID_FILE_BROWSER_CONTAINER
             div {
                 span { text("Location:") }
@@ -86,7 +86,7 @@ class FileBrowserPage(private val pageViewModel: PageViewModel) : Page() {
         val loc = window.location
         val path = remotePath.joinWith(item.name)
         val url = "${loc.protocol}//${loc.host}/storage.json?path=$path"
-        window.open(url, "_blank", "");
+        window.open(url, "_blank", "")
     }
 
     private fun loadPath(path: String) {

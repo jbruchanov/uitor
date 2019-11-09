@@ -7,7 +7,7 @@ import com.scurab.uitor.common.render.d
 import org.w3c.dom.CanvasRenderingContext2D
 
 fun CanvasRenderingContext2D.clear() {
-    clearRect(0.0, 0.0, canvas.width.toDouble(), canvas.height.toDouble());
+    clearRect(0.0, 0.0, canvas.width.toDouble(), canvas.height.toDouble())
 }
 
 fun CanvasRenderingContext2D.drawRectangle(

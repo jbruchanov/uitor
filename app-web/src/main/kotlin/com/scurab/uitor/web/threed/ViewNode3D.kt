@@ -100,7 +100,7 @@ class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int, private v
 
     companion object {
         //internal val textureLoader = TextureLoader()
-        private val colorMatcher = mutableMapOf<StateMatcher, Color>(
+        private val colorMatcher = mutableMapOf(
             StateMatcher(isLeaf = false, selected = false, hasCustomRenderArea = false) to "#5B0000".threeColor,
             StateMatcher(isLeaf = false, selected = true, hasCustomRenderArea = false) to "#FF0000".threeColor,
             StateMatcher(isLeaf = true, selected = false, hasCustomRenderArea = false) to "#005B00".threeColor,
@@ -149,7 +149,7 @@ private fun MeshBasicMaterial.withTexture(viewNode: ViewNode, side: Side, screen
             transparent = true
             opacity = 1
             premultiplyAlpha = true
-            wrapS = js.threejs.RepeatWrapping;
+            wrapS = js.threejs.RepeatWrapping
             repeat.x = when (side) {
                 BackSide -> -1
                 else -> 1

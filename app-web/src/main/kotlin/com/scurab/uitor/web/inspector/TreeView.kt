@@ -26,7 +26,6 @@ import kotlinx.html.span
 import kotlinx.html.td
 import kotlinx.html.title
 import kotlinx.html.tr
-import kotlinx.html.unsafe
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.events.Event

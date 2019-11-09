@@ -62,8 +62,8 @@ class HorizontalDelegate(private val denseFirstNColumns: Int = 0) : LayoutRender
                 else -> (denseFirstNColumns * 65)
             }
             d.y -= diff
-            if (d.x > x1) x1 = d.x;
-            if (d.x < x0) x0 = d.x;
+            if (d.x > x1) x1 = d.x
+            if (d.x < x0) x0 = d.x
         }
         //.viewBox(Rect(0, 0, width, (x1 - x0 + root.dx * 2).roundToInt()))
         return LayoutResult(
@@ -99,8 +99,8 @@ class VerticalDelegate : LayoutRenderDelegate {
         var x0 = Double.POSITIVE_INFINITY
         var x1 = Double.NEGATIVE_INFINITY
         r.each { d ->
-            if (d.x > x1) x1 = d.x;
-            if (d.x < x0) x0 = d.x;
+            if (d.x > x1) x1 = d.x
+            if (d.x < x0) x0 = d.x
         }
         return LayoutResult(
             r,

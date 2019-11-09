@@ -19,8 +19,7 @@ class ViewPropertiesValueCellRenderer {
         val hightlighted = filter?.takeIf { it.isNotEmpty() }
             ?.let { value.highlightAt(it, HTML_BOLD_START, HTML_BOLD_END) }
             ?: value
-        val out = renderer(key, value, hightlighted)
-        return out
+        return renderer(key, value, hightlighted)
     }
 
     companion object {

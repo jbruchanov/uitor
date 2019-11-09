@@ -66,7 +66,7 @@ fun <T : Element> Element.getElementById(id: String): T? {
     } else {
         for (i in (0 until children.length)) {
             val ch = children[i] ?: continue
-            val r: T? = ch.getElementById<T>(id)
+            val r: T? = ch.getElementById(id)
             if (r != null) {
                 return r
             }

@@ -27,7 +27,7 @@ class HashToken(private val token: String) {
 
     override fun toString(): String {
         val args = arguments.entries.joinToString(separator = DELIMITER) { (k, v) -> "$k$KEY_VALUE_DELIMITER${v}" }
-        return "$HASH${pageId}" + args.takeIf { it.isNotEmpty() }?.let { DELIMITER + it } ?: ""
+        return "$HASH${pageId}" + (args.takeIf { it.isNotEmpty() }?.let { DELIMITER + it } ?: "")
     }
 
     companion object {

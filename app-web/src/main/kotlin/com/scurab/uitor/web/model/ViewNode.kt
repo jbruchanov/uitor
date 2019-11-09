@@ -78,7 +78,7 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
     override fun findFrontVisibleView(x: Int, y: Int, ignore: Set<Int>): ViewNode? {
         //disabled for now, this makes views inactive actitivies "invisible" for search
         if (false && (data.typed<Int>(ViewNodeFields.InternalVisibility)) != 0) {//not visible
-            return null;
+            return null
         }
 
         if (rect.contains(x, y)) {

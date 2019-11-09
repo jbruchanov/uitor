@@ -11,7 +11,7 @@ import kotlin.browser.document
 import kotlin.browser.window
 
 object Navigation {
-    private val TAG = "Navigation"
+    private const val TAG = "Navigation"
     private val rootElement = document.requireElementById("root")
     private var currentPage: Page? = null
 

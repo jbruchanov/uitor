@@ -38,12 +38,12 @@ class ServerApi {
         val result = mutableMapOf<String, List<Triple<Int, String, String?>>>()
         load<Json>("resources.json").let { json ->
             json.keys().forEach { group ->
-                result.put(group, json.requireTypedListOf(group) {
+                result[group] = json.requireTypedListOf(group) {
                     val k = it["Key"] as? Int ?: ise("Missing Int field 'Key' in resources response")
                     val v = it["Value"] as? String ?: ise("Missing String field 'Value' in resources response")
                     val l = it["Value1"] as? String
                     Triple(k, v, l)
-                })
+                }
             }
         }
         return result
