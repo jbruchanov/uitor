@@ -5,6 +5,7 @@ package com.scurab.uitor.web.model
 import com.scurab.uitor.common.model.IViewNode
 import com.scurab.uitor.common.model.ViewNodeFields
 import com.scurab.uitor.common.render.Rect
+import com.scurab.uitor.common.util.capitalLetters
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.forEachReversed
 import com.scurab.uitor.common.util.usingKey
@@ -61,7 +62,7 @@ class ViewNode(json: Json) : IViewNode, ITreeItem {
     val locationScreenX: Int by rawdata.usingKey(ViewNodeFields.LocationScreenX)
     val locationScreenY: Int by rawdata.usingKey(ViewNodeFields.LocationScreenY)
     val typeSimple: String by lazy { rawdata.typed<String>(ViewNodeFields.Type).substringAfterLast(".") }
-    val typeAbbr: String by lazy { typeSimple.filter { it.toInt() in ('A'.toInt()..'Z'.toInt()) } }
+    val typeAbbr: String by lazy { typeSimple.capitalLetters() }
     val type: String by rawdata.usingKey(ViewNodeFields.Type)
     val shouldRender: Boolean by rawdata.usingKey(ViewNodeFields.InternalRenderViewContent)
     val absoluteScaleX: Double by rawdata.usingKey(ViewNodeFields.InternalViewScaleX)

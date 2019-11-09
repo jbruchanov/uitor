@@ -222,6 +222,14 @@ tr.tree-odd {
     float: right;
 }
 
+.tree-res-owner {
+    color: var(--font-color);
+    opacity: 0.5;
+    margin: 0 5px;
+    font-size: var(--font-size-small);
+    float: left;
+}
+
 /*endregion*/
 
 /*region TableView*/

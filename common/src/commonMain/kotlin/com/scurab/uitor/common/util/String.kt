@@ -111,3 +111,5 @@ fun String.highlightAt(substring: String, hStart: String, hEnd: String = hStart)
 
 fun Char.isUppercase() = this in ('A'..'Z')
 fun Char.isLowercase() = this in ('a'..'z')
+
+fun String.capitalLetters() = filter { it.toInt() in ('A'.toInt()..'Z'.toInt()) }

@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.common.render.Color
+import com.scurab.uitor.common.util.capitalLetters
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.MOUSE_MIDDLE
@@ -23,7 +24,9 @@ import kotlinx.html.js.onMouseOverFunction
 import kotlinx.html.js.table
 import kotlinx.html.span
 import kotlinx.html.td
+import kotlinx.html.title
 import kotlinx.html.tr
+import kotlinx.html.unsafe
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.events.Event
@@ -39,6 +42,7 @@ const val CSS_TREE_CLASS_NAME = "tree-class-name"
 const val CSS_TREE_CLASS_NAME_IGNORED = "tree-class-name-ignored"
 const val CSS_TREE_SELECTED = "tree-selected"
 const val CSS_TREE_ID = "tree-res-id"
+const val CSS_TREE_OWNER = "tree-res-owner"
 const val ID_TYPE_NAME = "tree-class-name"
 
 class TreeView(
@@ -118,6 +122,7 @@ class TreeView(
 
         element = document.create.table {
             classes = setOf(CSS_TREE)
+            var lastSimpleClassName: String? = null
             viewNode.forEachIndexed { _, vn ->
                 tr(classes = vn.position.evenOddStyle) {
                     id = vn.position.htmlViewNodeId
@@ -127,7 +132,13 @@ class TreeView(
                     onMouseOutFunction = mouseOutAction
                     onMouseDownFunction = mouseDownAction
                     td {
-                        span { text(" ") }
+                        span(classes = CSS_TREE_OWNER) {
+                            val simpleClassName = vn.owner.substringAfter(".")
+                            val newLevel = lastSimpleClassName != simpleClassName
+                            title = simpleClassName
+                            text(if (newLevel) simpleClassName.substringBefore("@").capitalLetters() else "")
+                            lastSimpleClassName = simpleClassName
+                        }
                     }
                     td {
                         span {
@@ -209,5 +220,9 @@ class TreeView(
 
     private fun ViewNode.typeHighlightColor(): Color? {
         return inspectorViewModel.clientConfig.typeHighlights[type]
+    }
+
+    private fun String.wrapIf(wrap: Boolean, pre: String, post: String): String {
+        return if (wrap) "$pre$this$post" else this
     }
 }
