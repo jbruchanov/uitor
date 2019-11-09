@@ -125,6 +125,7 @@ class DevServer(
     }
 
     private fun Routing.initRemoteServerRoutes(localDeviceIp: String) {
+        val httpClient = HttpClient(CIO)
         val response: PipelineInterceptor<Unit, ApplicationCall> = {
             var uri = call.request.uri.substringAfter("/")
             if (!uri.contains("screenIndex=")) {
@@ -136,7 +137,7 @@ class DevServer(
                 }
                 uri += s
             }
-            val result = HttpClient(CIO).get<ByteArray>("http://$localDeviceIp/${uri}")
+            val result = httpClient.get<ByteArray>("http://$localDeviceIp/${uri}")
             call.respond(result)
         }
 
@@ -147,7 +148,7 @@ class DevServer(
         get("/logcat.txt", response)
         post("/groovy") {
             val requestText = call.receiveText()
-            val result = HttpClient(CIO).post<String>("http://$localDeviceIp/groovy") {
+            val result = httpClient.post<String>("http://$localDeviceIp/groovy") {
                 body = requestText
             }
             call.respond(result)
