@@ -14,7 +14,7 @@ private const val DEFAULT_DELAY = 400L
 object PageProgressBar : HtmlView() {
     private val TAG = "PageProgressBar"
     private var job: Job? = null
-    private var counter = 0
+    private var token = 0
     override val element: HTMLElement = document.create.div(classes = CSS_PBAR) {
         span()
         img(src = "loader.gif")
@@ -26,6 +26,10 @@ object PageProgressBar : HtmlView() {
 
     fun show(delay: Long = 400): Int = show(delay, true)
 
+    /**
+     * Show progress bar
+     * @return A token to use with [hide]. Avoid a problem to hide someone else request about the PBar
+     */
     private fun show(delay: Long, incCounter: Boolean): Int {
         dlog(TAG) { "show:delay:$delay" }
         job?.cancel()
@@ -39,14 +43,22 @@ object PageProgressBar : HtmlView() {
             }
         }
         if (incCounter) {
-            counter++
+            token++
         }
-        return counter
+        return token
     }
 
-    fun hide(counter: Int/* = -1*/) {
-        dlog(TAG) { "hide sameToken:${counter == this.counter}" }
-        if (counter == -1 || counter == this.counter) {
+    /**
+     * Hide progress bar. Pass a token to be sure you are not going to hide pbar if there was another request
+     * [token] Token from [show], pass '-1' to hide no matter other requests.
+     */
+    fun hide(token: Int/* = -1*/) {
+        dlog(TAG) { "hide sameToken:${token == this.token}" }
+        if (token == -1) {
+            //inc token if hiding explicitly to avoid any potential confusion
+            this.token++
+        }
+        if (token == -1 || token == this.token) {
             job?.cancel()
             job = null
             element.hidden = true

@@ -2,6 +2,7 @@ package com.scurab.uitor.web.common
 
 import com.scurab.uitor.common.util.ilog
 import com.scurab.uitor.web.App
+import com.scurab.uitor.web.ui.PageProgressBar
 import com.scurab.uitor.web.util.HashToken
 import com.scurab.uitor.web.util.requireElementById
 import org.w3c.dom.HashChangeEvent
@@ -32,6 +33,7 @@ object Navigation {
     }
 
     fun open(page: Page, pushState: Boolean) {
+        PageProgressBar.hide(-1)
         currentPage?.detach()
         if (pushState) {
             window.history.pushState(
