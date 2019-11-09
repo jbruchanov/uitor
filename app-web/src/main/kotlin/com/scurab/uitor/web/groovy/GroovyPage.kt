@@ -1,12 +1,12 @@
 package com.scurab.uitor.web.groovy
 
-import js.ace.Editor
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.util.HashToken
 import com.scurab.uitor.web.util.lazyLifecycled
+import js.ace.Editor
 import kotlinx.html.button
 import kotlinx.html.div
 import kotlinx.html.id

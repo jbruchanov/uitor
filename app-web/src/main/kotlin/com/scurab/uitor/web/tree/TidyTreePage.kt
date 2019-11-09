@@ -2,34 +2,19 @@ package com.scurab.uitor.web.tree
 
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.BaseViewPropertiesPage
-import com.scurab.uitor.web.common.InspectorPage
 import com.scurab.uitor.web.common.Navigation
-import com.scurab.uitor.web.common.ViewPropertiesTableView
-import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.model.PageViewModel
-import com.scurab.uitor.web.model.ViewNode
-import com.scurab.uitor.web.ui.ColumnsLayout
-import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
-import com.scurab.uitor.web.ui.table.TableViewDelegate
 import com.scurab.uitor.web.util.HashToken
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.html.button
 import kotlinx.html.div
 import kotlinx.html.id
 import kotlinx.html.js.div
 import kotlinx.html.js.onClickFunction
-import kotlinx.html.js.table
-import kotlinx.html.td
-import kotlinx.html.tr
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.HTMLTableElement
 import kotlin.browser.window
 import kotlin.dom.clear
-import kotlin.math.max
 
 private const val CSS_BUTTONS = "ui-tree-buttons"
 private const val ID_TIDY_TREE = "ui-tree-tidy-tree"

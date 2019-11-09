@@ -7,7 +7,6 @@ import kotlinx.html.js.div
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import kotlin.browser.window
-import kotlin.math.roundToInt
 
 private const val CSS_CANVAS_CONTAINER = "threed-canvas-container"
 class ThreeDPage(pageViewModel: PageViewModel) : BaseViewPropertiesPage(pageViewModel) {
