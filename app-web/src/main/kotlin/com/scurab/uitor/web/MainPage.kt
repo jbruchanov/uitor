@@ -11,8 +11,10 @@ import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.resources.ResourcesPage
+import com.scurab.uitor.web.screen.ScreenComponentsPage
 import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
+import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.util.removeAll
 import com.scurab.uitor.web.util.requireElementById
 import kotlinx.coroutines.launch
@@ -65,7 +67,7 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
                 { ResourcesPage(PageViewModel(selectedScreenIndex)) }
                 createPageButton("FileBrowserPage", "File Browser")
                 { FileBrowserPage(PageViewModel(selectedScreenIndex)) }
-                createLinkButton("WindowsPage", "Windows") { "/screencomponents.html" }
+                createPageButton("WindowsPage", "Windows") { ScreenComponentsPage(PageViewModel(selectedScreenIndex)) }
                 createLinkButton("WindowsDetailedPage", "Windows Detailed") { "/screenstructure.json" }
                 createLinkButton("ScreenshotPage", "Screenshot") { "/screen.png?screenIndex=${selectedScreenIndex}" }
                 createLinkButton("LogCatPage", "LogCat") { "/logcat.txt" }

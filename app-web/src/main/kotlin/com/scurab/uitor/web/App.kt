@@ -14,6 +14,7 @@ import com.scurab.uitor.web.inspector.ViewPropertyPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.resources.ResourcesPage
+import com.scurab.uitor.web.screen.ScreenComponentsPage
 import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
 import com.scurab.uitor.web.ui.PageProgressBar
@@ -91,6 +92,7 @@ object App {
             "ThreeDPage" -> ThreeDPage(pageViewModel)
             "ResourcesPage" -> ResourcesPage(pageViewModel)
             "FileBrowserPage" -> FileBrowserPage(pageViewModel)
+            "ScreenComponentsPage" -> ScreenComponentsPage(pageViewModel)
             "ViewPropertyPage" -> {
                 val position = token.arguments["position"]?.toIntOrNull() ?: iae("Missing 'position' arg")
                 val property = token.arguments["property"] ?: iae("Missing 'property' arg")

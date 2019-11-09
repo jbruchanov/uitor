@@ -194,11 +194,11 @@ table.tree tr {
     width: 100%;
 }
 
-tr.tree-even {
+tr.tree-even, .screen-components-row-odd {
     background-color: var(--even-background);
 }
 
-tr.tree-odd {
+tr.tree-odd, .screen-components-row-even {
     background-color: var(--odd-background);
 }
 
@@ -289,7 +289,7 @@ tr.tree-odd {
     background: var(--background);
 }
 
-.ui-table-view tr:hover {
+.ui-table-view tr:hover, .screen-components-row-even:hover, .screen-components-row-odd:hover {
     background: var(--selected-background);
 }
 
@@ -582,4 +582,12 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
 hr {
   border:none;
   border-top: solid var(--divider-color) thin;
+}
+
+.screen-components-package-name, .screen-components-ref {
+    opacity:0.5;
+}
+
+.screen-components-type-name {
+
 }

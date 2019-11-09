@@ -4,6 +4,7 @@ import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.FSItem
 import com.scurab.uitor.web.model.ResourceItem
+import com.scurab.uitor.web.model.ScreenNode
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.model.ViewPropertyItem
 import com.scurab.uitor.web.util.keys
@@ -99,5 +100,10 @@ class ServerApi {
                 .await()
             JSON.parse<T>(text)
         }
+    }
+
+    suspend fun screenComponents(): ScreenNode {
+        val json = load<Json>("screencomponents.json")
+        return ScreenNode(json)
     }
 }
