@@ -152,7 +152,6 @@ class DevServer(
         get("/{data}.json", response)
         get("/screen.png", response)
         get("/view.png", response)
-        get("/screencomponents.html", response)
         get("/logcat.txt", response)
         post("/groovy") {
             val requestText = call.receiveText()
