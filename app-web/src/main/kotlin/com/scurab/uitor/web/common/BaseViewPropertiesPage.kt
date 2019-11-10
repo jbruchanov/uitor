@@ -7,6 +7,7 @@ import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
 import com.scurab.uitor.web.ui.SEPARATOR_WIDTH
 import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
+import com.scurab.uitor.web.ui.ViewPropsStatsView
 import com.scurab.uitor.web.ui.table.TableViewDelegate
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement

@@ -4,16 +4,14 @@ import com.scurab.uitor.common.render.relativeToScale
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.InspectorPage
-import com.scurab.uitor.web.common.ViewPropertiesTableView
+import com.scurab.uitor.web.ui.ViewPropsStatsView
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.model.isIgnored
 import com.scurab.uitor.web.ui.CSS_PROPERTIES_COLOR
 import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
-import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
 import com.scurab.uitor.web.ui.launchWithProgressBar
-import com.scurab.uitor.web.ui.table.TableViewDelegate
 import com.scurab.uitor.web.util.SCROLL_BAR_WIDTH
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
@@ -51,7 +49,7 @@ class LayoutInspectorPage(
     private lateinit var canvasContainer: HTMLElement
     private lateinit var canvasView: CanvasView
     private lateinit var treeView: TreeView
-    private lateinit var propertiesView: ViewPropertiesTableView
+    private val propertiesView = ViewPropsStatsView(viewModel)
     private val mouseLocation by lazyLifecycled { element.ref.requireElementById<HTMLSpanElement>(ID_COORDS) }
     private val colorName by lazyLifecycled { element.ref.requireElementById<HTMLElement>(ID_COLOR_NAME) }
     private val colorPreview by lazyLifecycled { element.ref.requireElementById<HTMLElement>(ID_COLOR_PREVIEW) }
@@ -59,12 +57,6 @@ class LayoutInspectorPage(
     private val ignoreCheckBox by lazyLifecycled { element.ref.requireElementById<HTMLInputElement>(ID_IGNORE_CHECKBOX) }
 
     override var element: HTMLElement? = null; private set
-    private val tableViewDelegate = TableViewDelegate(
-        render = ViewPropertiesTableViewComponents.columnRenderer(pageViewModel.clientConfig, true)
-    ).apply {
-        sorting = true
-        filtering = true
-    }
 
     override fun buildContent() {
         columnsLayout = ColumnsLayout(ColumnsLayoutDelegate(this))
@@ -90,11 +82,7 @@ class LayoutInspectorPage(
         }
         canvasView = CanvasView(viewModel)
         treeView = TreeView(viewModel)
-        propertiesView = ViewPropertiesTableView(
-            viewModel.clientConfig,
-            tableViewDelegate,
-            viewModel.screenIndex
-        )
+        propertiesView.buildContent()
     }
 
     override fun onAttachToRoot(rootElement: Element) {
@@ -142,7 +130,7 @@ class LayoutInspectorPage(
             }
 
             selectedNode.observe {vn ->
-                propertiesView.viewNode = vn
+//                propertiesView.viewNode = vn
                 updateStatusBar(null, vn)
             }
 
