@@ -234,7 +234,7 @@ tr.tree-odd, .screen-components-row-even {
 
 /*region TableView*/
 .ui-table-view-container {
-    height: var(--column-height-properties);
+    
 }
 
 .ui-table-view {
