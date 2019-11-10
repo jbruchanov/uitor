@@ -25,7 +25,7 @@
     --font-code-static-value: #9876AA;
     --font-code-highlight: #9876AA;
     --font-code-number: #6897BB;
-    --font-shadow: var(--link-color);
+    --font-shadow: var(--line-color);
     --filter-highlight-color: #b44038;
 
     --tree-node-fill: var(--background);
@@ -251,14 +251,25 @@ tr.tree-odd, .screen-components-row-even {
     color: var(--link-color);
 }
 
-.ui-table-view-header, .ui-table-view-header-title {
-    border-bottom: 2px solid var(--line-color);
+.ui-table-view-header, .ui-table-view-header-title, .ui-table-view-footer {
     font-size: 1.2em;
     font-weight: bold;
     text-align: left;
     color: var(--font-color);
     text-shadow: var(--font-shadow) 1px 1px 0;
     overflow: hidden;
+}
+
+.ui-table-view-header, .ui-table-view-header-title {
+    border-bottom: 2px solid var(--line-color);
+}
+
+.ui-table-view-footer {
+    border-top: 2px solid var(--line-color);
+}
+
+.ui-table-view tfoot {
+
 }
 
 .ui-table-view-filter {
@@ -323,6 +334,10 @@ tr.tree-odd, .screen-components-row-even {
     border: solid var(--line-color) var(--properties-color-border-width);
     vertical-align: center;
     margin: 2px 3px 0 3px;
+}
+
+#view-properties-stats td {
+    padding: 2px 10px;
 }
 
 /*endregion TableView*/
