@@ -1,13 +1,14 @@
 package com.scurab.uitor.web.threed
 
 import com.scurab.uitor.common.model.IViewNode
+import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.util.obj
 import js.threejs.BackSide
 import js.threejs.BoxGeometry
-import js.threejs.Color
+import js.threejs.Color as JsColor
 import js.threejs.EdgesGeometry
 import js.threejs.FrontSide
 import js.threejs.LineSegments
@@ -94,11 +95,9 @@ class ViewNode3D(val context: ViewNode3DContext) : IViewNode by context.viewNode
         }).withTexture(viewNode, side, context.screenIndex, textureLoader)
     }
 
-    private fun ViewNode.edgeColor(selected: Boolean, clientConfig: ClientConfig): Color {
-        return clientConfig.typeHighlights[type]?.let {
-            if(!selected) it.halfLightness() else it
-        }?.threeColor
-            ?: colorMatcher[StateMatcher(isLeaf, selected, hasCustomRenderArea)]
+    private fun ViewNode.edgeColor(selected: Boolean, clientConfig: ClientConfig): JsColor {
+        return (clientConfig.typeHighlights[type] ?: colorMatcher[StateMatcher(isLeaf, hasCustomRenderArea)])
+            ?.let { if (!selected) it.halfLightness() else it }?.threeColor
             ?: ise(
                 "Invalid state for color, isLeaf:$isLeaf, selected:$selected, hasCustomRenderArea:$hasCustomRenderArea"
             )
@@ -107,14 +106,10 @@ class ViewNode3D(val context: ViewNode3DContext) : IViewNode by context.viewNode
     companion object {
         //internal val textureLoader = TextureLoader()
         private val colorMatcher = mutableMapOf(
-            StateMatcher(isLeaf = false, selected = false, hasCustomRenderArea = false) to "#5B0000".threeColor,
-            StateMatcher(isLeaf = false, selected = true, hasCustomRenderArea = false) to "#FF0000".threeColor,
-            StateMatcher(isLeaf = true, selected = false, hasCustomRenderArea = false) to "#005B00".threeColor,
-            StateMatcher(isLeaf = true, selected = true, hasCustomRenderArea = false) to "#00FF00".threeColor,
-            StateMatcher(isLeaf = false, selected = false, hasCustomRenderArea = true) to "#5B5B00".threeColor,
-            StateMatcher(isLeaf = false, selected = true, hasCustomRenderArea = true) to "#FFFF00".threeColor,
-            StateMatcher(isLeaf = true, selected = false, hasCustomRenderArea = true) to "#5B5B00".threeColor,
-            StateMatcher(isLeaf = true, selected = true, hasCustomRenderArea = true) to "#FFFF00".threeColor
+            StateMatcher(isLeaf = false, hasCustomRenderArea = false) to Color.Red,
+            StateMatcher(isLeaf = true, hasCustomRenderArea = false) to Color.Green,
+            StateMatcher(isLeaf = false, hasCustomRenderArea = true) to Color.Yellow,
+            StateMatcher(isLeaf = true, hasCustomRenderArea = true) to Color.Yellow
         )
         fun fromObject(item: Object3D?): ViewNode3D? {
             return item?.userData as? ViewNode3D
@@ -170,7 +165,6 @@ private fun MeshBasicMaterial.withTexture(viewNode: ViewNode, side: Side, screen
 
 private data class StateMatcher(
     val isLeaf: Boolean,
-    val selected: Boolean,
     val hasCustomRenderArea: Boolean
 )
 
