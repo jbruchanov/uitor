@@ -62,15 +62,15 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
                 { ThreeDPage(PageViewModel(selectedScreenIndex)) }
                 createPageButton("TidyTreePage", "View Hierarchy")
                 { TidyTreePage(PageViewModel(selectedScreenIndex)) }
-                createPageButton("ResourcesPage", "Resources")
+                createPageButton("ResourcesPage", "Resources", true)
                 { ResourcesPage(PageViewModel(selectedScreenIndex)) }
-                createPageButton("FileBrowserPage", "File Browser")
+                createPageButton("FileBrowserPage", "File Browser", true)
                 { FileBrowserPage(PageViewModel(selectedScreenIndex)) }
                 createPageButton("WindowsPage", "Windows") { ScreenComponentsPage(PageViewModel(selectedScreenIndex)) }
-                createLinkButton("WindowsDetailedPage", "Windows Detailed") { "/screenstructure.json" }
-                createLinkButton("ScreenshotPage", "Screenshot") { "/screen.png?screenIndex=${selectedScreenIndex}" }
-                createLinkButton("LogCatPage", "LogCat") { "/logcat.txt" }
-                createPageButton("GroovyPage", "Groovy") { GroovyPage(PageViewModel(selectedScreenIndex), null) }
+                createLinkButton("WindowsDetailedPage", "Windows Detailed") { "screenstructure.json" }
+                createLinkButton("ScreenshotPage", "Screenshot") { "screen.png?screenIndex=${selectedScreenIndex}" }
+                createLinkButton("LogCatPage", "LogCat") { "logcat.txt" }
+                createPageButton("GroovyPage", "Groovy", true) { GroovyPage(PageViewModel(selectedScreenIndex), null) }
             }
         }
     }
@@ -95,8 +95,13 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
         }
     }
 
-    private fun TABLE.createPageButton(key: String, title: String, block: () -> Page) {
+
+    private fun TABLE.createPageButton(key: String, title: String, demoDisabled: Boolean = false, block: () -> Page) {
         createButton(key, title) {
+            if (demoDisabled && DEMO) {
+                alert("Sorry, $title is not supported in demo!")
+                return@createButton
+            }
             try {
                 Navigation.open(block())
             } catch (e: Throwable) {

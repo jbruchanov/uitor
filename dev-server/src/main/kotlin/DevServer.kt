@@ -123,21 +123,24 @@ class DevServer(
         }.start(wait = true)
     }
 
+    private val viewPositionRegex = "position=(\\d*)".toRegex()
+    private val savingForDemo = true
     private fun Routing.initRemoteServerRoutes(localDeviceIp: String) {
         val httpClient = HttpClient(CIO)
         val response: PipelineInterceptor<Unit, ApplicationCall> = {
-            var uri = call.request.uri.substringAfter("/")
-            if (!uri.contains("screenIndex=")) {
-                var s = "screenIndex=0"
-                if (!uri.contains("?")) {
-                    s = "?$s"
-                } else {
-                    s = "&$s"
-                }
-                uri += s
-            }
+            val uri = call.request.uri.substringAfter("/")
             try {
                 val result = httpClient.get<ByteArray>("http://$localDeviceIp/${uri}")
+                if(savingForDemo) {
+                    val fileName = if(uri.contains("view.png")) {
+                        val pos = viewPositionRegex.find(uri)?.groupValues?.get(1)
+                            ?: throw IllegalStateException("Not found position based on defined regex, url:'$uri'")
+                        "view-$pos.png"
+                    } else {
+                        uri.substringBefore("?")
+                    }
+                    File("c:\\Temp\\anuitor\\$fileName").writeBytes(result)
+                }
                 call.respond(result)
             } catch (e: ResponseException) {
                 call.respond(e.response.status, e.response)

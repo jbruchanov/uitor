@@ -30,6 +30,16 @@ fun main() {
     App.start()
 }
 
+/*
+views have to be renamed to view-position.png => view-0.png
+<Directory "/var/www/anuitor/demo2">
+   RewriteEngine On
+   RewriteCond %{QUERY_STRING} ^position=([0-9]*)
+   RewriteRule "^view\.png$" "view-%1.png"
+</Directory>
+ */
+const val DEMO = false
+
 object App {
     val serverApi = ServerApi()
     lateinit var clientConfig: ClientConfig; private set
@@ -94,6 +104,10 @@ object App {
             "FileBrowserPage" -> FileBrowserPage(pageViewModel)
             "ScreenComponentsPage" -> ScreenComponentsPage(pageViewModel)
             "ViewPropertyPage" -> {
+                if (DEMO) {
+                    window.alert("Sorry ViewPropertyPage is not supported in demo!")
+                    return
+                }
                 val position = token.arguments["position"]?.toIntOrNull() ?: iae("Missing 'position' arg")
                 val property = token.arguments["property"] ?: iae("Missing 'property' arg")
                 ViewPropertyPage(position, property, InspectorViewModel(pageViewModel))

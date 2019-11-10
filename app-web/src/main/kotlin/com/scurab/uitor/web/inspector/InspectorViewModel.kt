@@ -13,7 +13,7 @@ class InspectorViewModel(
     val rootNode: IObservable<ViewNode?> = Observable()
     val hoveredNode: IObservable<ViewNode?> = Observable()
     val selectedNode: IObservable<ViewNode?> = Observable()
-    val screenPreviewUrl = "/screen.png?screenIndex=$screenIndex"
+    val screenPreviewUrl = "screen.png?screenIndex=$screenIndex"
     val ignoredViewNodeChanged: IObservable<Pair<ViewNode, Boolean>> = Observable()
     //mix for ignoring by id or by position, todo maybe something better
     val ignoringViewNodeIdsOrPositions: MutableSet<Int> = pageViewModel.clientConfig.pointerIgnoreIds.toMutableSet()
