@@ -79,7 +79,11 @@ class TidyTreePage(pageViewModel: PageViewModel) : BaseViewPropertiesPage(pageVi
     private fun drawDiagram(refreshStats: Boolean) {
         viewModel.rootNode.item?.let { viewNode ->
             container.clear()
-            val svgDiagram = tidyTree.generateSvg(viewNode, viewModel.selectedNode.item, tidyTreeConfig) {
+            val svgDiagram = tidyTree.generateSvg(viewNode,
+                viewModel.selectedNode.item,
+                tidyTreeConfig,
+                viewModel.clientConfig
+            ) {
                 viewModel.selectedNode.post(it)
             }
             svgDiagram.id = ID_TIDY_TREE

@@ -2,6 +2,7 @@ package com.scurab.uitor.web.tree
 
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ellipsizeMid
+import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.ViewNode
 import js.d3.Node
 import js.d3.classes
@@ -12,6 +13,7 @@ import js.d3.onClick
 import js.d3.onMouseLeave
 import js.d3.onMouseOver
 import js.d3.radius
+import js.d3.stroke
 import js.d3.strokeLineJoin
 import js.d3.strokeWidth
 import js.d3.style
@@ -41,6 +43,7 @@ class TidyTree {
     fun generateSvg(data: ViewNode,
                     preSelectedNode: ViewNode? = null,
                     config: TreeConfig = TreeConfig.shortTypesTidyTree,
+                    clientConfig: ClientConfig,
                     nodeClickListener: (ViewNode) -> Unit
     ): SVGElement {
         val (root, width, height, x0) = config.layout(data, config)
@@ -87,6 +90,7 @@ class TidyTree {
         node.append("circle")
             .classes(CSS_CIRCLE)
             .radius(config.circleRadius)
+            .style { d: Node<*> -> d.item.highlightedStyle(clientConfig) }
             .attr("_id") { v: Node<*>, i: Int, items: Array<SVGCircleElement> ->
                 //just workaround how to iterate through nodes/circles and set the selected one
                 if (v.item == preSelectedNode) {
@@ -119,7 +123,12 @@ class TidyTree {
         }
         return svg.node()
     }
+}
 
+private fun ViewNode.highlightedStyle(clientConfig: ClientConfig) : String {
+    return clientConfig.typeHighlights[type]?.let {
+        "stroke:${it.htmlRGBA}"
+    } ?: ""
 }
 
 internal fun SVGElement.setClass(name: String) {
