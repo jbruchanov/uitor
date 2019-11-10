@@ -72,13 +72,4 @@ abstract class BaseViewPropertiesPage(pageViewModel: PageViewModel) : InspectorP
     protected open fun onColumnsResize(sizes: DoubleArray) {
         //subclass
     }
-
-    companion object {
-        fun defaultViewProperties(clientConfig: ClientConfig) = TableViewDelegate(
-            ViewPropertiesTableViewComponents.columnRenderer(clientConfig, true)
-        ).apply {
-            sorting = true
-            filtering = true
-        }
-    }
 }

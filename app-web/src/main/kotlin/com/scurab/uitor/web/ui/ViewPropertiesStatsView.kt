@@ -1,10 +1,12 @@
 package com.scurab.uitor.web.ui
 
+import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.BaseViewPropertiesPage
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.common.ViewPropertiesTableView
 import com.scurab.uitor.web.inspector.InspectorViewModel
+import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.defaultViewProperties
 import com.scurab.uitor.web.ui.table.ITableDataItem
 import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableView
@@ -20,27 +22,29 @@ class ViewPropsStatsView(private val viewModel: InspectorViewModel) : Page() {
     override fun stateDescription(): String? = null
 
     override var element: HTMLElement? = null; private set
-    private val tableView = ViewPropertiesTableView(
+    private val viewPropertiesTableView = ViewPropertiesTableView(
         viewModel.clientConfig,
-        BaseViewPropertiesPage.defaultViewProperties(viewModel.clientConfig),
+        defaultViewProperties(viewModel.clientConfig),
         viewModel.screenIndex
     )
-    private val tableView2 = TableView(delegate = TableViewDelegate<PropertyTableItem>().apply {
+    private val viewStatsTableView = TableView(delegate = TableViewDelegate<PropertyTableItem>().apply {
+        elementId = "view-properties-stats"
         sorting = true
     })
     private val tabHtmlView = TabHtmlView(TabDataProvider(
         2,
-        {
+        name = {
             when (it) {
                 0 -> "Properties"
                 1 -> "Stats"
-                else -> ""
+                else -> ise("Invalid column:$it")
             }
-        }, {
+        },
+        creator = {
             when (it) {
-                0 -> tableView
-                1 -> tableView2
-                else -> TODO()
+                0 -> viewPropertiesTableView
+                1 -> viewStatsTableView
+                else -> ise("Invalid column:$it")
             }
         }
     ))
@@ -57,9 +61,9 @@ class ViewPropsStatsView(private val viewModel: InspectorViewModel) : Page() {
 
     override fun onAttached() {
         super.onAttached()
-        tableView.onAttached()
+        viewPropertiesTableView.onAttached()
         viewModel.selectedNode.observe { node ->
-            tableView.viewNode = node
+            viewPropertiesTableView.viewNode = node
         }
         viewModel.rootNode.observe { node ->
             node?.let { vn ->
@@ -74,7 +78,7 @@ class ViewPropsStatsView(private val viewModel: InspectorViewModel) : Page() {
                     initElements = items,
                     footers = arrayOf("Sum", all.size.toString())
                 )
-                tableView2.data = data
+                viewStatsTableView.data = data
             }
         }
         //no need to load, already done by parent

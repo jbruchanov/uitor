@@ -15,6 +15,7 @@ import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_VALUE
 import com.scurab.uitor.web.ui.table.IRenderingContext
 import com.scurab.uitor.web.ui.table.ITableDataItem
 import com.scurab.uitor.web.ui.table.ITableViewRenderer
+import com.scurab.uitor.web.ui.table.TableViewDelegate
 import com.scurab.uitor.web.util.styleAttributes
 import com.scurab.uitor.web.util.styleBackgroundColor
 import com.scurab.uitor.web.util.toPropertyHighlightColor
@@ -34,13 +35,6 @@ object ViewPropertiesTableViewComponents {
     const val INDEX_KEY = 1
     const val INDEX_VALUE = 2
     const val GROOVY_NAME = "Groovy Console:"
-        /*
-        Navigation.buildUrl(
-                    "GroovyPage",
-                    "screenIndex" to screenIndex,
-                    "position" to position
-                )
-         */
 
     /**
      * Filter data based on smart property filter and property value contains
@@ -65,6 +59,13 @@ object ViewPropertiesTableViewComponents {
 
     fun columnRenderer(clientConfig: ClientConfig, considerLinks: Boolean): ITableViewRenderer<IViewPropertyTableItem> {
         return ViewPropertiesTableViewRenderer(clientConfig, considerLinks)
+    }
+
+    fun defaultViewProperties(clientConfig: ClientConfig) = TableViewDelegate(
+        columnRenderer(clientConfig, true)
+    ).apply {
+        sorting = true
+        filtering = true
     }
 }
 
@@ -95,7 +96,7 @@ private class ViewPropertiesTableViewRenderer(clientConfig: ClientConfig, privat
     private val propertyHighlights = clientConfig.propertyHighlights
     private val valueRender = ViewPropertiesValueCellRenderer()
     override val header: (TH.(IRenderingContext<IViewPropertyTableItem>, String?) -> Unit) = { _, value -> span { text(value ?: "") } }
-    override val footer: (TH.(IRenderingContext<IViewPropertyTableItem>, String?) -> Unit)? = { _, value -> span { text(value ?: "") } }
+    override val footer: (TH.(IRenderingContext<IViewPropertyTableItem>, String?) -> Unit)? = null
 
     @Suppress("NAME_SHADOWING")
     override val cell: TD.(IRenderingContext<IViewPropertyTableItem>, Any) -> Unit = { context, value ->
@@ -105,7 +106,7 @@ private class ViewPropertiesTableViewRenderer(clientConfig: ClientConfig, privat
         val keyRaw = item.name
         val key = item.name.substringBefore(":")
         when (column) {
-            INDEX_COLOR -> key.toPropertyHighlightColor(clientConfig.propertyHighlights)
+            INDEX_COLOR -> key.toPropertyHighlightColor(propertyHighlights)
                 ?.let {
                     span(classes = CSS_PROPERTIES_COLOR) {
                         styleAttributes = it.styleBackgroundColor()
