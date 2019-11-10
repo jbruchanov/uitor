@@ -159,7 +159,7 @@ input {
 }
 
 .canvas-status-bar td:nth-child(1) {
-    min-width: 125px;
+    min-width: 135px;
 }
 
 .canvas-status-bar td:nth-child(2) {
