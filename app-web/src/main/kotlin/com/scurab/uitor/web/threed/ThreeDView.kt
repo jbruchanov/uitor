@@ -152,7 +152,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
             onError = { PageProgressBar.hide(token) }
         ))
         root.all()
-            .map { ViewNode3D(it, viewModel.screenIndex, textureLoader) }
+            .map { ViewNode3D(ViewNode3DContext(it, viewModel.screenIndex, textureLoader, viewModel.clientConfig)) }
             .forEach {
                 it.add(scene)
             }

@@ -1,6 +1,8 @@
 package com.scurab.uitor.web.threed
 
 import com.scurab.uitor.common.model.IViewNode
+import com.scurab.uitor.common.util.ise
+import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.util.obj
 import js.threejs.BackSide
@@ -24,13 +26,14 @@ private const val COLOR_TEXTURE_SELECTED = "#808080"
 /**
  * Help class to compose ViewNode related threejs objects
  */
-class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int, private val textureLoader: TextureLoader) : IViewNode by viewNode {
+class ViewNode3D(val context: ViewNode3DContext) : IViewNode by context.viewNode {
+    val viewNode = context.viewNode
 
     override val rect = viewNode.renderAreaRelative?.let { viewNode.rect.addRelative(it) } ?: viewNode.rect
     private val hasCustomRenderArea = rect != viewNode.rect
     private val geometry = BoxGeometry(rect.width, rect.height, DEPTH)
     private val lineMaterial = js.threejs.LineBasicMaterial(obj {
-        color = viewNode.edgeColor(false)
+        color = viewNode.edgeColor(false, context.clientConfig)
     })
 
     private val lineSegments = LineSegments(EdgesGeometry(geometry), lineMaterial)
@@ -49,8 +52,8 @@ class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int, private v
         textureSideMaterial,//left
         textureSideMaterial,//top
         textureSideMaterial,//bottom
-        viewTexture(FrontSide, textureLoader),//front
-        viewTexture(BackSide, textureLoader)//back
+        viewTexture(FrontSide, context.textureLoader),//front
+        viewTexture(BackSide, context.textureLoader)//back
     )
 
     private val mesh = Mesh(geometry, textures)
@@ -73,7 +76,7 @@ class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int, private v
     }
 
     fun setSelected(selected: Boolean) {
-        lineMaterial.color = viewNode.edgeColor(selected)
+        lineMaterial.color = viewNode.edgeColor(selected, context.clientConfig)
         textures.forEach {
             if (textureSideMaterial != it) {
                 it?.color = (if (selected) COLOR_TEXTURE_SELECTED else COLOR_TEXTURE_DEFAULT).threeColor
@@ -88,14 +91,17 @@ class ViewNode3D(val viewNode: ViewNode, private val screenIndex: Int, private v
             color = COLOR_TEXTURE_DEFAULT
             depthWrite = false
             this.side = FrontSide
-        }).withTexture(viewNode, side, screenIndex, textureLoader)
+        }).withTexture(viewNode, side, context.screenIndex, textureLoader)
     }
 
-    private fun ViewNode.edgeColor(selected: Boolean): Color {
-        return colorMatcher[StateMatcher(
-            isLeaf, selected, hasCustomRenderArea
-        )] ?: throw IllegalStateException("Invalid state for color, " +
-                "isLeaf:$isLeaf, selected:$selected, hasCustomRenderArea:$hasCustomRenderArea")
+    private fun ViewNode.edgeColor(selected: Boolean, clientConfig: ClientConfig): Color {
+        return clientConfig.typeHighlights[type]?.let {
+            if(!selected) it.halfLightness() else it
+        }?.threeColor
+            ?: colorMatcher[StateMatcher(isLeaf, selected, hasCustomRenderArea)]
+            ?: ise(
+                "Invalid state for color, isLeaf:$isLeaf, selected:$selected, hasCustomRenderArea:$hasCustomRenderArea"
+            )
     }
 
     companion object {
@@ -166,4 +172,11 @@ private data class StateMatcher(
     val isLeaf: Boolean,
     val selected: Boolean,
     val hasCustomRenderArea: Boolean
+)
+
+class ViewNode3DContext(
+    val viewNode: ViewNode,
+    val screenIndex: Int,
+    val textureLoader: TextureLoader,
+    val clientConfig: ClientConfig
 )
