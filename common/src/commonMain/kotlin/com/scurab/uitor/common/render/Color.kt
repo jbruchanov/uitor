@@ -29,8 +29,8 @@ data class Color(val value: Int) {
 
     fun withAlpha(alpha: Double): Color {
         val v = value and 0x00FFFFFF//remove alpha
-        val alpha = (min(1.0, max(0.0, alpha)) * 255.0).roundToInt()
-        return Color(v or (alpha shl 24))
+        val a = (min(1.0, max(0.0, alpha)) * 255.0).roundToInt()
+        return Color(v or (a shl 24))
     }
 
     fun toHSV() : FloatArray {
@@ -40,7 +40,7 @@ data class Color(val value: Int) {
         val min = min(rf, min(gf, bf))
         val deltaMaxMin = max - min
 
-        var h: Float; var s: Float; var l = (max + min) / 2f
+        var h: Float; val s: Float; val l = (max + min) / 2f
 
         if (max == min) {
             // Monochromatic
@@ -55,9 +55,9 @@ data class Color(val value: Int) {
             s = deltaMaxMin / (1f - abs(2f * l - 1f))
         }
 
-        h = (h * 60f) % 360f;
+        h = (h * 60f) % 360f
         if (h < 0) {
-            h += 360f;
+            h += 360f
         }
 
         return floatArrayOf(
@@ -86,9 +86,9 @@ data class Color(val value: Int) {
 
         fun fromHSL(hsl: FloatArray) : Color {
             val h = hsl[0]; val s = hsl[1]; val l = hsl[2]
-            val c = (1f - abs(2 * l - 1f)) * s;
-            val m = l - 0.5f * c;
-            val x = c * (1f - abs((h / 60f % 2f) - 1f));
+            val c = (1f - abs(2 * l - 1f)) * s
+            val m = l - 0.5f * c
+            val x = c * (1f - abs((h / 60f % 2f) - 1f))
             val hueSegment = h.toInt() / 60
             var r = 0f; var g = 0f; var b = 0f
 
@@ -105,7 +105,7 @@ data class Color(val value: Int) {
             val ig = g.roundToInt().constrain(0, 255)
             val ib = b.roundToInt().constrain(0, 255)
 
-            return Color(255, ir, ig, ib);
+            return Color(255, ir, ig, ib)
         }
 
         private fun Float.constrain(low: Float, high: Float): Float {
