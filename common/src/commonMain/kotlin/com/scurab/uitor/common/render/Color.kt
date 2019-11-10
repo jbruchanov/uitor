@@ -61,9 +61,9 @@ data class Color(val value: Int) {
         }
 
         return floatArrayOf(
-            constrain(h, 0f, 360f),
-            constrain(s, 0f, 1f),
-            constrain(l, 0f, 1f)
+            h.constrain(0f, 360f),
+            s.constrain(0f, 1f),
+            l.constrain(0f, 1f)
         )
     }
 
@@ -75,6 +75,7 @@ data class Color(val value: Int) {
 
     companion object {
         val Red = Color(0xFFFF0000.toInt())
+        val Green = Color(0xFF00FF00.toInt())
         val Yellow = Color(0xFFFFFF00.toInt())
         val Gray20 = Color(0xFF333333.toInt())
 
@@ -100,19 +101,19 @@ data class Color(val value: Int) {
                 5, 6 -> { r = (255 * (c + m)); g = (255 * m); b = (255 * (x + m)) }
             }
 
-            val ir = constrain(r.roundToInt(), 0, 255)
-            val ig = constrain(g.roundToInt(), 0, 255)
-            val ib = constrain(b.roundToInt(), 0, 255)
+            val ir = r.roundToInt().constrain(0, 255)
+            val ig = g.roundToInt().constrain(0, 255)
+            val ib = b.roundToInt().constrain(0, 255)
 
             return Color(255, ir, ig, ib);
         }
 
-        private fun constrain(amount: Float, low: Float, high: Float): Float {
-            return if (amount < low) low else if (amount > high) high else amount
+        private fun Float.constrain(low: Float, high: Float): Float {
+            return if (this < low) low else if (this > high) high else this
         }
 
-        private fun constrain(amount: Int, low: Int, high: Int): Int {
-            return if (amount < low) low else if (amount > high) high else amount
+        private fun Int.constrain(low: Int, high: Int): Int {
+            return if (this < low) low else if (this > high) high else this
         }
     }
 }
