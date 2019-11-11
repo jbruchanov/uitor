@@ -2,7 +2,7 @@ package com.scurab.uitor.web.tree
 
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.BaseViewPropertiesPage
-import com.scurab.uitor.web.common.Navigation
+import com.scurab.uitor.web.Navigation
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.util.HashToken
 import com.scurab.uitor.web.util.lazyLifecycled

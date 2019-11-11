@@ -5,7 +5,7 @@ import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.matchingIndexes
 import com.scurab.uitor.common.util.npe
-import com.scurab.uitor.web.common.Navigation
+import com.scurab.uitor.web.Navigation
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents.GROOVY_NAME
 import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents.INDEX_COLOR
