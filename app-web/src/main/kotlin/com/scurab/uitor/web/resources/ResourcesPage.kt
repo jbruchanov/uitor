@@ -126,6 +126,9 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
 
     private fun tableRenderer(clickAction: (String) -> Unit): ITableViewRenderer<ResourceTableItem> =
         object : TextTableViewRenderer<ResourceTableItem>() {
+            init {
+                footer = null
+            }
             override val cell: TD.(IRenderingContext<ResourceTableItem>, Any) -> Unit = { _, value ->
                 span {
                     style = "cursor: pointer; display: block; padding: 2px 5px"

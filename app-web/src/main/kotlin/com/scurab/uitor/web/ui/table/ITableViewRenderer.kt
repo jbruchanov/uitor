@@ -46,7 +46,7 @@ interface ITableViewRenderer<T> {
  * Default implementation of Rendering, everything is just simple string
  */
 open class TextTableViewRenderer<T> : ITableViewRenderer<T> {
-    override val header: (TH.(IRenderingContext<T>, String?) -> Unit) = { _, item -> text(item ?: "") }
+    override val header: (TH.(IRenderingContext<T>, String?) -> Unit)? = { _, item -> text(item ?: "") }
     override val cell: (TD.(IRenderingContext<T>, Any) -> Unit) = { _, item -> text(item.toString()) }
-    override val footer: (TH.(IRenderingContext<T>, String?) -> Unit) = { _, item -> text(item ?: "") }
+    override var footer: (TH.(IRenderingContext<T>, String?) -> Unit)? = { _, item -> text(item ?: "") }
 }
