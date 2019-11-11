@@ -112,7 +112,7 @@ class CanvasView(
         document.addKeyDownListener { keyboardEvent ->
             dlog(TAG) { "KeyEvent:${keyboardEvent.keyCode} => '${keyboardEvent.key}'(${keyboardEvent.code})" }
             when (keyboardEvent.keyCode) {
-                106/*'*'*/ -> renderDeviceScreenshot(scaleToFit())
+                106/*'*'*/ -> renderDeviceScreenshot(calculateScaleToFit())
                 107/*+*/ -> onScaleChange(1)
                 109/*-*/ -> onScaleChange(-1)
                 else -> {/*none*/
@@ -121,7 +121,7 @@ class CanvasView(
         }
 
         document.addWindowResizeListener {
-            renderDeviceScreenshot(scaleToFit())
+            renderDeviceScreenshot(calculateScaleToFit())
         }
 
         inspectorViewModel.selectedNode.observe {
@@ -145,12 +145,16 @@ class CanvasView(
         loadImageHandler = LoadImageHandler(image).apply {
             val image = load(url)
             dlog(TAG) { "Image loaded, url:${url} size:${image.width}x${image.height}" }
-            renderDeviceScreenshot(scaleToFit())
+            renderDeviceScreenshot(calculateScaleToFit())
         }
     }
 
     //region scale
-    private fun scaleToFit(): Double {
+    fun scaleToFit() {
+        renderDeviceScreenshot(calculateScaleToFit())
+    }
+
+    private fun calculateScaleToFit(): Double {
         val imageWidth = image.width
         val imageHeight = image.height
         val windowHeight = window.innerHeight

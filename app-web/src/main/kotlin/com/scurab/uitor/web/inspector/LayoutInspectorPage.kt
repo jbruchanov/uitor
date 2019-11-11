@@ -123,6 +123,12 @@ class LayoutInspectorPage(
 
     override fun onAttached() {
         super.onAttached()
+        canvasView.element.ref.hidden = true
+        launchWithProgressBar {
+            canvasView.loadImage(viewModel.screenPreviewUrl)
+            canvasView.element.ref.hidden = false
+            canvasView.scaleToFit()
+        }
         viewModel.apply {
             rootNode.observe {
                 canvasView.renderMouseCross = true
@@ -139,9 +145,6 @@ class LayoutInspectorPage(
             ignoredViewNodeChanged.observe {
                 updateStatusBar(null, viewModel.selectedNode.item ?: it.first)
             }
-        }
-        launchWithProgressBar {
-            canvasView.loadImage(viewModel.screenPreviewUrl)
         }
     }
 
