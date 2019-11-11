@@ -21,6 +21,7 @@
     --divider-color: #676767;
     --link-color: #4682B4;
     --font-color: #BABABA;
+    --font-color-code: var(--font-color);
     --font-code-keyword: #CB772F;
     --font-code-static-value: #9876AA;
     --font-code-highlight: #9876AA;
@@ -52,6 +53,7 @@
     --divider-color: #2b2b2b;
     --link-color: #4682B4;
     --font-color: #2b2b2b;
+    --font-color-code: #FFF;
     --font-code-keyword: #ff973a;
     --font-code-static-value: #d979ff;
     --font-code-highlight: #d979ff;
@@ -518,6 +520,10 @@ button:not(:disabled), [type="button"]:not(:disabled), [type="reset"]:not(:disab
     height: calc(100vh - 20px);
     display: block;
     overflow: auto;
+}
+
+.resources-item-content pre {
+    color: var(--font-color-code);
 }
 
 .resources-item-property-preview {
