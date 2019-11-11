@@ -82,7 +82,7 @@ object App {
     }
 
     private fun reloadTimer() = GlobalScope.launchWithProgressBar(0) {
-        delay(5000)
+        delay(3000)
         window.location.reload()
     }
 
