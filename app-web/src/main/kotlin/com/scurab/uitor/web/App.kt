@@ -46,7 +46,7 @@ object App {
     private var theme: String = ""
 
     fun start() {
-        switchTheme()
+        setTheme(window.localStorage.getItem("theme") ?: "dark")
         document.body.ref.firstElementChild.ref.let {
             PageProgressBar.attachTo(it)
         }
@@ -73,12 +73,23 @@ object App {
     }
 
     private fun switchTheme() {
-        theme = if (theme == "dark") {
-            "light"
-        } else {
-            "dark"
+        setTheme(
+            if (theme == "dark") {
+                "light"
+            } else {
+                "dark"
+            }
+        )
+    }
+
+    private fun setTheme(theme: String) {
+        try {
+            window.localStorage.setItem("theme", theme)
+        } catch (e: Exception) {
+            elog("App") { "Unable to save theme setting into local storage\n${e.messageSafe}" }
         }
         document.documentElement.ref.setAttribute("data-theme", theme)
+        App.theme = theme
     }
 
     private fun reloadTimer() = GlobalScope.launchWithProgressBar(0) {
