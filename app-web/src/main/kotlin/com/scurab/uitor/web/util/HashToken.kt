@@ -1,8 +1,9 @@
 package com.scurab.uitor.web.util
 
 import com.scurab.uitor.common.util.usingKey
+import kotlin.browser.window
 
-class HashToken(private val token: String) {
+class HashToken(private val token: String = window.location.hash) {
     val pageId: String
     val arguments = mutableMapOf<String, String>()
     val type: String? by arguments.usingKey(TYPE) { null }

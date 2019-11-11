@@ -14,6 +14,7 @@ import com.scurab.uitor.web.ui.table.ITableDataItem
 import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableView
 import com.scurab.uitor.web.ui.table.TableViewDelegate
+import com.scurab.uitor.web.util.HashToken
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
 import kotlinx.html.div
@@ -69,7 +70,8 @@ class FileBrowserPage(private val pageViewModel: PageViewModel) : Page() {
     override fun onAttachToRoot(rootElement: Element) {
         super.onAttachToRoot(rootElement)
         tableView.attachTo(element.ref)
-        loadPath("")
+        val path = HashToken().arguments["path"] ?: ""
+        loadPath(path)
     }
 
     private fun onItemClick(tableItem: FSTableItem) {
