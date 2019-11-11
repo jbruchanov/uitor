@@ -32,7 +32,7 @@ object PageProgressBar : HtmlView() {
      * @return A token to use with [hide]. Avoid a problem to hide someone else request about the PBar
      */
     private fun show(delay: Long, incCounter: Boolean): Int {
-        dlog(TAG) { "show:delay:$delay" }
+        dlog(TAG) { "show:delay:$delay, incCounter:$incCounter, token:${if (incCounter) token + 1 else token}" }
         job?.cancel()
         job = null
         if (delay == 0L) {
@@ -54,7 +54,7 @@ object PageProgressBar : HtmlView() {
      * [token] Token from [show], pass '-1' to hide no matter other requests.
      */
     fun hide(token: Int/* = -1*/) {
-        dlog(TAG) { "hide sameToken:${token == this.token}" }
+        dlog(TAG) { "hide sameToken:${token == this.token}, token:$token" }
         if (token == -1) {
             //inc token if hiding explicitly to avoid any potential confusion
             this.token++
