@@ -2,7 +2,7 @@ package com.scurab.uitor.web.filebrowser
 
 import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.ref
-import com.scurab.uitor.web.common.Navigation
+import com.scurab.uitor.web.Navigation
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.filebrowser.FSTableItem.Companion.TYPE_FILE
 import com.scurab.uitor.web.filebrowser.FSTableItem.Companion.TYPE_FOLDER
@@ -31,7 +31,7 @@ private const val ID_FILE_BROWSER_CURRENT_FOLDER = "file-browser-current-folder"
 
 class FileBrowserPage(private val pageViewModel: PageViewModel) : Page() {
 
-    private var _stateDescription: String? = null
+    private var _stateDescription: String = ""
         set(value) {
             field = value
             Navigation.updateDescriptionState(this)
