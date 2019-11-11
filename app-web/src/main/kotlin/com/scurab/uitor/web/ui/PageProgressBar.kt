@@ -28,7 +28,12 @@ object PageProgressBar : HtmlView() {
     override fun buildContent() {}
 
     fun show(delay: Long = 400): Int {
+        check(delay >= 0) { "Invalid delay:$delay, must be non-negative number" }
         token++
+        if (delay == 0L) {
+            //add it to delayed directly, so later check works fine
+            delayedTokens.add(token)
+        }
         return show(delay, token)
     }
 
