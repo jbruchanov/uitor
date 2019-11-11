@@ -6,12 +6,9 @@ import com.scurab.uitor.common.util.messageSafe
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.ui.launchWithProgressBar
-import com.scurab.uitor.web.util.DefaultCoroutineErrorHandler
 import com.scurab.uitor.web.util.HashToken
 import com.scurab.uitor.web.util.lazyLifecycled
 import js.ace.Editor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.html.button
 import kotlinx.html.div
 import kotlinx.html.id
@@ -84,7 +81,7 @@ class GroovyPage(private val viewModel: PageViewModel, private val position: Int
         waitingForResponse = true
         launchWithProgressBar {
             val now = Date().toLocaleString()
-            val message = try {
+            var message = try {
                 viewModel.serverApi.executeGroovyCode(editor.getValue())
             } catch (e: Exception) {
                 elog { e.messageSafe }
@@ -92,6 +89,9 @@ class GroovyPage(private val viewModel: PageViewModel, private val position: Int
             } finally {
                 waitingForResponse = false
             }
+            message = message
+                .replace("\n", "<br/>")
+                .replace("\t","&nbsp;&nbsp;&nbsp;&nbsp;")
             result.innerHTML = "$now<br/>${message}<br/><hr/>" + result.innerHTML
         }
     }
