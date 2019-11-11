@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.ui
 
 import com.scurab.uitor.common.util.dlog
+import com.scurab.uitor.web.util.DefaultCoroutineErrorHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -68,7 +69,7 @@ object PageProgressBar : HtmlView() {
 
 fun CoroutineScope.launchWithProgressBar(delay: Long = DEFAULT_DELAY, block: suspend CoroutineScope.() -> Unit): Job {
     val token = PageProgressBar.show(delay)
-    val job = launch(block = block)
+    val job = launch(context = DefaultCoroutineErrorHandler, block = block)
     job.invokeOnCompletion { PageProgressBar.hide(token) }
     return job
 }

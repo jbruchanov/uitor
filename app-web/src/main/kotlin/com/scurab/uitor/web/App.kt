@@ -59,22 +59,16 @@ object App {
                 }
             }
         }
-        out@ kotlin.run {
-            val job = GlobalScope.launchWithProgressBar {
-                try {
-                    clientConfig = serverApi.clientConfiguration()
-                } catch (e: Throwable) {
-                    window.alert("Unable to load client configuration")
-                    elog("App") { e.messageSafe }
-                    return@out
-                }
-                try {
-                    check(clientConfig.pages.isNotEmpty()) { "ClientConfig.pages is empty!" }
-                    openPageBaseOnUrl()
-                } catch (e: Exception) {
-                    window.alert(e.messageSafe)
-                }
+        GlobalScope.launchWithProgressBar {
+            try {
+                clientConfig = serverApi.clientConfiguration()
+            } catch (e: Throwable) {
+                window.alert("Unable to load client configuration")
+                elog("App") { e.messageSafe }
+                return@launchWithProgressBar
             }
+            check(clientConfig.pages.isNotEmpty()) { "ClientConfig.pages is empty!" }
+            openPageBaseOnUrl()
         }
     }
 
