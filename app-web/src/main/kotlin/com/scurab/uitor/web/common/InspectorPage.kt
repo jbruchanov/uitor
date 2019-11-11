@@ -9,7 +9,8 @@ import kotlinx.coroutines.CancellationException
 
 abstract class InspectorPage(protected val viewModel: InspectorViewModel) : Page() {
 
-    init {
+    override fun onAttached() {
+        //keep it after init{}, otherwise navigation will explicitly hide the pbar
         launchWithProgressBar {
             try {
                 viewModel.load()
@@ -24,6 +25,7 @@ abstract class InspectorPage(protected val viewModel: InspectorViewModel) : Page
                 elog { e.messageSafe }
             }
         }
+        super.onAttached()
     }
 
     override fun stateDescription(): String {
