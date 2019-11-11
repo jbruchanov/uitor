@@ -1,14 +1,11 @@
 package com.scurab.uitor.web.common
 
 import com.scurab.uitor.web.inspector.InspectorViewModel
-import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
 import com.scurab.uitor.web.ui.SEPARATOR_WIDTH
-import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
-import com.scurab.uitor.web.ui.ViewPropsStatsView
-import com.scurab.uitor.web.ui.table.TableViewDelegate
+import com.scurab.uitor.web.ui.viewproperties.ViewPropsStatsView
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import kotlin.browser.window

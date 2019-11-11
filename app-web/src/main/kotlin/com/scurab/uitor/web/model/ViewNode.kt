@@ -9,7 +9,7 @@ import com.scurab.uitor.common.util.capitalLetters
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.forEachReversed
 import com.scurab.uitor.common.util.usingKey
-import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.GROOVY_NAME
+import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents.GROOVY_NAME
 import com.scurab.uitor.web.util.getMap
 import com.scurab.uitor.web.util.getTypedListOf
 import com.scurab.uitor.web.util.jsonField

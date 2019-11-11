@@ -4,11 +4,11 @@ import com.scurab.uitor.common.render.relativeToScale
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.InspectorPage
-import com.scurab.uitor.web.ui.ViewPropsStatsView
+import com.scurab.uitor.web.ui.viewproperties.ViewPropsStatsView
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.model.isIgnored
-import com.scurab.uitor.web.ui.CSS_PROPERTIES_COLOR
+import com.scurab.uitor.web.ui.viewproperties.CSS_PROPERTIES_COLOR
 import com.scurab.uitor.web.ui.ColumnsLayout
 import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
 import com.scurab.uitor.web.ui.launchWithProgressBar

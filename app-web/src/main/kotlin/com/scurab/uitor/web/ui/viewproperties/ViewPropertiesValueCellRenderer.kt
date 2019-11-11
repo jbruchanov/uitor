@@ -1,4 +1,4 @@
-package com.scurab.uitor.web.ui
+package com.scurab.uitor.web.ui.viewproperties
 
 import com.scurab.uitor.common.render.toColor
 import com.scurab.uitor.common.util.highlightAt

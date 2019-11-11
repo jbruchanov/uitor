@@ -1,12 +1,12 @@
-package com.scurab.uitor.web.ui
+package com.scurab.uitor.web.ui.viewproperties
 
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.ref
-import com.scurab.uitor.web.common.BaseViewPropertiesPage
 import com.scurab.uitor.web.common.Page
-import com.scurab.uitor.web.common.ViewPropertiesTableView
 import com.scurab.uitor.web.inspector.InspectorViewModel
-import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.defaultViewProperties
+import com.scurab.uitor.web.ui.TabDataProvider
+import com.scurab.uitor.web.ui.TabHtmlView
+import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents.defaultViewProperties
 import com.scurab.uitor.web.ui.table.ITableDataItem
 import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableView

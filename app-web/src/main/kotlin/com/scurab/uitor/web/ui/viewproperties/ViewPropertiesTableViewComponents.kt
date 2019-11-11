@@ -1,4 +1,4 @@
-package com.scurab.uitor.web.ui
+package com.scurab.uitor.web.ui.viewproperties
 
 import com.scurab.uitor.common.util.highlightAt
 import com.scurab.uitor.common.util.iae
@@ -6,12 +6,11 @@ import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.matchingIndexes
 import com.scurab.uitor.common.util.npe
 import com.scurab.uitor.web.common.Navigation
-import com.scurab.uitor.web.common.PropertiesViewRenderingContext
 import com.scurab.uitor.web.model.ClientConfig
-import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.GROOVY_NAME
-import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_COLOR
-import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_KEY
-import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents.INDEX_VALUE
+import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents.GROOVY_NAME
+import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents.INDEX_COLOR
+import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents.INDEX_KEY
+import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents.INDEX_VALUE
 import com.scurab.uitor.web.ui.table.IRenderingContext
 import com.scurab.uitor.web.ui.table.ITableDataItem
 import com.scurab.uitor.web.ui.table.ITableViewRenderer

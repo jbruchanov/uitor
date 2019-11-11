@@ -1,10 +1,7 @@
-package com.scurab.uitor.web.common
+package com.scurab.uitor.web.ui.viewproperties
 
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.ViewNode
-import com.scurab.uitor.web.ui.IViewPropertyTableItem
-import com.scurab.uitor.web.ui.ViewNodePropertyTableItem
-import com.scurab.uitor.web.ui.ViewPropertiesTableViewComponents
 import com.scurab.uitor.web.ui.table.IRenderingContext
 import com.scurab.uitor.web.ui.table.ITableViewDelegate
 import com.scurab.uitor.web.ui.table.TableData
