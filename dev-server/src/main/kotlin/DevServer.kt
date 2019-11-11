@@ -124,7 +124,7 @@ class DevServer(
     }
 
     private val viewPositionRegex = "position=(\\d*)".toRegex()
-    private val savingForDemo = true
+    private val savingForDemo = false
     private fun Routing.initRemoteServerRoutes(localDeviceIp: String) {
         val httpClient = HttpClient(CIO)
         val response: PipelineInterceptor<Unit, ApplicationCall> = {
