@@ -16,6 +16,8 @@ object PageProgressBar : HtmlView() {
     private val TAG = "PageProgressBar"
     private var job: Job? = null
     private var token = 0
+    private var startedTokens = mutableSetOf<Int>()
+    private var delayedTokens = mutableSetOf<Int>()
     override val element: HTMLElement = document.create.div(classes = CSS_PBAR) {
         span()
         img(src = "loader.gif")
@@ -25,26 +27,29 @@ object PageProgressBar : HtmlView() {
 
     override fun buildContent() {}
 
-    fun show(delay: Long = 400): Int = show(delay, true)
+    fun show(delay: Long = 400): Int {
+        token++
+        return show(delay, token)
+    }
 
     /**
      * Show progress bar
      * @return A token to use with [hide]. Avoid a problem to hide someone else request about the PBar
      */
-    private fun show(delay: Long, incCounter: Boolean): Int {
-        dlog(TAG) { "show:delay:$delay, incCounter:$incCounter, token:${if (incCounter) token + 1 else token}" }
-        job?.cancel()
-        job = null
+    private fun show(delay: Long, token: Int): Int {
+        dlog(TAG) { "showing delay:$delay, token:${token}, startedTokens:${startedTokens}, delayedTokens:${delayedTokens}" }
         if (delay == 0L) {
-            element.hidden = false
+            if (delayedTokens.contains(token)) {
+                delayedTokens.remove(token)
+                startedTokens.add(token)
+                element.hidden = false
+            }
         } else {
+            delayedTokens.add(token)
             job = launch {
                 kotlinx.coroutines.delay(delay)
-                show(0, false)
+                show(0, token)
             }
-        }
-        if (incCounter) {
-            token++
         }
         return token
     }
@@ -54,12 +59,14 @@ object PageProgressBar : HtmlView() {
      * [token] Token from [show], pass '-1' to hide no matter other requests.
      */
     fun hide(token: Int/* = -1*/) {
-        dlog(TAG) { "hide sameToken:${token == this.token}, token:$token" }
+        dlog(TAG) { "hiding token:$token, started:${startedTokens} delayedTokens:${delayedTokens}" }
         if (token == -1) {
-            //inc token if hiding explicitly to avoid any potential confusion
-            this.token++
+            delayedTokens.clear()
+            startedTokens.clear()
         }
-        if (token == -1 || token == this.token) {
+        delayedTokens.remove(token)
+        startedTokens.remove(token)
+        if (startedTokens.isEmpty() && delayedTokens.isEmpty()) {
             job?.cancel()
             job = null
             element.hidden = true
