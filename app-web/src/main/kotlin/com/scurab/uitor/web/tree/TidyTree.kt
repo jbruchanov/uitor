@@ -110,15 +110,16 @@ class TidyTree {
             .text { d: Node<*> -> config.nodeTitleSelector(d) }
             .clone(true).lower()
 
+        node.append("title")
+            .text { "${it.item.type}\n${it.item.ids ?: ""}" }
+
         if (config.showViewIds) {
             node.append("text")
                 .classes(CSS_NODE_ID)
                 .dy { d -> if (d.item.ids != null) "1.1em" else "0em" }
                 .x { d: Node<*> -> d.textAnchorX(config) }
                 .textAnchor { d: Node<*> -> d.textAnchor(config) }
-                .text { d: Node<*> ->
-                    d.item.ids ?: ""
-                }
+                .text { d: Node<*> -> d.item.ids?.idEllipsizedMid(d.depth) ?: "" }
                 .clone(true).lower()
         }
         return svg.node()
@@ -129,6 +130,22 @@ private fun ViewNode.highlightedStyle(clientConfig: ClientConfig) : String {
     return clientConfig.typeHighlights[type]?.let {
         "stroke:${it.htmlRGBA}"
     } ?: ""
+}
+
+private fun String.idEllipsizedMid(nodeDepth: Int): String {
+    return if(nodeDepth < TreeConfig.DENSE_COLS && this.length > 11) {
+        ellipsizeMid(14)
+    } else {
+        ellipsizeMid(24)
+    }
+}
+
+private fun String.typeEllipsizedMid(nodeDepth: Int): String {
+    return if(nodeDepth < TreeConfig.DENSE_COLS && length > 11) {
+        ellipsizeMid(10)
+    } else {
+        ellipsizeMid(21)
+    }
 }
 
 internal fun SVGElement.setClass(name: String) {
@@ -148,21 +165,14 @@ class TreeConfig(
     val nodeTitleSelector: (Node<*>) -> String
 ) : LayoutRenderDelegate by delegate {
     companion object {
-        private const val DENSE_COLS = 4
+        internal const val DENSE_COLS = 4
         val defaultTidyTree: TreeConfig = TreeConfig(
             "default",
             175.0, 30.0, 5.0,
             showViewIds = true,
             viewGroupAnchorEnd = false,
             delegate = HorizontalDelegate(DENSE_COLS)
-        ) {
-            val typeSimple = it.item.typeSimple
-            if(it.depth < DENSE_COLS && typeSimple.length > 11) {
-                typeSimple.ellipsizeMid(10)
-            } else {
-                typeSimple.ellipsizeMid(21)
-            }
-        }
+        ) { it.item.typeSimple.typeEllipsizedMid(it.depth) }
 
         val shortTypesTidyTree = TreeConfig(
             "shortTypes",
@@ -172,9 +182,7 @@ class TreeConfig(
             showViewIds = false,
             viewGroupAnchorEnd = false,
             delegate = HorizontalDelegate()
-        ) {
-            it.item.typeAbbr
-        }
+        ) { it.item.typeAbbr }
 
         val verticalSimpleTree =
             TreeConfig(
