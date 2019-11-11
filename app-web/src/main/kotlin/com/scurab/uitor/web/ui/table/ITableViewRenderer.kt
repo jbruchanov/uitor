@@ -39,7 +39,6 @@ interface ITableViewRenderer<T> {
     val header: (TH.(IRenderingContext<T>, String?) -> Unit)?
     val cell: (TD.(IRenderingContext<T>, Any) -> Unit)
     val footer: (TH.(IRenderingContext<T>, String?) -> Unit)?
-
 }
 
 /**
