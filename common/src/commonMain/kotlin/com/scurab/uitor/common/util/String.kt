@@ -113,3 +113,15 @@ fun Char.isUppercase() = this in ('A'..'Z')
 fun Char.isLowercase() = this in ('a'..'z')
 
 fun String.capitalLetters() = filter { it.toInt() in ('A'.toInt()..'Z'.toInt()) }
+
+fun String.prefixToLen(prefix: Char, len: Int): String {
+    return if (this.length >= len) {
+        this
+    } else {
+        StringBuilder().let { sb ->
+            repeat(len - this.length) { sb.append(prefix) }
+            sb.append(this)
+            sb.toString()
+        }
+    }
+}

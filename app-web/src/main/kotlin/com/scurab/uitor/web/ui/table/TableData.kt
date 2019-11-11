@@ -22,7 +22,7 @@ open class TableData<T : ITableDataItem> constructor(
     /**
      * Convert value field during sorting to String so it's easily comparable
      */
-    var sortingMapper: (Any) -> String = { it.toString() }
+    var sortingMapper: (column: Int, value: Any) -> String = { _, it -> it.toString() }
 
     override val rows: Int get() = elements.size
     override fun headerCell(column: Int): String? = headers.getOrNull(column)
@@ -43,7 +43,7 @@ open class TableData<T : ITableDataItem> constructor(
     }
 
     private fun sortingKeys(column: Int): List<Pair<String, Int>> =
-        elements.mapIndexed { i, item -> Pair(sortingMapper(item[column]), i) }
+        elements.mapIndexed { i, item -> Pair(sortingMapper(column, item[column]), i) }
 
     private fun List<Pair<*, Int>>.sortedResult(): List<T> = map { (_, i) -> elements[i] }
 

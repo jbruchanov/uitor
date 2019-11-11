@@ -1,6 +1,8 @@
 package com.scurab.uitor.web.ui.viewproperties
 
+import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.ise
+import com.scurab.uitor.common.util.prefixToLen
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.inspector.InspectorViewModel
@@ -77,7 +79,15 @@ class ViewPropsStatsView(private val viewModel: InspectorViewModel) : Page() {
                     arrayOf("Name", "Count"),
                     initElements = items,
                     footers = arrayOf("Sum", all.size.toString())
-                )
+                ).apply {
+                    sortingMapper = { column, value ->
+                        when (column) {
+                            0 -> value.toString()
+                            1 -> value.toString().prefixToLen('0', 3)
+                            else -> iae("Invalid column:${column}")
+                        }
+                    }
+                }
                 viewStatsTableView.data = data
             }
         }

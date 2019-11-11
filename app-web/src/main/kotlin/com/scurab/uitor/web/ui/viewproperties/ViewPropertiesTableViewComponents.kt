@@ -54,7 +54,7 @@ object ViewPropertiesTableViewComponents {
             } ?: elements
         }
 
-    val sortingMapper: (Any) -> String = { it.toString().toLowerCase() }
+    val sortingMapper: (column: Int, value: Any) -> String = { _, v -> v.toString().toLowerCase() }
 
     fun columnRenderer(clientConfig: ClientConfig, considerLinks: Boolean): ITableViewRenderer<IViewPropertyTableItem> {
         return ViewPropertiesTableViewRenderer(clientConfig, considerLinks)
