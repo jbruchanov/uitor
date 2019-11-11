@@ -130,7 +130,6 @@ class LayoutInspectorPage(
             }
 
             selectedNode.observe {vn ->
-//                propertiesView.viewNode = vn
                 updateStatusBar(null, vn)
             }
 
