@@ -5,7 +5,7 @@ object ViewNodeFields {
     const val IDs = "IDs"
     const val Level = "Level"
     const val Position = "Position"
-    const val Owner = "Owner"
+    const val Owner = "Owner:"
     const val Data = "Data"
     const val Nodes = "Nodes"
     const val Width = "Width"
