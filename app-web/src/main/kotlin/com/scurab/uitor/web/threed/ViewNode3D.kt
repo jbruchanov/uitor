@@ -8,7 +8,6 @@ import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.util.obj
 import js.threejs.BackSide
 import js.threejs.BoxGeometry
-import js.threejs.Color as JsColor
 import js.threejs.EdgesGeometry
 import js.threejs.FrontSide
 import js.threejs.LineSegments
@@ -18,6 +17,7 @@ import js.threejs.Object3D
 import js.threejs.Scene
 import js.threejs.Side
 import js.threejs.TextureLoader
+import js.threejs.Color as JsColor
 
 private const val DEPTH = 1
 private const val HALF = 0.5

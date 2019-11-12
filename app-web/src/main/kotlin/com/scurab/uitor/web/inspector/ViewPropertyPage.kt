@@ -5,12 +5,12 @@ import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.messageSafe
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.resources.ResourcesContentGenerator
-import com.scurab.uitor.web.ui.viewproperties.IViewPropertyTableItem
-import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableView
 import com.scurab.uitor.web.ui.table.TableViewDelegate
+import com.scurab.uitor.web.ui.viewproperties.IViewPropertyTableItem
+import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents
 import com.scurab.uitor.web.util.HashToken
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.toPropertyHighlightColor

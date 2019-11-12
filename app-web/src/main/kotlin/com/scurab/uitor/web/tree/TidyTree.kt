@@ -13,7 +13,6 @@ import js.d3.onClick
 import js.d3.onMouseLeave
 import js.d3.onMouseOver
 import js.d3.radius
-import js.d3.stroke
 import js.d3.strokeLineJoin
 import js.d3.strokeWidth
 import js.d3.style

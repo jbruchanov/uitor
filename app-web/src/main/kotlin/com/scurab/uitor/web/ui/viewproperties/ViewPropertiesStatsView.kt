@@ -8,11 +8,11 @@ import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.ui.TabDataProvider
 import com.scurab.uitor.web.ui.TabHtmlView
-import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents.defaultViewProperties
 import com.scurab.uitor.web.ui.table.ITableDataItem
 import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableView
 import com.scurab.uitor.web.ui.table.TableViewDelegate
+import com.scurab.uitor.web.ui.viewproperties.ViewPropertiesTableViewComponents.defaultViewProperties
 import kotlinx.html.js.div
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
