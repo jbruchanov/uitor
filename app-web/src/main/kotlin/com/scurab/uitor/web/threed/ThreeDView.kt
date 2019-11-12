@@ -153,8 +153,12 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
         ))
         root.all()
             .map { ViewNode3D(ViewNode3DContext(it, viewModel.screenIndex, textureLoader, viewModel.clientConfig)) }
-            .forEach {
-                it.add(scene)
+            .toList().let {
+                it.forEach { n -> n.add(scene) }
+                val toRender = it.count { n -> n.viewNode.shouldRender }
+                if (toRender == 0) {
+                    PageProgressBar.hide(token)
+                }
             }
     }
 
