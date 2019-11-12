@@ -12,6 +12,7 @@ import com.scurab.uitor.web.ui.IColumnsLayoutDelegate
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.ui.viewproperties.CSS_PROPERTIES_COLOR
 import com.scurab.uitor.web.ui.viewproperties.ViewPropsStatsView
+import com.scurab.uitor.web.util.SCROLL_BAR_WIDTH
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
 import kotlinx.html.checkBoxInput
@@ -87,6 +88,8 @@ class LayoutInspectorPage(
 
     override fun onAttachToRoot(rootElement: Element) {
         columnsLayout.attachTo(rootElement)
+        //just init size to avoid UI glitches like changes, is initiated later
+        columnsLayout.setGridTemplateColumns("1fr 0px 0px 0px 0px")
         columnsLayout.left.append(canvasContainer)
         canvasView.attachTo(canvasContainer)
         treeView.attachTo(columnsLayout.middle.first())
@@ -190,11 +193,11 @@ class LayoutInspectorPage(
             col1 = imageWidth
             when {
                 resWidth > (treeWidth + expCol3) -> {
-                    col2 = treeWidth
+                    col2 = treeWidth + SCROLL_BAR_WIDTH
                     col3 = expCol3
                 }
                 resWidth > (treeWidth + minCol3) -> {
-                    col2 = treeWidth
+                    col2 = treeWidth + SCROLL_BAR_WIDTH
                     col3 = minCol3
                 }
                 else -> {
