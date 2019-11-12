@@ -144,6 +144,11 @@ class LayoutInspectorPage(
                 updateStatusBar(null, viewModel.selectedNode.item ?: it.first)
             }
         }
+
+        document.addWindowResizeListener {
+            //not the most amazing UX for downsizing
+            reInitColumns(initColumnsState)
+        }
     }
 
     private var initColumnsState = 0
