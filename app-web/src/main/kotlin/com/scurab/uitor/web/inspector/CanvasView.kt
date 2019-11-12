@@ -66,6 +66,8 @@ class CanvasView(
     var renderMouseCross: Boolean = false
     var useWheelToScale: Boolean = false
     var onMouseMove: ((Pair<Double, Double>?, ViewNode?) -> Unit)? = null
+    val imageSize get() = Pair(image.width.toDouble(), image.height.toDouble())
+    val imageSizeScaled get() = calculateScaleToFit().let { Pair(image.width * it, image.height * it) }
 
     override fun buildContent() {
         val el = document.create.div(classes = CSS_CANVAS_CONTAINER)

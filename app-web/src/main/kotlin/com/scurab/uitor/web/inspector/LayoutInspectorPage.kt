@@ -1,6 +1,7 @@
 package com.scurab.uitor.web.inspector
 
 import com.scurab.uitor.common.render.relativeToScale
+import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.InspectorPage
@@ -15,14 +16,9 @@ import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.util.SCROLL_BAR_WIDTH
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.requireElementById
-import kotlinx.html.checkBoxInput
-import kotlinx.html.id
+import kotlinx.html.*
 import kotlinx.html.js.div
 import kotlinx.html.js.onClickFunction
-import kotlinx.html.span
-import kotlinx.html.table
-import kotlinx.html.td
-import kotlinx.html.tr
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
@@ -55,11 +51,12 @@ class LayoutInspectorPage(
     private val colorPreview by lazyLifecycled { element.ref.requireElementById<HTMLElement>(ID_COLOR_PREVIEW) }
     private val viewName by lazyLifecycled { element.ref.requireElementById<HTMLSpanElement>(ID_VIEW_NAME) }
     private val ignoreCheckBox by lazyLifecycled { element.ref.requireElementById<HTMLInputElement>(ID_IGNORE_CHECKBOX) }
+    private val columnsLayoutDelegate = ColumnsLayoutDelegate(this)
 
     override var element: HTMLElement? = null; private set
 
     override fun buildContent() {
-        columnsLayout = ColumnsLayout(ColumnsLayoutDelegate(this))
+        columnsLayout = ColumnsLayout(columnsLayoutDelegate)
         canvasContainer = document.create.div {
             table (classes = CANVAS_STATUS_BAR) {
                 tr {
@@ -128,11 +125,12 @@ class LayoutInspectorPage(
             canvasView.loadImage(viewModel.screenPreviewUrl)
             canvasView.element.ref.hidden = false
             canvasView.scaleToFit()
+            reInitColumns(initColumnsState + 1)
         }
         viewModel.apply {
             rootNode.observe {
                 canvasView.renderMouseCross = true
-                columnsLayout.initColumnSizes()
+                reInitColumns(initColumnsState + 1)
             }
 
             selectedNode.observe {vn ->
@@ -148,6 +146,23 @@ class LayoutInspectorPage(
         }
     }
 
+    private var initColumnsState = 0
+    private fun reInitColumns(state: Int) {
+        initColumnsState = state
+        //workaround for the middle column
+        //not sure how to get the max width to fill the space, getBoundingClientRect gives range of values
+        //between "row is min width to not show scrollbar" to "not filling space anymore"
+        //so let's make it almost full screen and then it gives the value to fill the width as expected
+        if(state == 2) {
+            val expectedCanvasWidth = canvasView.imageSizeScaled.first
+            columnsLayout.setGridTemplateColumns("10px 5px 1fr 5px 10px")
+            val expectedMiddleColumnWidth =
+                (treeView.element as? HTMLTableElement)?.rows?.get(0)?.getBoundingClientRect()?.width ?: 0.0
+            columnsLayoutDelegate.recalculate(expectedCanvasWidth, expectedMiddleColumnWidth)
+            columnsLayout.initColumnSizes()
+        }
+    }
+
     override fun onDetached() {
         canvasView.detach()
         treeView.detach()
@@ -156,16 +171,40 @@ class LayoutInspectorPage(
     }
 
     class ColumnsLayoutDelegate(val page: LayoutInspectorPage) : IColumnsLayoutDelegate {
+        private var col1 = 0.0
+        private var col2 = 0.0
+        private var col3 = 0.0
+        private val minCol3 = 500.0
+        private val expCol3 = max(minCol3, min(window.innerWidth, window.screen.width) / 3.0)
+
+        fun recalculate(imageWidth: Double, treeWidth: Double) {
+            val resWidth = window.innerWidth - imageWidth
+            col1 = imageWidth
+            when {
+                resWidth > (treeWidth + expCol3) -> {
+                    col2 = treeWidth
+                    col3 = expCol3
+                }
+                resWidth > (treeWidth + minCol3) -> {
+                    col2 = treeWidth
+                    col3 = minCol3
+                }
+                else -> {
+                    col2 = resWidth / 2
+                    col3 = resWidth / 2
+                }
+            }
+        }
+
         override val innerContentWidthEstimator: (Int) -> Double = { column ->
             if (window.innerWidth < 1280) {
                 window.innerWidth / 3.0
             } else {
                 when (column) {
-                    2 -> {
-                        SCROLL_BAR_WIDTH + ((page.treeView.element as? HTMLTableElement)?.rows?.get(0)?.getBoundingClientRect()?.width
-                            ?: window.innerWidth / 4.0)
-                    }
-                    else -> max(500.0, min(window.innerWidth, window.screen.width) / 3.0)
+                    0 -> col1
+                    2 -> col2
+                    4 -> col3
+                    else -> 0.0
                 }
             }
         }

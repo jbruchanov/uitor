@@ -78,7 +78,6 @@ class ColumnsLayout(
             }
             div("$CLASS_COLUMN right") { id = ID_RIGHT }
         }
-        //TODO inject styling
     }
 
     override fun onAttached() {
