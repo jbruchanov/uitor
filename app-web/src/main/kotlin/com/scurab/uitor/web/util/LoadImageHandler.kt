@@ -48,7 +48,7 @@ internal class LoadImageHandler(
             detach()
             dlog(TAG) { "handleEvent:${event.type}" }
             when (event.type) {
-                ERROR -> continuation?.resumeWithException(IllegalStateException("Unable to load url:'${InputType.url}'"))
+                ERROR -> continuation?.resumeWithException(IllegalStateException("Unable to load url:'$url'"))
                 else -> continuation?.resume(element)
             }
         }
