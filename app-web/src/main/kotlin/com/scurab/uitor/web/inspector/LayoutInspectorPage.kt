@@ -192,11 +192,11 @@ class LayoutInspectorPage(
             val resWidth = window.innerWidth - imageWidth
             col1 = imageWidth
             when {
-                resWidth > (treeWidth + expCol3) -> {
+                resWidth > (treeWidth + expCol3 + SCROLL_BAR_WIDTH) -> {
                     col2 = treeWidth + SCROLL_BAR_WIDTH
                     col3 = expCol3
                 }
-                resWidth > (treeWidth + minCol3) -> {
+                resWidth > (treeWidth + minCol3 + SCROLL_BAR_WIDTH) -> {
                     col2 = treeWidth + SCROLL_BAR_WIDTH
                     col3 = minCol3
                 }
