@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.multiplatform") version "1.3.50"
+    id("org.jetbrains.kotlin.multiplatform") version Versions.kotlin
 }
 
 //group = "com.scurab"
@@ -15,14 +15,11 @@ kotlin {
         browser {}
     }
 
-    val coroutinesVersion = "1.3.2"
-
-
     sourceSets {
         commonMain {
             dependencies {
                 implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutinesVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${Versions.kotlinCoroutines}")
             }
         }
         commonTest {
@@ -47,7 +44,7 @@ kotlin {
         named("jsMain") {
             dependencies {
                 implementation(kotlin("stdlib-js"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$coroutinesVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${Versions.kotlinCoroutines}")
             }
         }
         named("jsTest") {

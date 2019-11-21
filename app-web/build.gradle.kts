@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.js") version "1.3.50"
+    id("org.jetbrains.kotlin.js") version Versions.kotlin
 }
 
 project.apply {
@@ -16,13 +16,11 @@ repositories {
 
 dependencies {
     //TODO something better
-    val kotlinxHtmlJsVersion : String by project
-    val kotlinxCoroutinesCoreJsVersion : String by project
 
     implementation(project(":common"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-js")
-    implementation("org.jetbrains.kotlinx:kotlinx-html-js:$kotlinxHtmlJsVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$kotlinxCoroutinesCoreJsVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-html-js:${Versions.kotlinHtmlJs}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${Versions.kotlinCoroutines}")
     testImplementation("org.jetbrains.kotlin:kotlin-test-js")
 }
 
