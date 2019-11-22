@@ -115,8 +115,7 @@ fun getOrderedDeps(): List<File> {
 val installNpmTask = tasks.register<Exec>("installNpm") {
     group = "custom build"
     workingDir = project.projectDir
-    val cmd = "cmd /c npm install"
-    commandLine = cmd.split(" ")
+    commandLine = "npm install".osCommandLineArgs()
 }
 
 val uglifyjsReleaseArtifactTask = tasks.create<Exec>("uglifyjsReleaseArtifact") {
@@ -124,8 +123,10 @@ val uglifyjsReleaseArtifactTask = tasks.create<Exec>("uglifyjsReleaseArtifact") 
     workingDir = project.projectDir
     val outputFile = File(artifactOutputDir, releaseFileName)
     val outputMinFile = File(artifactOutputDir, releaseMinFileName)
-    val cmd = "uglifyjs -m -c -o \"$outputMinFile\" \"$outputFile\""
-    commandLine = listOf("cmd", "/c") + cmd.split(" ")
+    //having "$outputMinFile" (qouted) full path doesn't work with npx (on mac)
+    //will have probably issues with spaces in file
+    val cmd = "npx uglifyjs -m -c -o $outputMinFile $outputFile"
+    commandLine = cmd.osCommandLineArgs()
     dependsOn(installNpmTask, generateSingleArtifact)
 }
 
@@ -164,4 +165,12 @@ val assembleReleaseZipArtifactTask = tasks.create<Zip>("assembleReleaseZipArtifa
         exclude(releaseFileName)
     }
     dependsOn(createReleaseIndexHtmlTask)
+}
+
+fun String.osCommandLineArgs(): List<String> {
+    var cmd = this
+    if (System.getProperty("os.name").contains("windows")) {
+        cmd = "cmd /c $cmd"
+    }
+    return cmd.split(" ")
 }
