@@ -41,8 +41,10 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
 
     private val screensSelect by lazy { element.ref.requireElementById<HTMLSelectElement>(ID_SCREEN_INDEX) }
     private val serverApi = ServerApi()
-    private val selectedScreenIndex: Int
-        get() = screensSelect.selectedIndex.takeIf { it >= 0 } ?: ise("Invalid screen selection")
+    private val screenIndexOptional: Int?
+        get() = screensSelect.selectedIndex.takeIf { it >= 0 }
+    private val screenIndex: Int
+        get() = screenIndexOptional ?: ise("Invalid screen selection")
 
     override fun buildContent() {
         element = document.create.div {
@@ -56,20 +58,20 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
             table {
                 style = "margin-left:auto;margin-right:auto;"
                 createPageButton("LayoutInspectorPage", "Layout Inspector")
-                { LayoutInspectorPage(PageViewModel(selectedScreenIndex)) }
+                { LayoutInspectorPage(PageViewModel(screenIndex)) }
                 createPageButton("ThreeDPage", "3D Inspector")
-                { ThreeDPage(PageViewModel(selectedScreenIndex)) }
+                { ThreeDPage(PageViewModel(screenIndex)) }
                 createPageButton("TidyTreePage", "View Hierarchy")
-                { TidyTreePage(PageViewModel(selectedScreenIndex)) }
+                { TidyTreePage(PageViewModel(screenIndex)) }
                 createPageButton("ResourcesPage", "Resources", true)
-                { ResourcesPage(PageViewModel(selectedScreenIndex)) }
+                { ResourcesPage(PageViewModel(screenIndexOptional ?: -1)) }
                 createPageButton("FileBrowserPage", "File Browser", true)
-                { FileBrowserPage(PageViewModel(selectedScreenIndex)) }
-                createPageButton("WindowsPage", "Windows") { ScreenComponentsPage(PageViewModel(selectedScreenIndex)) }
+                { FileBrowserPage(PageViewModel(screenIndexOptional ?: -1)) }
+                createPageButton("WindowsPage", "Windows") { ScreenComponentsPage(PageViewModel(screenIndexOptional ?: -1)) }
                 createLinkButton("WindowsDetailedPage", "Windows Detailed") { "screenstructure" }
-                createLinkButton("ScreenshotPage", "Screenshot") { ServerApi.screenShotUrl(selectedScreenIndex) }
+                createLinkButton("ScreenshotPage", "Screenshot") { ServerApi.screenShotUrl(screenIndex) }
                 createLinkButton("LogCatPage", "LogCat") { "logcat" }
-                createPageButton("GroovyPage", "Groovy", true) { GroovyPage(PageViewModel(selectedScreenIndex), null) }
+                createPageButton("GroovyPage", "Groovy", true) { GroovyPage(PageViewModel(screenIndexOptional ?: -1), null) }
             }
         }
     }
@@ -111,7 +113,11 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
 
     private fun TABLE.createLinkButton(key: String, title: String, block: () -> String) {
         createButton(key, title) {
-            window.open(block(), "_blank", "")
+            try {
+                window.open(block(), "_blank", "")
+            } catch (e: Throwable) {
+                alert(e)
+            }
         }
     }
 
