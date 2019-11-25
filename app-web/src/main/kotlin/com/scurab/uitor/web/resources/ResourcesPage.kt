@@ -106,7 +106,7 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
         resTuple?.let {
             contentContainer.clear()
             launchWithProgressBar {
-                val item = pageViewModel.serverApi.loadResources(it.first)
+                val item = pageViewModel.serverApi.loadResources(pageViewModel.screenIndex, it.first)
                 item.source = resTuple.third
                 val element = resourcesContentPage.buildFullDescriptionContent(item)
                 contentContainer.append(element)

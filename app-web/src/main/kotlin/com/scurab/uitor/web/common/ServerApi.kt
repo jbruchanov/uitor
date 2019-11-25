@@ -21,23 +21,23 @@ import kotlin.js.Json
 class ServerApi {
 
     suspend fun viewHierarchy(screenIndex: Int): ViewNode {
-        val json = load<Json>("viewhierarchy.json?screenIndex=${screenIndex}")
+        val json = load<Json>("viewhierarchy/$screenIndex")
         return ViewNode(json)
     }
 
     suspend fun clientConfiguration(): ClientConfig {
-        val json = load<Json>("config.json")
+        val json = load<Json>("config")
         return ClientConfig(json)
     }
 
     suspend fun activeScreens(): Array<String> {
-        val json = load<Json>("screens.json")
+        val json = load<Json>("screens")
         return json.unsafeCast<Array<String>>()
     }
 
     suspend fun loadResources(): MutableMap<String, List<Triple<Int, String, String?>>> {
         val result = mutableMapOf<String, List<Triple<Int, String, String?>>>()
-        load<Json>("resources.json").let { json ->
+        load<Json>("/resources").let { json ->
             json.keys().forEach { group ->
                 result[group] = json.requireTypedListOf(group) {
                     val k = it["Key"] as? Int ?: ise("Missing Int field 'Key' in resources response")
@@ -50,13 +50,13 @@ class ServerApi {
         return result
     }
 
-    suspend fun loadResources(resId: Int): ResourceItem {
-        val json = load<Json>("resources.json?id=$resId")
+    suspend fun loadResources(screenIndex: Int, resId: Int): ResourceItem {
+        val json = load<Json>("/resources/$screenIndex/$resId")
         return ResourceItem(json)
     }
 
     suspend fun loadFileStorage(path: String = ""): List<FSItem> {
-        val items = load<Array<Json>>("storage.json?path=$path")
+        val items = load<Array<Json>>(storageUrl(path))
         return items.map { FSItem(it) }
     }
 
@@ -66,11 +66,7 @@ class ServerApi {
     }
 
     fun viewPropertyUrl(screenIndex: Int, position: Int, property: String, maxDepth: Int = 0): String {
-        var url = "viewproperty.json?screenIndex=$screenIndex&position=$position&property=$property"
-        if (maxDepth > 0) {
-            url += "&maxDepth=$maxDepth"
-        }
-        return url
+        return "view/$screenIndex/$position/$property/false/$maxDepth/"
     }
 
     suspend fun executeGroovyCode(code: String): String {
@@ -103,7 +99,21 @@ class ServerApi {
     }
 
     suspend fun screenComponents(): ScreenNode {
-        val json = load<Json>("screencomponents.json")
+        val json = load<Json>("screencomponents")
         return ScreenNode(json)
+    }
+
+    companion object {
+        fun storageUrl(path: String = ""): String {
+            return "storage?path=$path"
+        }
+
+        fun screenShotUrl(screenIndex: Int): String {
+            return "screen/$screenIndex"
+        }
+
+        fun viewShotUrl(screenIndex: Int, viewIndex: Int): String {
+            return "view/$screenIndex/$viewIndex"
+        }
     }
 }

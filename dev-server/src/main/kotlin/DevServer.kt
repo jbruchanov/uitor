@@ -149,10 +149,7 @@ class DevServer(
             }
         }
 
-        get("/{data}.json", response)
-        get("/screen.png", response)
-        get("/view.png", response)
-        get("/logcat.txt", response)
+        get("/{...}", response)
         post("/groovy") {
             val requestText = call.receiveText()
             val result = httpClient.post<String>("http://$localDeviceIp/groovy") {

@@ -4,6 +4,7 @@ import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.Navigation
 import com.scurab.uitor.web.common.Page
+import com.scurab.uitor.web.common.ServerApi
 import com.scurab.uitor.web.filebrowser.FSTableItem.Companion.TYPE_FILE
 import com.scurab.uitor.web.filebrowser.FSTableItem.Companion.TYPE_FOLDER
 import com.scurab.uitor.web.filebrowser.FSTableItem.Companion.TYPE_PARENT_FOLDER
@@ -87,7 +88,8 @@ class FileBrowserPage(private val pageViewModel: PageViewModel) : Page() {
     private fun openFile(item: FSItem) {
         val loc = window.location
         val path = remotePath.joinWith(item.name)
-        val url = "${loc.protocol}//${loc.host}/storage.json?path=$path"
+        //escaping seems not be necessary
+        val url = ServerApi.storageUrl(path)
         window.open(url, "_blank", "")
     }
 

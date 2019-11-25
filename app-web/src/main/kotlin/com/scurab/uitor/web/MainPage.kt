@@ -66,9 +66,9 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
                 createPageButton("FileBrowserPage", "File Browser", true)
                 { FileBrowserPage(PageViewModel(selectedScreenIndex)) }
                 createPageButton("WindowsPage", "Windows") { ScreenComponentsPage(PageViewModel(selectedScreenIndex)) }
-                createLinkButton("WindowsDetailedPage", "Windows Detailed") { "screenstructure.json" }
-                createLinkButton("ScreenshotPage", "Screenshot") { "screen.png?screenIndex=${selectedScreenIndex}" }
-                createLinkButton("LogCatPage", "LogCat") { "logcat.txt" }
+                createLinkButton("WindowsDetailedPage", "Windows Detailed") { "screenstructure" }
+                createLinkButton("ScreenshotPage", "Screenshot") { ServerApi.screenShotUrl(selectedScreenIndex) }
+                createLinkButton("LogCatPage", "LogCat") { "logcat" }
                 createPageButton("GroovyPage", "Groovy", true) { GroovyPage(PageViewModel(selectedScreenIndex), null) }
             }
         }
