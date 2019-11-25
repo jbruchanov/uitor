@@ -2,12 +2,25 @@ package com.scurab.uitor.web.util
 
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.npe
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.html.Tag
+import kotlinx.html.dom.create
+import kotlinx.html.js.a
+import kotlinx.html.js.canvas
+import kotlinx.html.js.img
+import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLCollection
 import org.w3c.dom.HTMLOptionsCollection
 import org.w3c.dom.get
+import org.w3c.dom.url.URL
+import org.w3c.files.Blob
+import org.w3c.files.BlobPropertyBag
+import kotlin.browser.document
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+
 
 const val ATTR_STYLE = "style"
 const val SCROLL_BAR_WIDTH = 17
@@ -56,8 +69,12 @@ fun scrollIntoViewArgs(
 /**
  * Helper method to create javascript iface object used as json args
  */
-fun <T> obj(initBlock: T.() -> Unit): T {
-    return (js("{}") as T).apply(initBlock)
+fun <T> obj(initBlock: (T.() -> Unit)? = null): T {
+    return (js("{}") as T).apply {
+        if (initBlock != null) {
+            this.apply(initBlock)
+        }
+    }
 }
 
 fun <T : Element> Element.getElementById(id: String): T? {
@@ -93,5 +110,45 @@ fun Element.getElementByClass(clazz: String, to: MutableList<Element> = mutableL
 fun HTMLOptionsCollection.removeAll() {
     while (this.length > 0) {
         remove(0)
+    }
+}
+
+/**
+ * Initiate download data
+ */
+fun browserDownload(content: Any, fileName: String, contentType: String) {
+    val a = document.create.a()
+    val file = Blob(arrayOf(content), BlobPropertyBag(contentType))
+    a.href = URL.createObjectURL(file)
+    a.download = fileName
+    a.click()
+    a.remove()
+}
+
+/**
+ * Load image from url as the Base64 string
+ */
+suspend fun loadImage(url:String) : String {
+    val img = document.create.img()
+    img.crossOrigin = "Anonymous";
+    return suspendCancellableCoroutine { continuation ->
+        img.onload = {
+            try {
+                val canvas = document.create.canvas(null, "")
+                val ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+                canvas.width = img.width
+                canvas.height = img.height
+                ctx.drawImage(img, 0.0, 0.0)
+                val base64 = canvas.toDataURL()
+                continuation.resume(base64)
+                canvas.remove()
+            } catch (e: Exception) {
+                continuation.resumeWithException(e)
+            }
+        }
+        img.onerror = { _, _, _, _, _ ->
+            continuation.resumeWithException(Exception("Unable to load image"))
+        }
+        img.src = url
     }
 }

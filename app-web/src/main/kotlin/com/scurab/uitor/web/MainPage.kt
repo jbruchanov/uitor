@@ -9,13 +9,20 @@ import com.scurab.uitor.web.groovy.GroovyPage
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
+import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.resources.ResourcesPage
 import com.scurab.uitor.web.screen.ScreenComponentsPage
 import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
 import com.scurab.uitor.web.ui.launchWithProgressBar
+import com.scurab.uitor.web.util.browserDownload
+import com.scurab.uitor.web.util.loadImage
+import com.scurab.uitor.web.util.obj
 import com.scurab.uitor.web.util.removeAll
 import com.scurab.uitor.web.util.requireElementById
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.html.TABLE
 import kotlinx.html.button
 import kotlinx.html.div
@@ -30,6 +37,7 @@ import kotlinx.html.tr
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSelectElement
 import kotlin.browser.window
+import kotlin.js.Json
 
 private const val ID_SCREEN_INDEX = "main-screen-index"
 private const val DEVICE_INFO = "main-screen-device-info"
@@ -67,11 +75,51 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
                 { ResourcesPage(PageViewModel(screenIndexOptional ?: -1)) }
                 createPageButton("FileBrowserPage", "File Browser", true)
                 { FileBrowserPage(PageViewModel(screenIndexOptional ?: -1)) }
-                createPageButton("WindowsPage", "Windows") { ScreenComponentsPage(PageViewModel(screenIndexOptional ?: -1)) }
+                createPageButton("WindowsPage", "Windows") {
+                    ScreenComponentsPage(
+                        PageViewModel(
+                            screenIndexOptional ?: -1
+                        )
+                    )
+                }
                 createLinkButton("WindowsDetailedPage", "Windows Detailed") { "screenstructure" }
                 createLinkButton("ScreenshotPage", "Screenshot") { ServerApi.screenShotUrl(screenIndex) }
                 createLinkButton("LogCatPage", "LogCat") { "logcat" }
-                createPageButton("GroovyPage", "Groovy", true) { GroovyPage(PageViewModel(screenIndexOptional ?: -1), null) }
+                createPageButton("GroovyPage", "Groovy", true) {
+                    GroovyPage(
+                        PageViewModel(screenIndexOptional ?: -1),
+                        null
+                    )
+                }
+                createButton("", "Save") {
+                    launchWithProgressBar {
+                        val screenIndex = screenIndex
+                        val screen = serverApi.activeScreens()[screenIndex]
+
+                        val image = async { loadImage(ServerApi.screenShotUrl(screenIndex)) }
+                        val viewHierarchy = async { serverApi.rawViewHierarchy(screenIndex) }
+                        val clientConfig = async { serverApi.rawClientConfiguration() }
+
+                        val vh = viewHierarchy.await()
+                        val viewNode = ViewNode(vh)
+                        val cf = clientConfig.await()
+                        val im = image.await()
+                        val viewShots = viewNode.all()
+                            .map { vn ->
+                                if (vn.shouldRender) {
+                                    loadImage(ServerApi.viewShotUrl(screenIndex, vn.position))
+                                } else null
+                            }
+                        val obj = obj<Snapshot> {
+                            this.name = screen
+                            this.viewHierarchy = vh
+                            this.clientConfiguration = cf
+                            this.screenshot = im
+                            this.viewShots = viewShots
+                        }
+                        browserDownload(JSON.stringify(obj), "snapshot.json", "application/json")
+                    }
+                }
             }
         }
     }
@@ -122,7 +170,7 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
     }
 
     private fun TABLE.createButton(key: String, title: String, clickAction: () -> Unit) {
-        if (!clientConfig.pages.contains(key)) {
+        if (key.isNotEmpty() && !clientConfig.pages.contains(key)) {
             return
         }
         tr {
@@ -135,4 +183,14 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
             }
         }
     }
+}
+
+interface Snapshot {
+    var name: String
+    var version: String
+    var taken: String
+    var viewHierarchy: Json
+    var clientConfiguration: Json
+    var screenshot: String?
+    var viewShots: List<String?>
 }

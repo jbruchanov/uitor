@@ -20,19 +20,20 @@ import kotlin.js.Json
 
 class ServerApi {
 
+    suspend fun rawViewHierarchy(screenIndex: Int): Json = loadText("viewhierarchy/$screenIndex").parseJson()
+    suspend fun rawClientConfiguration(): Json = loadText("config").parseJson()
+    suspend fun rawActiveScreens(): Json = loadText("screens").parseJson()
+
     suspend fun viewHierarchy(screenIndex: Int): ViewNode {
-        val json = load<Json>("viewhierarchy/$screenIndex")
-        return ViewNode(json)
+        return ViewNode(rawViewHierarchy(screenIndex))
     }
 
     suspend fun clientConfiguration(): ClientConfig {
-        val json = load<Json>("config")
-        return ClientConfig(json)
+        return ClientConfig(rawClientConfiguration())
     }
 
     suspend fun activeScreens(): Array<String> {
-        val json = load<Json>("screens")
-        return json.unsafeCast<Array<String>>()
+        return rawActiveScreens().unsafeCast<Array<String>>()
     }
 
     suspend fun loadResources(): MutableMap<String, List<Triple<Int, String, String?>>> {
@@ -86,7 +87,7 @@ class ServerApi {
         }
     }
 
-    private suspend fun <T> load(url: String, timeOut: Long = 10000): T {
+    private suspend fun loadText(url: String, timeOut: Long = 10000): String {
         return withTimeout(timeOut) {
             val response = window.fetch(url).asDeferred().await()
             check(response.status == 200.toShort()) { "[${response.status}]${response.statusText}" }
@@ -94,8 +95,16 @@ class ServerApi {
                 .text()
                 .asDeferred()
                 .await()
-            JSON.parse<T>(text)
+            text
         }
+    }
+
+    private suspend fun <T> load(url: String, timeOut: Long = 10000): T {
+        return JSON.parse<T>(loadText(url, timeOut))
+    }
+
+    private fun <T> String.parseJson() : T {
+        return JSON.parse(this)
     }
 
     suspend fun screenComponents(): ScreenNode {
