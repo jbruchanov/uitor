@@ -6,6 +6,7 @@ import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.model.PageViewModel
+import com.scurab.uitor.web.model.ResourceDTO
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.ui.table.IRenderingContext
 import com.scurab.uitor.web.ui.table.ITableDataItem
@@ -44,13 +45,13 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
     private val groupTable = TableView(delegate = tableViewDelegate(ID_GROUPS_TABLE, this::onGroupSelected))
     private val itemsTable = TableView(delegate = tableViewDelegate(ID_ITEMS_TABLE, this::onItemSelected))
     private val contentContainer by lazyLifecycled { element.ref.requireElementById<HTMLElement>(ID_CONTENT_CONTAINER) }
-    private val resources = Observable<Map<String, List<Triple<Int, String, String?>>>>()
+    private val resources = Observable<Map<String, List<ResourceDTO>>>()
     private val resourcesContentPage = ResourcesContentGenerator()
-    private var idNamesToResIds = mutableMapOf<String, Triple<Int, String, String?>>()
+    private var idNamesToResIds = mutableMapOf<String, ResourceDTO>()
 
     init {
         launchWithProgressBar {
-            resources.post(pageViewModel.serverApi.loadResources())
+            resources.post(pageViewModel.serverApi.loadResourceItem())
         }
     }
 
@@ -81,7 +82,7 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
 
         resources.observe { resources ->
             resources.values.flatten().forEach {
-                val v = it.second
+                val v = it.value
                 idNamesToResIds[v] = it
             }
             groupTable.data = TableData(
@@ -96,18 +97,18 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
         val list = resources.item.ref[group] ?: iae("Unable to find group:'${group}'?!")
         itemsTable.data = TableData(
             arrayOf("Item"),
-            list.map { ResourceTableItem(it.second) }
+            list.map { ResourceTableItem(it.value) }
         )
     }
 
     private fun onItemSelected(item: String) {
         val resTuple = idNamesToResIds[item]
-        dlog(TAG) { "Item:$item resId:${resTuple?.first}" }
+        dlog(TAG) { "Item:$item resId:${resTuple?.key}" }
         resTuple?.let {
             contentContainer.clear()
             launchWithProgressBar {
-                val item = pageViewModel.serverApi.loadResources(pageViewModel.screenIndex, it.first)
-                item.source = resTuple.third
+                val item = pageViewModel.serverApi.loadResourceItem(pageViewModel.screenIndex, it.key)
+                item.source = resTuple.contextValue
                 val element = resourcesContentPage.buildFullDescriptionContent(item)
                 contentContainer.append(element)
                 js.pr.prettyPrint()

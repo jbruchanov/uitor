@@ -9,24 +9,25 @@ import com.scurab.uitor.web.groovy.GroovyPage
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
-import com.scurab.uitor.web.model.ViewNode
+import com.scurab.uitor.web.model.Snapshot
 import com.scurab.uitor.web.resources.ResourcesPage
 import com.scurab.uitor.web.screen.ScreenComponentsPage
 import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.util.browserDownload
-import com.scurab.uitor.web.util.loadImage
-import com.scurab.uitor.web.util.obj
+import com.scurab.uitor.web.util.lazyLifecycled
+import com.scurab.uitor.web.util.readAsText
 import com.scurab.uitor.web.util.removeAll
 import com.scurab.uitor.web.util.requireElementById
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.html.InputType
 import kotlinx.html.TABLE
 import kotlinx.html.button
 import kotlinx.html.div
 import kotlinx.html.id
+import kotlinx.html.input
+import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.option
 import kotlinx.html.select
@@ -34,31 +35,38 @@ import kotlinx.html.style
 import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.tr
+import kotlinx.html.unsafe
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSelectElement
 import kotlin.browser.window
-import kotlin.js.Json
+import kotlin.dom.clear
 
 private const val ID_SCREEN_INDEX = "main-screen-index"
 private const val DEVICE_INFO = "main-screen-device-info"
 
-class MainPage(private val clientConfig: ClientConfig) : Page() {
+class MainPage(private var clientConfig: ClientConfig) : Page() {
 
     override var element: HTMLElement? = null
         private set
 
-    private val screensSelect by lazy { element.ref.requireElementById<HTMLSelectElement>(ID_SCREEN_INDEX) }
-    private val serverApi = ServerApi()
+    private val screensSelect by lazyLifecycled { element.ref.requireElementById<HTMLSelectElement>(ID_SCREEN_INDEX) }
+    private val serverApi get() = App.serverApi
     private val screenIndexOptional: Int?
         get() = screensSelect.selectedIndex.takeIf { it >= 0 }
     private val screenIndex: Int
         get() = screenIndexOptional ?: ise("Invalid screen selection")
 
     override fun buildContent() {
-        element = document.create.div {
+        //let anyone who is bound to this to reset the state
+        onDetachObservable.post(this)
+        val el = element ?: document.create.div()
+        element = el
+        el.clear()
+        document.create.div {
             style = "text-align: center; padding:10px;"
             div(classes = DEVICE_INFO) {
-                text(clientConfig.deviceInfo)
+                unsafe { raw(clientConfig.deviceInfo.replace("\n", "<br/>")) }
             }
             select {
                 id = ID_SCREEN_INDEX
@@ -93,34 +101,33 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
                 }
                 createButton("", "Save") {
                     launchWithProgressBar {
-                        val screenIndex = screenIndex
-                        val screen = serverApi.activeScreens()[screenIndex]
-
-                        val image = async { loadImage(ServerApi.screenShotUrl(screenIndex)) }
-                        val viewHierarchy = async { serverApi.rawViewHierarchy(screenIndex) }
-                        val clientConfig = async { serverApi.rawClientConfiguration() }
-
-                        val vh = viewHierarchy.await()
-                        val viewNode = ViewNode(vh)
-                        val cf = clientConfig.await()
-                        val im = image.await()
-                        val viewShots = viewNode.all()
-                            .map { vn ->
-                                if (vn.shouldRender) {
-                                    loadImage(ServerApi.viewShotUrl(screenIndex, vn.position))
-                                } else null
-                            }
-                        val obj = obj<Snapshot> {
-                            this.name = screen
-                            this.viewHierarchy = vh
-                            this.clientConfiguration = cf
-                            this.screenshot = im
-                            this.viewShots = viewShots
-                        }
+                        val obj = serverApi.snapshot(screenIndex)
                         browserDownload(JSON.stringify(obj), "snapshot.json", "application/json")
                     }
                 }
+                input {
+                    type = InputType.file
+                    accept = "application/json"
+                    onChangeFunction = { event ->
+                        val files = (event.target as? HTMLInputElement)?.files
+                        val file = files
+                            ?.takeIf { it.length > 0 }
+                            ?.item(0)
+                            ?.let { file ->
+                                GlobalScope.launchWithProgressBar {
+                                    val snapshot = JSON.parse<Snapshot>(file.readAsText())
+                                    App.setSnapshot(snapshot)
+                                    clientConfig = App.clientConfig
+                                    buildContent()
+                                    reloadScreens()
+                                }
+                            }
+
+                    }
+                }
             }
+        }.apply {
+            el.append(this)
         }
     }
 
@@ -183,14 +190,4 @@ class MainPage(private val clientConfig: ClientConfig) : Page() {
             }
         }
     }
-}
-
-interface Snapshot {
-    var name: String
-    var version: String
-    var taken: String
-    var viewHierarchy: Json
-    var clientConfiguration: Json
-    var screenshot: String?
-    var viewShots: List<String?>
 }

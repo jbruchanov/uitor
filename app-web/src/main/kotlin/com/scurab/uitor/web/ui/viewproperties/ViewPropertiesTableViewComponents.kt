@@ -60,8 +60,11 @@ object ViewPropertiesTableViewComponents {
         return ViewPropertiesTableViewRenderer(clientConfig, considerLinks)
     }
 
-    fun defaultViewProperties(clientConfig: ClientConfig) = TableViewDelegate(
-        columnRenderer(clientConfig, true)
+    fun defaultViewProperties(
+        clientConfig: ClientConfig,
+        considerLinks: Boolean
+    ) = TableViewDelegate(
+        columnRenderer(clientConfig, considerLinks)
     ).apply {
         sorting = true
         filtering = true

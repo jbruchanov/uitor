@@ -4,6 +4,7 @@ import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.messageSafe
 import com.scurab.uitor.web.common.Page
+import com.scurab.uitor.web.common.ServerApi
 import com.scurab.uitor.web.resources.ResourcesContentGenerator
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.ui.table.TableData
@@ -99,7 +100,7 @@ class ViewPropertyPage(
     }
 
     private fun onOpenRawJson() {
-        val url = viewModel.serverApi.viewPropertyUrl(viewModel.screenIndex, position, property, 3)
+        val url = ServerApi.viewPropertyUrl(viewModel.screenIndex, position, property, 3)
         window.open(url, "_blank", "")
     }
 

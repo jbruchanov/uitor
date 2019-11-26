@@ -67,6 +67,14 @@ fun Json.getMap(key: String, to: MutableMap<String, Any?> = linkedMapOf()): Muta
     }
 }
 
+fun Map<String, Any?>.toJson(): Json {
+    val json = obj<Json>()
+    this.forEach { (k, v) ->
+        json[k] = v
+    }
+    return json
+}
+
 fun <T> jsonField(json: Json, name: String? = null): ReadOnlyProperty<Any, T> = JsonDelegate(json, name)
 
 private class JsonDelegate<T>(private val json: Json, private val name: String?) : ReadOnlyProperty<Any, T> {

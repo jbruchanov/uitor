@@ -3,13 +3,17 @@ package com.scurab.uitor.web
 import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.common.util.messageSafe
 import com.scurab.uitor.common.util.ref
+import com.scurab.uitor.web.common.IServerApi
 import com.scurab.uitor.web.common.ServerApi
+import com.scurab.uitor.web.common.SnapshotServerApi
 import com.scurab.uitor.web.model.ClientConfig
+import com.scurab.uitor.web.model.Snapshot
 import com.scurab.uitor.web.ui.PageProgressBar
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.util.DocumentWrapper
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.browser.document
 import kotlin.browser.window
 
@@ -28,7 +32,7 @@ views have to be renamed to view-position.png => view-0.png
 const val DEMO = false
 
 object App {
-    val serverApi = ServerApi()
+    var serverApi: IServerApi = ServerApi(); private set
     lateinit var clientConfig: ClientConfig; private set
     private var theme: String = ""
 
@@ -82,5 +86,10 @@ object App {
     private fun reloadTimer() = GlobalScope.launchWithProgressBar(0) {
         delay(3000)
         window.location.reload()
+    }
+
+    suspend fun setSnapshot(snapshot: Snapshot) {
+        serverApi = SnapshotServerApi(snapshot)
+        clientConfig = serverApi.clientConfiguration()
     }
 }

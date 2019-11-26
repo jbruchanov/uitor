@@ -17,6 +17,7 @@ import org.w3c.dom.get
 import org.w3c.dom.url.URL
 import org.w3c.files.Blob
 import org.w3c.files.BlobPropertyBag
+import org.w3c.files.FileReader
 import kotlin.browser.document
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -150,5 +151,19 @@ suspend fun loadImage(url:String) : String {
             continuation.resumeWithException(Exception("Unable to load image"))
         }
         img.src = url
+    }
+}
+
+suspend fun Blob.readAsText(): String {
+    return suspendCancellableCoroutine { coroutine ->
+        FileReader().apply {
+            onload = {
+                coroutine.resume(result as String)
+            }
+            onerror = {
+                coroutine.resumeWithException(Exception("Unable to load data"))
+            }
+            this.readAsText(this@readAsText)
+        }
     }
 }

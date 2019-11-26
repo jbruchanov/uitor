@@ -26,7 +26,7 @@ class ViewPropsStatsView(private val viewModel: InspectorViewModel) : Page() {
     override var element: HTMLElement? = null; private set
     private val viewPropertiesTableView = ViewPropertiesTableView(
         viewModel.clientConfig,
-        defaultViewProperties(viewModel.clientConfig),
+        defaultViewProperties(viewModel.clientConfig, viewModel.serverApi.supportsViewPropertyDetails),
         viewModel.screenIndex
     )
     private val viewStatsTableView = TableView(delegate = TableViewDelegate<PropertyTableItem>().apply {

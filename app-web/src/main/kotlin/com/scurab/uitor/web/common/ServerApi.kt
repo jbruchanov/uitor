@@ -3,74 +3,126 @@ package com.scurab.uitor.web.common
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.FSItem
+import com.scurab.uitor.web.model.ResourceDTO
 import com.scurab.uitor.web.model.ResourceItem
 import com.scurab.uitor.web.model.ScreenNode
+import com.scurab.uitor.web.model.Snapshot
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.model.ViewPropertyItem
 import com.scurab.uitor.web.util.keys
+import com.scurab.uitor.web.util.loadImage
+import com.scurab.uitor.web.util.obj
 import com.scurab.uitor.web.util.requireTypedListOf
 import kotlinx.coroutines.asDeferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeout
 import org.w3c.fetch.Headers
 import org.w3c.fetch.NO_CACHE
 import org.w3c.fetch.RequestCache
 import org.w3c.fetch.RequestInit
 import kotlin.browser.window
+import kotlin.js.Date
 import kotlin.js.Json
 
-class ServerApi {
+interface IServerApi {
 
-    suspend fun rawViewHierarchy(screenIndex: Int): Json = loadText("viewhierarchy/$screenIndex").parseJson()
-    suspend fun rawClientConfiguration(): Json = loadText("config").parseJson()
-    suspend fun rawActiveScreens(): Json = loadText("screens").parseJson()
+    suspend fun snapshot(screenIndex: Int): Snapshot
+    suspend fun viewHierarchy(screenIndex: Int): ViewNode
+    suspend fun clientConfiguration(): ClientConfig
+    suspend fun activeScreens(): Array<String>
+    suspend fun loadResourceItem(): MutableMap<String, List<ResourceDTO>>
+    suspend fun loadResourceItem(screenIndex: Int, resId: Int): ResourceItem
+    suspend fun loadFileStorage(path: String = ""): List<FSItem>
+    suspend fun loadViewProperty(screenIndex: Int, position: Int, property: String): ViewPropertyItem
+    suspend fun executeGroovyCode(code: String): String
+    suspend fun screenComponents(): ScreenNode
+    val supportsViewPropertyDetails : Boolean
+}
 
-    suspend fun viewHierarchy(screenIndex: Int): ViewNode {
+class ServerApi : IServerApi {
+
+    private suspend fun rawViewHierarchy(screenIndex: Int): Json = loadText("viewhierarchy/$screenIndex").parseJson()
+    private suspend fun rawClientConfiguration(): Json = loadText("config").parseJson()
+    private suspend fun rawActiveScreens(): Json = loadText("screens").parseJson()
+    private suspend fun rawResourceItem(screenIndex: Int, resId: Int): Json = loadText("resources/$screenIndex/$resId").parseJson()
+    private suspend fun rawScreenComponents(): Json = loadText("screencomponents").parseJson()
+
+    override suspend fun snapshot(screenIndex: Int) : Snapshot = coroutineScope {
+        val imageTask = async { loadImage(screenShotUrl(screenIndex)) }
+        val viewHierarchyTask = async { rawViewHierarchy(screenIndex) }
+        val clientConfigTask = async { rawClientConfiguration() }
+
+        val screenName = activeScreens()[screenIndex]
+        val viewHierarchy = viewHierarchyTask.await()
+        val clientConfig = clientConfigTask.await()
+        clientConfig["detail"] = "Snapshot: ${Date().toISOString()}"
+        val screenshot = imageTask.await()
+        val viewShots = ViewNode(viewHierarchy).all()
+            .map { vn ->
+                if (vn.shouldRender) {
+                    loadImage(viewShotUrl(screenIndex, vn.position))
+                } else null
+            }
+
+        val obj = obj<Snapshot> {
+            this.name = screenName
+            this.viewHierarchy = viewHierarchy
+            this.clientConfiguration = clientConfig
+            this.screenshot = screenshot
+            this.viewShots = viewShots
+        }
+        obj
+    }
+
+    override suspend fun viewHierarchy(screenIndex: Int): ViewNode {
         return ViewNode(rawViewHierarchy(screenIndex))
     }
 
-    suspend fun clientConfiguration(): ClientConfig {
+    override suspend fun clientConfiguration(): ClientConfig {
         return ClientConfig(rawClientConfiguration())
     }
 
-    suspend fun activeScreens(): Array<String> {
+    override suspend fun activeScreens(): Array<String> {
         return rawActiveScreens().unsafeCast<Array<String>>()
     }
 
-    suspend fun loadResources(): MutableMap<String, List<Triple<Int, String, String?>>> {
-        val result = mutableMapOf<String, List<Triple<Int, String, String?>>>()
+    override suspend fun loadResourceItem(): MutableMap<String, List<ResourceDTO>> {
+        val result = mutableMapOf<String, List<ResourceDTO>>()
         load<Json>("/resources").let { json ->
             json.keys().forEach { group ->
                 result[group] = json.requireTypedListOf(group) {
                     val k = it["Key"] as? Int ?: ise("Missing Int field 'Key' in resources response")
                     val v = it["Value"] as? String ?: ise("Missing String field 'Value' in resources response")
                     val l = it["Value1"] as? String
-                    Triple(k, v, l)
+                    ResourceDTO(k, v, l)
                 }
             }
         }
         return result
     }
 
-    suspend fun loadResources(screenIndex: Int, resId: Int): ResourceItem {
-        val json = load<Json>("/resources/$screenIndex/$resId")
-        return ResourceItem(json)
+    override suspend fun loadResourceItem(screenIndex: Int, resId: Int): ResourceItem {
+        return ResourceItem(rawResourceItem(screenIndex, resId))
     }
 
-    suspend fun loadFileStorage(path: String = ""): List<FSItem> {
+    override suspend fun loadFileStorage(path: String): List<FSItem> {
         val items = load<Array<Json>>(storageUrl(path))
         return items.map { FSItem(it) }
     }
 
-    suspend fun loadViewProperty(screenIndex: Int, position: Int, property: String): ViewPropertyItem {
+    override suspend fun loadViewProperty(screenIndex: Int, position: Int, property: String): ViewPropertyItem {
         val json = load<Json>(viewPropertyUrl(screenIndex, position, property))
         return ViewPropertyItem(json)
     }
 
-    fun viewPropertyUrl(screenIndex: Int, position: Int, property: String, maxDepth: Int = 0): String {
-        return "view/$screenIndex/$position/$property/false/$maxDepth/"
+    override suspend fun screenComponents(): ScreenNode {
+        return ScreenNode(rawScreenComponents())
     }
 
-    suspend fun executeGroovyCode(code: String): String {
+    override val supportsViewPropertyDetails: Boolean = true
+
+    override suspend fun executeGroovyCode(code: String): String {
         return withTimeout(15000) {
             val response = window.fetch(
                 "groovy", RequestInit(
@@ -107,11 +159,6 @@ class ServerApi {
         return JSON.parse(this)
     }
 
-    suspend fun screenComponents(): ScreenNode {
-        val json = load<Json>("screencomponents")
-        return ScreenNode(json)
-    }
-
     companion object {
         fun storageUrl(path: String = ""): String {
             return "storage?path=$path"
@@ -123,6 +170,9 @@ class ServerApi {
 
         fun viewShotUrl(screenIndex: Int, viewIndex: Int): String {
             return "view/$screenIndex/$viewIndex"
+        }
+        fun viewPropertyUrl(screenIndex: Int, position: Int, property: String, maxDepth: Int = 0): String {
+            return "view/$screenIndex/$position/$property/false/$maxDepth/"
         }
     }
 }
