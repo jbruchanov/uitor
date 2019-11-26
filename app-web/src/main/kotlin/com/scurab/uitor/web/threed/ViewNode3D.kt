@@ -3,6 +3,7 @@ package com.scurab.uitor.web.threed
 import com.scurab.uitor.common.model.IViewNode
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.ise
+import com.scurab.uitor.web.App
 import com.scurab.uitor.web.common.ServerApi
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.ViewNode
@@ -145,7 +146,9 @@ private fun MeshBasicMaterial.withTexture(viewNode: ViewNode, side: Side, screen
     transparent = !viewNode.shouldRender
     if (viewNode.shouldRender) {
         //this expects to server handle the hammering
-        map = textureLoader.load(ServerApi.viewShotUrl(screenIndex, viewNode.position)).apply {
+        //TODO: remove direct reference to App.serverApi
+        val uri = App.serverApi.viewShotUrl(screenIndex, viewNode.position)
+        map = textureLoader.load(uri).apply {
             minFilter = js.threejs.LinearFilter
             magFilter = js.threejs.LinearFilter
             transparent = true

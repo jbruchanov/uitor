@@ -1,6 +1,5 @@
 package com.scurab.uitor.web.common
 
-
 import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.FSItem
@@ -10,6 +9,8 @@ import com.scurab.uitor.web.model.ScreenNode
 import com.scurab.uitor.web.model.Snapshot
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.model.ViewPropertyItem
+
+
 class SnapshotServerApi(private val snapshot: Snapshot) : IServerApi {
 
     override suspend fun snapshot(screenIndex: Int): Snapshot = snapshot
@@ -31,6 +32,16 @@ class SnapshotServerApi(private val snapshot: Snapshot) : IServerApi {
 
     override suspend fun screenComponents(): ScreenNode {
         return ScreenNode(snapshot.screenComponents)
+    }
+
+    override fun screenShotUrl(screenIndex: Int): String {
+        screenIndex.assertZero()
+        return snapshot.screenshot
+    }
+
+    override fun viewShotUrl(screenIndex: Int, viewIndex: Int): String {
+        screenIndex.assertZero()
+        return snapshot.viewShots[viewIndex] ?: ""
     }
 
     override suspend fun loadResourceItem(): MutableMap<String, List<ResourceDTO>> {

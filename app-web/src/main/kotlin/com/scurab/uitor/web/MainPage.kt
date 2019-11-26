@@ -3,7 +3,6 @@ package com.scurab.uitor.web
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Page
-import com.scurab.uitor.web.common.ServerApi
 import com.scurab.uitor.web.filebrowser.FileBrowserPage
 import com.scurab.uitor.web.groovy.GroovyPage
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
@@ -27,6 +26,7 @@ import kotlinx.html.button
 import kotlinx.html.div
 import kotlinx.html.id
 import kotlinx.html.input
+import kotlinx.html.js.img
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.option
@@ -91,7 +91,7 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
                     )
                 }
                 createLinkButton("WindowsDetailedPage", "Windows Detailed") { "screenstructure" }
-                createLinkButton("ScreenshotPage", "Screenshot") { ServerApi.screenShotUrl(screenIndex) }
+                createLinkButton("ScreenshotPage", "Screenshot") { App.serverApi.screenShotUrl(screenIndex) }
                 createLinkButton("LogCatPage", "LogCat") { "logcat" }
                 createPageButton("GroovyPage", "Groovy", true) {
                     GroovyPage(
@@ -169,7 +169,17 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
     private fun TABLE.createLinkButton(key: String, title: String, block: () -> String) {
         createButton(key, title) {
             try {
-                window.open(block(), "_blank", "")
+                val url = block()
+                //TODO: something better ?
+                if (url.startsWith("data:image")) {
+                    val wnd = window.open("about:blank", "_blank", "")
+                    val img = document.create.img {
+                        this.src = url
+                    }
+                    wnd!!.document.body!!.append(img)
+                } else {
+                    window.open(url, "_blank", "")
+                }
             } catch (e: Throwable) {
                 alert(e)
             }

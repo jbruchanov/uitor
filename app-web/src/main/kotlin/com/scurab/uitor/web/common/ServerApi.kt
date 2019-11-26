@@ -37,6 +37,8 @@ interface IServerApi {
     suspend fun loadViewProperty(screenIndex: Int, position: Int, property: String): ViewPropertyItem
     suspend fun executeGroovyCode(code: String): String
     suspend fun screenComponents(): ScreenNode
+    fun screenShotUrl(screenIndex: Int): String
+    fun viewShotUrl(screenIndex: Int, viewIndex: Int): String
     val supportsViewPropertyDetails : Boolean
 }
 
@@ -63,7 +65,7 @@ class ServerApi : IServerApi {
                 if (vn.shouldRender) {
                     loadImage(viewShotUrl(screenIndex, vn.position))
                 } else null
-            }
+            }.toTypedArray()
 
         val obj = obj<Snapshot> {
             this.name = screenName
@@ -120,6 +122,14 @@ class ServerApi : IServerApi {
         return ScreenNode(rawScreenComponents())
     }
 
+    override fun screenShotUrl(screenIndex: Int): String {
+        return "screen/$screenIndex"
+    }
+
+    override fun viewShotUrl(screenIndex: Int, viewIndex: Int): String {
+        return "view/$screenIndex/$viewIndex"
+    }
+
     override val supportsViewPropertyDetails: Boolean = true
 
     override suspend fun executeGroovyCode(code: String): String {
@@ -164,13 +174,6 @@ class ServerApi : IServerApi {
             return "storage?path=$path"
         }
 
-        fun screenShotUrl(screenIndex: Int): String {
-            return "screen/$screenIndex"
-        }
-
-        fun viewShotUrl(screenIndex: Int, viewIndex: Int): String {
-            return "view/$screenIndex/$viewIndex"
-        }
         fun viewPropertyUrl(screenIndex: Int, position: Int, property: String, maxDepth: Int = 0): String {
             return "view/$screenIndex/$position/$property/false/$maxDepth/"
         }
