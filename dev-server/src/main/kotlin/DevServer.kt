@@ -149,7 +149,21 @@ class DevServer(
             }
         }
 
-        get("/{...}", response)
+        //takes everything, even source code :(
+        //get("/{...}", response)
+        get("/screens", response)
+        get("/screencomponents", response)
+        get("/screenstructure", response)
+        get("/config", response)
+        get("/logcat/{type?}", response)
+        get("/screen/{index}", response)
+        get("/resources/{screenIndex?}/{resId?}", response)
+        get("/storage", response)
+        get("/storage?path={path}", response)
+        get("/view/{screen}/{id}", response)
+        get("/viewhierarchy/{screenIndex}", response)
+        get("/view/{screen}/{id}/{property}/{reflection?}/{maxDepth?}/", response)
+
         post("/groovy") {
             val requestText = call.receiveText()
             val result = httpClient.post<String>("http://$localDeviceIp/groovy") {
