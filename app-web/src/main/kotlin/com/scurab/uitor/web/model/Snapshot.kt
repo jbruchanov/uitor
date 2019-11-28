@@ -11,4 +11,5 @@ interface Snapshot {
     var screenComponents: Json
     var screenshot: String
     var viewShots: Array<String?>
+    var logCat: String
 }

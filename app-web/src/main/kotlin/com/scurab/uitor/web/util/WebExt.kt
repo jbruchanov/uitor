@@ -21,6 +21,7 @@ import org.w3c.files.FileReader
 import kotlin.browser.document
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.js.Date
 
 
 const val ATTR_STYLE = "style"
@@ -31,6 +32,12 @@ var Tag.styleAttributes: String
     set(value) {
         attributes[ATTR_STYLE] = value
     }
+
+
+fun Date.toYMHhms(): String {
+    val d = fun Int.(): String { return toString().padStart(2, '0') }
+    return "${getFullYear().d()}-${getMonth().d()}-${getDay().d()} ${getHours().d()}:${getMinutes().d()}:${getSeconds().d()}"
+}
 
 fun Color.styleBackgroundColor(): String = "background-color:${htmlRGBA}"
 fun Document.requireElementById(id: String) = getElementById(id) ?: npe(id)

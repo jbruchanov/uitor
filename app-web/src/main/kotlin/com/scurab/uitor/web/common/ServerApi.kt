@@ -3,6 +3,7 @@ package com.scurab.uitor.web.common
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.FSItem
+import com.scurab.uitor.web.model.Pages
 import com.scurab.uitor.web.model.ResourceDTO
 import com.scurab.uitor.web.model.ResourceItem
 import com.scurab.uitor.web.model.ScreenNode
@@ -13,8 +14,10 @@ import com.scurab.uitor.web.util.keys
 import com.scurab.uitor.web.util.loadImage
 import com.scurab.uitor.web.util.obj
 import com.scurab.uitor.web.util.requireTypedListOf
+import com.scurab.uitor.web.util.toYMHhms
 import kotlinx.coroutines.asDeferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeout
 import org.w3c.fetch.Headers
@@ -39,6 +42,7 @@ interface IServerApi {
     suspend fun screenComponents(): ScreenNode
     fun screenShotUrl(screenIndex: Int): String
     fun viewShotUrl(screenIndex: Int, viewIndex: Int): String
+    fun logCatUrl(): String
     val supportsViewPropertyDetails : Boolean
 }
 
@@ -51,15 +55,30 @@ class ServerApi : IServerApi {
     private suspend fun rawScreenComponents(): Json = loadText("screencomponents").parseJson()
 
     override suspend fun snapshot(screenIndex: Int) : Snapshot = coroutineScope {
+        val taken = Date().toYMHhms()
         val imageTask = async { loadImage(screenShotUrl(screenIndex)) }
         val viewHierarchyTask = async { rawViewHierarchy(screenIndex) }
         val clientConfigTask = async { rawClientConfiguration() }
+        val screenComponentsTask = async { rawScreenComponents() }
+        val logcatTask = async { loadText(logCatUrl()) }
 
         val screenName = activeScreens()[screenIndex]
         val viewHierarchy = viewHierarchyTask.await()
-        val clientConfig = clientConfigTask.await()
-        clientConfig["detail"] = "Snapshot: ${Date().toISOString()}"
+        val clientConfig = clientConfigTask.await().apply {
+            this[ClientConfig.DETAIL] = "Snapshot: $taken"
+            this[ClientConfig.PAGES] = arrayOf(
+                Pages.LayoutInspector,
+                Pages.ThreeD,
+                Pages.TidyTree,
+                Pages.Screenshot,
+                Pages.Windows,
+                Pages.WindowsDetailed,
+                Pages.LogCat
+            )
+        }
         val screenshot = imageTask.await()
+        val screenComponents = screenComponentsTask.await()
+        val logCat = logcatTask.await()
         val viewShots = ViewNode(viewHierarchy).all()
             .map { vn ->
                 if (vn.shouldRender) {
@@ -73,6 +92,9 @@ class ServerApi : IServerApi {
             this.clientConfiguration = clientConfig
             this.screenshot = screenshot
             this.viewShots = viewShots
+            this.screenComponents = screenComponents
+            this.logCat = "data:text/plain,$logCat"
+            this.taken = taken
         }
         obj
     }
@@ -128,6 +150,10 @@ class ServerApi : IServerApi {
 
     override fun viewShotUrl(screenIndex: Int, viewIndex: Int): String {
         return "view/$screenIndex/$viewIndex"
+    }
+
+    override fun logCatUrl(): String {
+        return "logcat"
     }
 
     override val supportsViewPropertyDetails: Boolean = true

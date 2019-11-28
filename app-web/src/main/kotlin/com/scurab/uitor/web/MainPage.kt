@@ -1,6 +1,7 @@
 package com.scurab.uitor.web
 
 import com.scurab.uitor.common.util.ise
+import com.scurab.uitor.common.util.npe
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.filebrowser.FileBrowserPage
@@ -8,12 +9,14 @@ import com.scurab.uitor.web.groovy.GroovyPage
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.PageViewModel
+import com.scurab.uitor.web.model.Pages
 import com.scurab.uitor.web.model.Snapshot
 import com.scurab.uitor.web.resources.ResourcesPage
 import com.scurab.uitor.web.screen.ScreenComponentsPage
 import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
 import com.scurab.uitor.web.ui.launchWithProgressBar
+import com.scurab.uitor.web.util.DocumentWrapper
 import com.scurab.uitor.web.util.browserDownload
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.readAsText
@@ -30,6 +33,7 @@ import kotlinx.html.js.img
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.option
+import kotlinx.html.js.pre
 import kotlinx.html.select
 import kotlinx.html.style
 import kotlinx.html.table
@@ -73,27 +77,27 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
             }
             table {
                 style = "margin-left:auto;margin-right:auto;"
-                createPageButton("LayoutInspectorPage", "Layout Inspector")
+                createPageButton(Pages.LayoutInspector, "Layout Inspector")
                 { LayoutInspectorPage(PageViewModel(screenIndex)) }
-                createPageButton("ThreeDPage", "3D Inspector")
+                createPageButton(Pages.ThreeD, "3D Inspector")
                 { ThreeDPage(PageViewModel(screenIndex)) }
-                createPageButton("TidyTreePage", "View Hierarchy")
+                createPageButton(Pages.TidyTree, "View Hierarchy")
                 { TidyTreePage(PageViewModel(screenIndex)) }
-                createPageButton("ResourcesPage", "Resources", true)
+                createPageButton(Pages.Resources, "Resources", true)
                 { ResourcesPage(PageViewModel(screenIndexOptional ?: -1)) }
-                createPageButton("FileBrowserPage", "File Browser", true)
+                createPageButton(Pages.FileBrowser, "File Browser", true)
                 { FileBrowserPage(PageViewModel(screenIndexOptional ?: -1)) }
-                createPageButton("WindowsPage", "Windows") {
+                createPageButton(Pages.Windows, "Windows") {
                     ScreenComponentsPage(
                         PageViewModel(
                             screenIndexOptional ?: -1
                         )
                     )
                 }
-                createLinkButton("WindowsDetailedPage", "Windows Detailed") { "screenstructure" }
-                createLinkButton("ScreenshotPage", "Screenshot") { App.serverApi.screenShotUrl(screenIndex) }
-                createLinkButton("LogCatPage", "LogCat") { "logcat" }
-                createPageButton("GroovyPage", "Groovy", true) {
+                createLinkButton(Pages.WindowsDetailed, "Windows Detailed") { "screenstructure" }
+                createLinkButton(Pages.Screenshot, "Screenshot") { App.serverApi.screenShotUrl(screenIndex) }
+                createLinkButton(Pages.LogCat, "LogCat") { App.serverApi.logCatUrl() }
+                createPageButton(Pages.Groovy, "Groovy", true) {
                     GroovyPage(
                         PageViewModel(screenIndexOptional ?: -1),
                         null
@@ -101,6 +105,7 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
                 }
                 createButton("", "Save") {
                     launchWithProgressBar {
+                        val x = "1".toIntOrNull()
                         val obj = serverApi.snapshot(screenIndex)
                         browserDownload(JSON.stringify(obj), "snapshot.json", "application/json")
                     }
@@ -171,14 +176,33 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
             try {
                 val url = block()
                 //TODO: something better ?
-                if (url.startsWith("data:image")) {
-                    val wnd = window.open("about:blank", "_blank", "")
-                    val img = document.create.img {
-                        this.src = url
+                when {
+                    url.startsWith("data:image") -> {
+                        window.open("about:blank", "_blank", "")?.let { window ->
+                            val img = document.create.img {
+                                style = "-webkit-user-select: none;margin: auto;cursor: zoom-in;"
+                                this.src = url
+                            }
+                            window.document.let { doc ->
+                                doc.body?.let { body ->
+                                    body.setAttribute("style", "margin: 0px; background: #0e0e0e;")
+                                    body.append(img)
+                                } ?: npe("No body in document ?!")
+                            }
+                        }
                     }
-                    wnd!!.document.body!!.append(img)
-                } else {
-                    window.open(url, "_blank", "")
+                    url.startsWith("data:text") -> {
+                        window.open("about:blank", "_blank", "")?.let { window ->
+                            val el = document.create.pre {
+                                style = "word-wrap: break-word; white-space: pre-wrap;"
+                                text(url.substringAfter(","))
+                            }
+                            window.document.body.ref.append(el)
+                        }
+                    }
+                    else -> {
+                        window.open(url, "_blank", "")
+                    }
                 }
             } catch (e: Throwable) {
                 alert(e)

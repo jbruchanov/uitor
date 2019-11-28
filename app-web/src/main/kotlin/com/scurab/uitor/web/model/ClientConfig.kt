@@ -14,7 +14,7 @@ class ClientConfig(private val json: Json) {
     val device = json.getMap(ConfigFields.Device)
     val groovy by jsonField<Boolean>(json, ConfigFields.Groovy)
     val pointerIgnoreIds: Set<Int> = (json[ConfigFields.PointerIgnoreIds] as? Array<Int> ?: emptyArray()).toHashSet()
-    val pages: Array<String> = json["Pages"] as? Array<String> ?: npe("Undefined field 'Pages'")
+    val pages: Array<String> = json[PAGES] as? Array<String> ?: npe("Undefined field 'Pages'")
 
     val propertyHighlights =
         json.getMap(ConfigFields.PropertyHighlights)
@@ -23,7 +23,7 @@ class ClientConfig(private val json: Json) {
     val typeHighlights = json.getMap(ConfigFields.TypeHighlights)
         .map({ it }, { it.toString().toColor() })
 
-    var detail: String? = json["detail"] as? String
+    var detail: String? = json[DETAIL] as? String
 
     val deviceInfo: String by lazy {
         val man = device["MANUFACTURER"]?.toString() ?: ""
@@ -35,4 +35,22 @@ class ClientConfig(private val json: Json) {
         }
         item
     }
+
+    companion object {
+        const val DETAIL = "detail"
+        const val PAGES = "Pages"
+    }
+}
+
+object Pages {
+    const val LayoutInspector = "LayoutInspectorPage"
+    const val ThreeD = "ThreeDPage"
+    const val TidyTree = "TidyTreePage"
+    const val Resources = "ResourcesPage"
+    const val FileBrowser = "FileBrowserPage"
+    const val Windows = "WindowsPage"
+    const val WindowsDetailed = "WindowsDetailedPage"
+    const val Screenshot = "ScreenshotPage"
+    const val LogCat = "LogCatPage"
+    const val Groovy = "GroovyPage"
 }
