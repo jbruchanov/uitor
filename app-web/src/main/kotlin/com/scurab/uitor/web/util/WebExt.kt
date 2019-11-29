@@ -5,7 +5,6 @@ import com.scurab.uitor.common.util.npe
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.html.Tag
 import kotlinx.html.dom.create
-import kotlinx.html.js.a
 import kotlinx.html.js.canvas
 import kotlinx.html.js.img
 import org.w3c.dom.CanvasRenderingContext2D
@@ -14,9 +13,7 @@ import org.w3c.dom.Element
 import org.w3c.dom.HTMLCollection
 import org.w3c.dom.HTMLOptionsCollection
 import org.w3c.dom.get
-import org.w3c.dom.url.URL
 import org.w3c.files.Blob
-import org.w3c.files.BlobPropertyBag
 import org.w3c.files.FileReader
 import kotlin.browser.document
 import kotlin.coroutines.resume
@@ -34,9 +31,13 @@ var Tag.styleAttributes: String
     }
 
 
-fun Date.toYMHhms(): String {
+fun Date.toYMHhms(useSeparators: Boolean = true, dateTimeSeparator: String = " "): String {
     val d = fun Int.(): String { return toString().padStart(2, '0') }
-    return "${getFullYear().d()}-${getMonth().d()}-${getDay().d()} ${getHours().d()}:${getMinutes().d()}:${getSeconds().d()}"
+    val dateSep = if (useSeparators) "-" else ""
+    val timeSep = if (useSeparators) ":" else ""
+    val date = getFullYear().d() + dateSep + getMonth().d() + dateSep + getDay().d()
+    val time = getHours().d() + timeSep + getMinutes().d() + timeSep + getSeconds().d()
+    return date + dateTimeSeparator + time
 }
 
 fun Color.styleBackgroundColor(): String = "background-color:${htmlRGBA}"
@@ -122,18 +123,6 @@ fun HTMLOptionsCollection.removeAll() {
 }
 
 /**
- * Initiate download data
- */
-fun browserDownload(content: Any, fileName: String, contentType: String) {
-    val a = document.create.a()
-    val file = Blob(arrayOf(content), BlobPropertyBag(contentType))
-    a.href = URL.createObjectURL(file)
-    a.download = fileName
-    a.click()
-    a.remove()
-}
-
-/**
  * Load image from url as the Base64 string
  */
 suspend fun loadImage(url:String) : String {
@@ -155,7 +144,7 @@ suspend fun loadImage(url:String) : String {
             }
         }
         img.onerror = { _, _, _, _, _ ->
-            continuation.resumeWithException(Exception("Unable to load image"))
+            continuation.resumeWithException(Exception("Unable to load image url:'$url'"))
         }
         img.src = url
     }

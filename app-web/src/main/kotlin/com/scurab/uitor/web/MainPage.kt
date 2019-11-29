@@ -1,7 +1,6 @@
 package com.scurab.uitor.web
 
 import com.scurab.uitor.common.util.ise
-import com.scurab.uitor.common.util.npe
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.filebrowser.FileBrowserPage
@@ -16,11 +15,12 @@ import com.scurab.uitor.web.screen.ScreenComponentsPage
 import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
 import com.scurab.uitor.web.ui.launchWithProgressBar
-import com.scurab.uitor.web.util.browserDownload
+import com.scurab.uitor.web.util.Browser
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.readAsText
 import com.scurab.uitor.web.util.removeAll
 import com.scurab.uitor.web.util.requireElementById
+import com.scurab.uitor.web.util.toYMHhms
 import kotlinx.coroutines.GlobalScope
 import kotlinx.html.InputType
 import kotlinx.html.TABLE
@@ -28,11 +28,9 @@ import kotlinx.html.button
 import kotlinx.html.div
 import kotlinx.html.id
 import kotlinx.html.input
-import kotlinx.html.js.img
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.option
-import kotlinx.html.js.pre
 import kotlinx.html.select
 import kotlinx.html.style
 import kotlinx.html.table
@@ -44,6 +42,7 @@ import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSelectElement
 import kotlin.browser.window
 import kotlin.dom.clear
+import kotlin.js.Date
 
 private const val ID_SCREEN_INDEX = "main-screen-index"
 private const val DEVICE_INFO = "main-screen-device-info"
@@ -104,14 +103,14 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
                 }
                 createButton("", "Save") {
                     launchWithProgressBar {
-                        val x = "1".toIntOrNull()
                         val obj = serverApi.snapshot(screenIndex)
-                        browserDownload(JSON.stringify(obj), "snapshot.json", "application/json")
+                        val filename = "snapshot-${Date().toYMHhms(false, "_")}.json"
+                        Browser.download(JSON.stringify(obj), filename, Browser.CONTENT_JSON)
                     }
                 }
                 input {
                     type = InputType.file
-                    accept = "application/json"
+                    accept = Browser.CONTENT_JSON
                     onChangeFunction = { event ->
                         val files = (event.target as? HTMLInputElement)?.files
                         val file = files
@@ -174,34 +173,10 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
         createButton(key, title) {
             try {
                 val url = block()
-                //TODO: something better ?
                 when {
-                    url.startsWith("data:image") -> {
-                        window.open("about:blank", "_blank", "")?.let { window ->
-                            val img = document.create.img {
-                                style = "-webkit-user-select: none;margin: auto;cursor: zoom-in;"
-                                this.src = url
-                            }
-                            window.document.let { doc ->
-                                doc.body?.let { body ->
-                                    body.setAttribute("style", "margin: 0px; background: #0e0e0e;")
-                                    body.append(img)
-                                } ?: npe("No body in document ?!")
-                            }
-                        }
-                    }
-                    url.startsWith("data:text") -> {
-                        window.open("about:blank", "_blank", "")?.let { window ->
-                            val el = document.create.pre {
-                                style = "word-wrap: break-word; white-space: pre-wrap;"
-                                text(url.substringAfter(","))
-                            }
-                            window.document.body.ref.append(el)
-                        }
-                    }
-                    else -> {
-                        window.open(url, "_blank", "")
-                    }
+                    url.startsWith("data:image") -> Browser.openImageInNewTab(url)
+                    url.startsWith("data:text") -> Browser.openTextDataInNewTab(url)
+                    else -> window.open(url, "_blank", "")
                 }
             } catch (e: Throwable) {
                 alert(e)

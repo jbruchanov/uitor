@@ -10,6 +10,7 @@ import com.scurab.uitor.web.model.ScreenNode
 import com.scurab.uitor.web.model.Snapshot
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.model.ViewPropertyItem
+import com.scurab.uitor.web.util.Browser
 import com.scurab.uitor.web.util.keys
 import com.scurab.uitor.web.util.loadImage
 import com.scurab.uitor.web.util.obj
@@ -97,7 +98,7 @@ class ServerApi : IServerApi {
             this.viewShots = viewShots
             this.screenComponents = screenComponents
             this.logCat = "data:text/plain,$logCat"
-            this.screenStructure = "data:text/json,$screenStructure"
+            this.screenStructure = "data:${Browser.CONTENT_JSON},$screenStructure"
             this.taken = taken
         }
         obj
@@ -190,7 +191,7 @@ class ServerApi : IServerApi {
     }
 
     private suspend fun <T> load(url: String, timeOut: Long = 10000): T {
-        return JSON.parse<T>(loadText(url, timeOut))
+        return JSON.parse(loadText(url, timeOut))
     }
 
     private fun <T> String.parseJson() : T {
