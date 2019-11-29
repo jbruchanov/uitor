@@ -16,7 +16,6 @@ import com.scurab.uitor.web.screen.ScreenComponentsPage
 import com.scurab.uitor.web.threed.ThreeDPage
 import com.scurab.uitor.web.tree.TidyTreePage
 import com.scurab.uitor.web.ui.launchWithProgressBar
-import com.scurab.uitor.web.util.DocumentWrapper
 import com.scurab.uitor.web.util.browserDownload
 import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.readAsText
@@ -94,7 +93,7 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
                         )
                     )
                 }
-                createLinkButton(Pages.WindowsDetailed, "Windows Detailed") { "screenstructure" }
+                createLinkButton(Pages.WindowsDetailed, "Windows Detailed") { App.serverApi.screenStructureUrl() }
                 createLinkButton(Pages.Screenshot, "Screenshot") { App.serverApi.screenShotUrl(screenIndex) }
                 createLinkButton(Pages.LogCat, "LogCat") { App.serverApi.logCatUrl() }
                 createPageButton(Pages.Groovy, "Groovy", true) {

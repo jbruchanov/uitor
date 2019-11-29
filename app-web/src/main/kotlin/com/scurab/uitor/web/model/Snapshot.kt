@@ -9,6 +9,7 @@ interface Snapshot {
     var viewHierarchy: Json
     var clientConfiguration: Json
     var screenComponents: Json
+    var screenStructure: String
     var screenshot: String
     var viewShots: Array<String?>
     var logCat: String

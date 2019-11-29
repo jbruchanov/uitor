@@ -17,7 +17,6 @@ import com.scurab.uitor.web.util.requireTypedListOf
 import com.scurab.uitor.web.util.toYMHhms
 import kotlinx.coroutines.asDeferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeout
 import org.w3c.fetch.Headers
@@ -43,6 +42,8 @@ interface IServerApi {
     fun screenShotUrl(screenIndex: Int): String
     fun viewShotUrl(screenIndex: Int, viewIndex: Int): String
     fun logCatUrl(): String
+    fun screenStructureUrl(): String
+
     val supportsViewPropertyDetails : Boolean
 }
 
@@ -61,6 +62,7 @@ class ServerApi : IServerApi {
         val clientConfigTask = async { rawClientConfiguration() }
         val screenComponentsTask = async { rawScreenComponents() }
         val logcatTask = async { loadText(logCatUrl()) }
+        val screenStructureTask = async { loadText(screenStructureUrl()) }
 
         val screenName = activeScreens()[screenIndex]
         val viewHierarchy = viewHierarchyTask.await()
@@ -77,6 +79,7 @@ class ServerApi : IServerApi {
             )
         }
         val screenshot = imageTask.await()
+        val screenStructure = screenStructureTask.await()
         val screenComponents = screenComponentsTask.await()
         val logCat = logcatTask.await()
         val viewShots = ViewNode(viewHierarchy).all()
@@ -94,6 +97,7 @@ class ServerApi : IServerApi {
             this.viewShots = viewShots
             this.screenComponents = screenComponents
             this.logCat = "data:text/plain,$logCat"
+            this.screenStructure = "data:text/json,$screenStructure"
             this.taken = taken
         }
         obj
@@ -148,13 +152,11 @@ class ServerApi : IServerApi {
         return "screen/$screenIndex"
     }
 
-    override fun viewShotUrl(screenIndex: Int, viewIndex: Int): String {
-        return "view/$screenIndex/$viewIndex"
-    }
+    override fun viewShotUrl(screenIndex: Int, viewIndex: Int): String = "view/$screenIndex/$viewIndex"
 
-    override fun logCatUrl(): String {
-        return "logcat"
-    }
+    override fun logCatUrl(): String = "logcat"
+
+    override fun screenStructureUrl(): String = "screenstructure"
 
     override val supportsViewPropertyDetails: Boolean = true
 

@@ -44,9 +44,9 @@ class SnapshotServerApi(private val snapshot: Snapshot) : IServerApi {
         return snapshot.viewShots[viewIndex] ?: ""
     }
 
-    override fun logCatUrl(): String {
-        return snapshot.logCat
-    }
+    override fun logCatUrl(): String = snapshot.logCat
+
+    override fun screenStructureUrl(): String = snapshot.screenStructure
 
     override suspend fun loadResourceItem(): MutableMap<String, List<ResourceDTO>> {
         throw UnsupportedOperationException("loadResourceItem()")
