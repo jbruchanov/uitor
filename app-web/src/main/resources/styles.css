@@ -37,6 +37,7 @@
     --button-backgroud-default: #555;
     --button-backgroud-pressed: #444;
     --button-backgroud-focused: #666;
+    --button-backgroud-disabled: #333;
 }
 
 [data-theme="light"] {
@@ -66,8 +67,9 @@
     --tree-node-link: #CCC;
 
     --button-backgroud-default: #DDD;
-    --button-backgroud-pressed: #CCC;
-    --button-backgroud-focused: #EEE;
+    --button-backgroud-pressed: #BBB;
+    --button-backgroud-focused: #CCC;
+    --button-backgroud-disabled: #F2F2F2;
 }
 
 body {
@@ -486,6 +488,10 @@ select {
 
 button:hover, select:hover {
     background-color: var(--button-backgroud-focused);
+}
+
+button:disabled, select:disabled {
+    background-color: var(--button-backgroud-disabled);
 }
 
 button:active, select:hover {

@@ -37,6 +37,7 @@ import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.tr
 import kotlinx.html.unsafe
+import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSelectElement
@@ -101,11 +102,18 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
                         null
                     )
                 }
-                createButton("", "Save") {
+                createButton("", "Save") { button ->
+                    button.disabled = true
                     launchWithProgressBar {
-                        val obj = serverApi.snapshot(screenIndex)
-                        val filename = "snapshot-${Date().toYMHhms(false, "_")}.json"
-                        Browser.download(JSON.stringify(obj), filename, Browser.CONTENT_JSON)
+                        try {
+                            val obj = serverApi.snapshot(screenIndex)
+                            val filename = "snapshot-${Date().toYMHhms(false, "_")}.json"
+                            Browser.download(JSON.stringify(obj), filename, Browser.CONTENT_JSON)
+                        } catch (e: Exception) {
+                            throw e
+                        } finally {
+                            button.disabled = false
+                        }
                     }
                 }
                 input {
@@ -184,7 +192,7 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
         }
     }
 
-    private fun TABLE.createButton(key: String, title: String, clickAction: () -> Unit) {
+    private fun TABLE.createButton(key: String, title: String, clickAction: (HTMLButtonElement) -> Unit) {
         if (key.isNotEmpty() && !clientConfig.pages.contains(key)) {
             return
         }
@@ -193,7 +201,7 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
                 button {
                     style = "width:100%"
                     text(title)
-                    onClickFunction = { clickAction() }
+                    onClickFunction = { clickAction(it.target as HTMLButtonElement) }
                 }
             }
         }
