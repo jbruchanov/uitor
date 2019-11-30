@@ -69,10 +69,10 @@ object Browser {
         }
     }
 
-    fun saveButtonHandler(serverApi: IServerApi, screenIndex: () -> Int): (Event) -> Unit {
-        return { ev: Event ->
-            val button = ev.target as HTMLButtonElement
-            button.disabled = true
+    fun saveButtonHandler(serverApi: IServerApi, screenIndex: () -> Int): (Event?) -> Unit {
+        return { ev ->
+            val button = ev?.target as? HTMLButtonElement
+            button?.disabled = true
             GlobalScope.launch {
                 launchWithProgressBar {
                     try {
@@ -82,7 +82,7 @@ object Browser {
                     } catch (e: Exception) {
                         throw e
                     } finally {
-                        button.disabled = false
+                        button?.disabled = false
                     }
                 }
             }

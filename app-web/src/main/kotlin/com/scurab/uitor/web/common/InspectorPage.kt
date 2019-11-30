@@ -4,6 +4,7 @@ import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.common.util.messageSafe
 import com.scurab.uitor.web.inspector.InspectorViewModel
 import com.scurab.uitor.web.ui.launchWithProgressBar
+import com.scurab.uitor.web.util.Browser
 import com.scurab.uitor.web.util.HashToken
 import kotlinx.coroutines.CancellationException
 
@@ -23,6 +24,15 @@ abstract class InspectorPage(protected val viewModel: InspectorViewModel) : Page
                     )
                 }
                 elog { e.messageSafe }
+            }
+        }
+        document.addKeyUpListener {
+            //global CTRL+S listener
+            if (it.altKey) {
+                when (it.keyCode) {
+                    //hard to find something what works in chrome/FF
+                    83/*s*/ -> Browser.saveButtonHandler(viewModel.serverApi) { viewModel.screenIndex }(null)
+                }
             }
         }
         super.onAttached()
