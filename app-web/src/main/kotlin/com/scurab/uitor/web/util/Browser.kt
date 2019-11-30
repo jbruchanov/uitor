@@ -1,16 +1,23 @@
 package com.scurab.uitor.web.util
 
 import com.scurab.uitor.common.util.npe
+import com.scurab.uitor.web.common.IServerApi
+import com.scurab.uitor.web.ui.launchWithProgressBar
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.html.dom.create
 import kotlinx.html.js.a
 import kotlinx.html.js.img
 import kotlinx.html.js.pre
 import kotlinx.html.style
+import org.w3c.dom.HTMLButtonElement
+import org.w3c.dom.events.Event
 import org.w3c.dom.url.URL
 import org.w3c.files.Blob
 import org.w3c.files.BlobPropertyBag
 import kotlin.browser.document
 import kotlin.browser.window
+import kotlin.js.Date
 
 object Browser {
     const val CONTENT_JSON = "text/json"
@@ -28,7 +35,7 @@ object Browser {
         a.remove()
     }
 
-    fun openImageInNewTab(url:String) {
+    fun openImageInNewTab(url: String) {
         window.open(ABOUT_BLANK, TARGET_BLANK, "")?.let { window ->
             window.onload = {
                 val img = document.create.img {
@@ -58,6 +65,26 @@ object Browser {
                     text(text)
                 }
                 window.document.body?.append(el) ?: npe("No body in document ?!")
+            }
+        }
+    }
+
+    fun saveButtonHandler(serverApi: IServerApi, screenIndex: () -> Int): (Event) -> Unit {
+        return { ev: Event ->
+            val button = ev.target as HTMLButtonElement
+            button.disabled = true
+            GlobalScope.launch {
+                launchWithProgressBar {
+                    try {
+                        val obj = serverApi.snapshot(screenIndex())
+                        val filename = "snapshot-${Date().toYMHhms(false, "_")}.json"
+                        download(JSON.stringify(obj), filename, Browser.CONTENT_JSON)
+                    } catch (e: Exception) {
+                        throw e
+                    } finally {
+                        button.disabled = false
+                    }
+                }
             }
         }
     }

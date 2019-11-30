@@ -20,8 +20,8 @@ import com.scurab.uitor.web.util.lazyLifecycled
 import com.scurab.uitor.web.util.readAsText
 import com.scurab.uitor.web.util.removeAll
 import com.scurab.uitor.web.util.requireElementById
-import com.scurab.uitor.web.util.toYMHhms
 import kotlinx.coroutines.GlobalScope
+import kotlinx.html.HtmlBlockTag
 import kotlinx.html.InputType
 import kotlinx.html.TABLE
 import kotlinx.html.button
@@ -41,9 +41,9 @@ import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSelectElement
+import org.w3c.dom.get
 import kotlin.browser.window
 import kotlin.dom.clear
-import kotlin.js.Date
 
 private const val ID_SCREEN_INDEX = "main-screen-index"
 private const val DEVICE_INFO = "main-screen-device-info"
@@ -102,38 +102,17 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
                         null
                     )
                 }
-                createButton("", "Save") { button ->
-                    button.disabled = true
-                    launchWithProgressBar {
-                        try {
-                            val obj = serverApi.snapshot(screenIndex)
-                            val filename = "snapshot-${Date().toYMHhms(false, "_")}.json"
-                            Browser.download(JSON.stringify(obj), filename, Browser.CONTENT_JSON)
-                        } catch (e: Exception) {
-                            throw e
-                        } finally {
-                            button.disabled = false
-                        }
-                    }
-                }
-                input {
-                    type = InputType.file
-                    accept = Browser.CONTENT_JSON
-                    onChangeFunction = { event ->
-                        val files = (event.target as? HTMLInputElement)?.files
-                        val file = files
-                            ?.takeIf { it.length > 0 }
-                            ?.item(0)
-                            ?.let { file ->
-                                GlobalScope.launchWithProgressBar {
-                                    val snapshot = JSON.parse<Snapshot>(file.readAsText())
-                                    App.setSnapshot(snapshot)
-                                    clientConfig = App.clientConfig
-                                    buildContent()
-                                    reloadScreens()
-                                }
+                tr {
+                    td {
+                        div {
+                            style = "display: grid;grid-template-columns: 1fr 5.6px 1fr;"
+                            button {
+                                text("Save")
+                                onClickFunction = Browser.saveButtonHandler(serverApi) { screenIndex }
                             }
-
+                            div {}
+                            createLoadButton()
+                        }
                     }
                 }
             }
@@ -163,7 +142,12 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
     }
 
 
-    private fun TABLE.createPageButton(key: String, title: String, demoDisabled: Boolean = false, block: () -> Page) {
+    private fun TABLE.createPageButton(
+        key: String,
+        title: String,
+        demoDisabled: Boolean = false,
+        block: () -> Page
+    ) {
         createButton(key, title) {
             if (demoDisabled && DEMO) {
                 alert("Sorry, $title is not supported in demo!")
@@ -202,6 +186,34 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
                     style = "width:100%"
                     text(title)
                     onClickFunction = { clickAction(it.target as HTMLButtonElement) }
+                }
+            }
+        }
+    }
+
+    private fun HtmlBlockTag.createLoadButton() {
+        button {
+            onClickFunction = {
+                ((it.target as HTMLElement).children[0] as HTMLElement).click()
+            }
+            text("Load")
+            input(classes = "inputfile") {
+                type = InputType.file
+                accept = Browser.CONTENT_JSON
+                onChangeFunction = { event ->
+                    val files = (event.target as? HTMLInputElement)?.files
+                    val file = files
+                        ?.takeIf { it.length > 0 }
+                        ?.item(0)
+                        ?.let { file ->
+                            GlobalScope.launchWithProgressBar {
+                                val snapshot = JSON.parse<Snapshot>(file.readAsText())
+                                App.setSnapshot(snapshot)
+                                clientConfig = App.clientConfig
+                                buildContent()
+                                reloadScreens()
+                            }
+                        }
                 }
             }
         }
