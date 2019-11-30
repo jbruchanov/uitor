@@ -73,7 +73,7 @@ class ServerApi : IServerApi {
             this[ClientConfig.DETAIL] = "Snapshot: $taken"
             val snapshotResources = (this[ClientConfig.SNAPSHOT_RESOURCES] as? Boolean) ?: false
             if (snapshotResources) {
-                resourcesTask = async { loadText("resources/all").parseJson<kotlin.js.Json>() }
+                resourcesTask = async { loadText(URL_RESOURCES_ALL).parseJson<Json>() }
             }
             this[ClientConfig.PAGES] = arrayOf(
                 Pages.LayoutInspector,
@@ -127,7 +127,7 @@ class ServerApi : IServerApi {
 
     override suspend fun loadResourceItem(): MutableMap<String, List<ResourceDTO>> {
         val result = mutableMapOf<String, List<ResourceDTO>>()
-        load<Json>("/resources").let { json ->
+        load<Json>(URL_RESOURCES_LIST).let { json ->
             json.keys().forEach { group ->
                 result[group] = json.requireTypedListOf(group) {
                     ResourceDTO.fromJson(it)
@@ -184,7 +184,7 @@ class ServerApi : IServerApi {
         }
     }
 
-    private suspend fun loadText(url: String, timeOut: Long = 10000): String {
+    suspend fun loadText(url: String, timeOut: Long = 10000): String {
         return withTimeout(timeOut) {
             val response = window.fetch(url).asDeferred().await()
             check(response.status == 200.toShort()) { "[${response.status}]${response.statusText}" }
@@ -205,6 +205,9 @@ class ServerApi : IServerApi {
     }
 
     companion object {
+        const val URL_RESOURCES_ALL = "resources/all"
+        const val URL_RESOURCES_LIST = "resources/list"
+
         fun storageUrl(path: String = ""): String {
             return "storage?path=$path"
         }

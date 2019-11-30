@@ -3,6 +3,7 @@ package com.scurab.uitor.web
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Page
+import com.scurab.uitor.web.common.ServerApi
 import com.scurab.uitor.web.filebrowser.FileBrowserPage
 import com.scurab.uitor.web.groovy.GroovyPage
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
@@ -21,6 +22,8 @@ import com.scurab.uitor.web.util.readAsText
 import com.scurab.uitor.web.util.removeAll
 import com.scurab.uitor.web.util.requireElementById
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.asDeferred
+import kotlinx.coroutines.async
 import kotlinx.html.HtmlBlockTag
 import kotlinx.html.InputType
 import kotlinx.html.TABLE
@@ -82,7 +85,7 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
                 { ThreeDPage(PageViewModel(screenIndex)) }
                 createPageButton(Pages.TidyTree, "View Hierarchy")
                 { TidyTreePage(PageViewModel(screenIndex)) }
-                createPageButton(Pages.Resources, "Resources", true)
+                createPageButton(Pages.Resources, "Resources", false)
                 { ResourcesPage(PageViewModel(screenIndexOptional ?: -1)) }
                 createPageButton(Pages.FileBrowser, "File Browser", true)
                 { FileBrowserPage(PageViewModel(screenIndexOptional ?: -1)) }
@@ -114,6 +117,23 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
                             createLoadButton()
                         }
                     }
+                }
+
+                val savingForDemo = false
+                if(savingForDemo) {
+                    tr { td { button {
+                                text("DemoSave")
+                                onClickFunction = {
+                                    launchWithProgressBar {
+                                        async { window.fetch(ServerApi.URL_RESOURCES_ALL).asDeferred() }.await()
+                                        serverApi.loadResourceItem().forEach { (k, v) ->
+                                            v.forEach { res ->
+                                                serverApi.loadResourceItem(0, res.key)
+                                            }
+                                        }
+                                    }
+                                }
+                    } } }
                 }
             }
         }.apply {
