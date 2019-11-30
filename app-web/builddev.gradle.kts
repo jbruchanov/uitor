@@ -118,6 +118,7 @@ val installNpmTask = tasks.register<Exec>("installNpm") {
     commandLine = "npm install".osCommandLineArgs()
 }
 
+//FIXME: uglifyjs needs to be installed global
 val uglifyjsReleaseArtifactTask = tasks.create<Exec>("uglifyjsReleaseArtifact") {
     group = "custom build"
     workingDir = project.projectDir
@@ -169,7 +170,7 @@ val assembleReleaseZipArtifactTask = tasks.create<Zip>("assembleReleaseZipArtifa
 
 fun String.osCommandLineArgs(): List<String> {
     var cmd = this
-    if (System.getProperty("os.name").contains("windows")) {
+    if (System.getProperty("os.name").contains("windows", true)) {
         cmd = "cmd /c $cmd"
     }
     return cmd.split(" ")
