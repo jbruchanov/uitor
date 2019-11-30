@@ -159,9 +159,10 @@ class CanvasView(
     private fun calculateScaleToFit(): Double {
         val imageWidth = image.width
         val imageHeight = image.height
+        val windowWidth = window.innerWidth
         val windowHeight = window.innerHeight
         val maxH = windowHeight - HEIGHT_OFFSET
-        val maxW = element.ref.getBoundingClientRect().width
+        val maxW = min(element.ref.getBoundingClientRect().width, windowWidth - 1000.0)
         val scaleW = max(SCALE_MIN / 100, maxW / imageWidth)
         val scaleH = max(SCALE_MIN / 100, maxH / imageHeight)
         return min(scaleW, scaleH)
