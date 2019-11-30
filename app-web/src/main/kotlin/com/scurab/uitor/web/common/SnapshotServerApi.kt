@@ -1,14 +1,18 @@
 package com.scurab.uitor.web.common
 
 import com.scurab.uitor.common.util.iae
+import com.scurab.uitor.common.util.npe
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.FSItem
+import com.scurab.uitor.web.model.IResourceDTO
 import com.scurab.uitor.web.model.ResourceDTO
 import com.scurab.uitor.web.model.ResourceItem
 import com.scurab.uitor.web.model.ScreenNode
 import com.scurab.uitor.web.model.Snapshot
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.model.ViewPropertyItem
+import com.scurab.uitor.web.util.getMap
+import kotlin.js.Json
 
 
 class SnapshotServerApi(private val snapshot: Snapshot) : IServerApi {
@@ -16,6 +20,26 @@ class SnapshotServerApi(private val snapshot: Snapshot) : IServerApi {
     override suspend fun snapshot(screenIndex: Int): Snapshot = snapshot
 
     override val supportsViewPropertyDetails: Boolean = false
+
+    private val resourcesDtos : Map<String, List<ResourceDTO>>?
+    private val resourcesItems : Map<Int, ResourceItem>?
+
+    init {
+        val dtosMap = mutableMapOf<String, MutableList<ResourceDTO>>()
+        val itemsMap = mutableMapOf<Int, ResourceItem>()
+
+        snapshot.resources?.getMap(null)?.forEach { (group, v) ->
+            val items = v as Array<Json>
+            items.forEach { resItem ->
+                val item = ResourceItem(resItem)
+                val dto = ResourceDTO(item.id, item.name, item.source)
+                dtosMap.getOrPut(group) { mutableListOf() }.add(dto)
+                itemsMap[item.id] = item
+            }
+        }
+        resourcesDtos = dtosMap
+        resourcesItems = itemsMap
+    }
 
     override suspend fun viewHierarchy(screenIndex: Int): ViewNode {
         screenIndex.assertZero()
@@ -48,12 +72,13 @@ class SnapshotServerApi(private val snapshot: Snapshot) : IServerApi {
 
     override fun screenStructureUrl(): String = snapshot.screenStructure
 
-    override suspend fun loadResourceItem(): MutableMap<String, List<ResourceDTO>> {
-        throw UnsupportedOperationException("loadResourceItem()")
+    override suspend fun loadResourceItem(): Map<String, List<IResourceDTO>> {
+        return resourcesDtos ?: npe("Unsupported loadResourceItem()")
     }
 
     override suspend fun loadResourceItem(screenIndex: Int, resId: Int): ResourceItem {
-        throw UnsupportedOperationException("loadResourceItem(screenIndex: Int, resId: Int)")
+        resourcesItems ?: npe("Unsupported loadResourceItem(screenIndex: Int, resId: Int)")
+        return resourcesItems[resId] ?: npe("Missing resource item for id:$resId")
     }
 
     override suspend fun loadFileStorage(path: String): List<FSItem> {

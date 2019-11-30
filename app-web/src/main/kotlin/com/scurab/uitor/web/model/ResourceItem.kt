@@ -35,4 +35,13 @@ class ResourceDTO(
     override val key: Int,
     override val value: String,
     override val contextValue: String?
-) : IResourceDTO
+) : IResourceDTO {
+    companion object {
+        fun fromJson(json: Json) : ResourceDTO {
+            val k = json["key"] as? Int ?: ise("Missing Int field 'Key' in resources response")
+            val v = json["value"] as? String ?: ise("Missing String field 'Value' in resources response")
+            val l = json["contextValue"] as? String
+            return ResourceDTO(k, v, l)
+        }
+    }
+}

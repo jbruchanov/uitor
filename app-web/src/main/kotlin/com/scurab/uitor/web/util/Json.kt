@@ -51,9 +51,9 @@ fun <T> Json.requireTypedListOf(key: String, creator: (Json) -> T): List<T> {
     return array.map { creator(it) }
 }
 
-fun Json.getMap(key: String, to: MutableMap<String, Any?> = linkedMapOf()): MutableMap<String, Any?> {
+fun Json.getMap(key: String?, to: MutableMap<String, Any?> = linkedMapOf()): MutableMap<String, Any?> {
     try {
-        val obj = get(key) as? Json
+        val obj = if (key == null) this else get(key) as? Json
         if (obj != null) {
             for (k in obj.keys().sorted()) {
                 val value = obj[k]

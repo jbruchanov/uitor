@@ -24,6 +24,7 @@ class ClientConfig(private val json: Json) {
         .map({ it }, { it.toString().toColor() })
 
     var detail: String? = json[DETAIL] as? String
+    var snapshotResources: Boolean = json[SNAPSHOT_RESOURCES] as? Boolean ?: false
 
     val deviceInfo: String by lazy {
         val man = device["MANUFACTURER"]?.toString() ?: ""
@@ -39,6 +40,7 @@ class ClientConfig(private val json: Json) {
     companion object {
         const val DETAIL = "detail"
         const val PAGES = "Pages"
+        const val SNAPSHOT_RESOURCES = "SnapshotResources"
     }
 }
 

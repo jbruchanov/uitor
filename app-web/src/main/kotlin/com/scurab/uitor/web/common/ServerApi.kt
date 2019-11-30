@@ -1,8 +1,8 @@
 package com.scurab.uitor.web.common
 
-import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.FSItem
+import com.scurab.uitor.web.model.IResourceDTO
 import com.scurab.uitor.web.model.Pages
 import com.scurab.uitor.web.model.ResourceDTO
 import com.scurab.uitor.web.model.ResourceItem
@@ -16,6 +16,7 @@ import com.scurab.uitor.web.util.loadImage
 import com.scurab.uitor.web.util.obj
 import com.scurab.uitor.web.util.requireTypedListOf
 import com.scurab.uitor.web.util.toYMHhms
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.asDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -34,7 +35,7 @@ interface IServerApi {
     suspend fun viewHierarchy(screenIndex: Int): ViewNode
     suspend fun clientConfiguration(): ClientConfig
     suspend fun activeScreens(): Array<String>
-    suspend fun loadResourceItem(): MutableMap<String, List<ResourceDTO>>
+    suspend fun loadResourceItem(): Map<String, List<IResourceDTO>>
     suspend fun loadResourceItem(screenIndex: Int, resId: Int): ResourceItem
     suspend fun loadFileStorage(path: String = ""): List<FSItem>
     suspend fun loadViewProperty(screenIndex: Int, position: Int, property: String): ViewPropertyItem
@@ -64,11 +65,16 @@ class ServerApi : IServerApi {
         val screenComponentsTask = async { rawScreenComponents() }
         val logcatTask = async { loadText(logCatUrl()) }
         val screenStructureTask = async { loadText(screenStructureUrl()) }
+        var resourcesTask: Deferred<Json>? = null
 
         val screenName = activeScreens()[screenIndex]
         val viewHierarchy = viewHierarchyTask.await()
         val clientConfig = clientConfigTask.await().apply {
             this[ClientConfig.DETAIL] = "Snapshot: $taken"
+            val snapshotResources = (this[ClientConfig.SNAPSHOT_RESOURCES] as? Boolean) ?: false
+            if (snapshotResources) {
+                resourcesTask = async { loadText("resources/all").parseJson<kotlin.js.Json>() }
+            }
             this[ClientConfig.PAGES] = arrayOf(
                 Pages.LayoutInspector,
                 Pages.ThreeD,
@@ -76,7 +82,8 @@ class ServerApi : IServerApi {
                 Pages.Screenshot,
                 Pages.Windows,
                 Pages.WindowsDetailed,
-                Pages.LogCat
+                Pages.LogCat,
+                if (snapshotResources) Pages.Resources else "!${Pages.Resources}"//just keeping it for debug
             )
         }
         val screenshot = imageTask.await()
@@ -89,6 +96,7 @@ class ServerApi : IServerApi {
                     loadImage(viewShotUrl(screenIndex, vn.position))
                 } else null
             }.toTypedArray()
+        val resources = resourcesTask?.await()
 
         val obj = obj<Snapshot> {
             this.name = screenName
@@ -100,6 +108,7 @@ class ServerApi : IServerApi {
             this.logCat = "data:text/plain,$logCat"
             this.screenStructure = "data:${Browser.CONTENT_JSON},$screenStructure"
             this.taken = taken
+            this.resources = resources
         }
         obj
     }
@@ -121,10 +130,7 @@ class ServerApi : IServerApi {
         load<Json>("/resources").let { json ->
             json.keys().forEach { group ->
                 result[group] = json.requireTypedListOf(group) {
-                    val k = it["Key"] as? Int ?: ise("Missing Int field 'Key' in resources response")
-                    val v = it["Value"] as? String ?: ise("Missing String field 'Value' in resources response")
-                    val l = it["Value1"] as? String
-                    ResourceDTO(k, v, l)
+                    ResourceDTO.fromJson(it)
                 }
             }
         }

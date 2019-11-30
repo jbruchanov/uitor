@@ -5,6 +5,7 @@ import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Page
+import com.scurab.uitor.web.model.IResourceDTO
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.model.ResourceDTO
 import com.scurab.uitor.web.ui.launchWithProgressBar
@@ -45,9 +46,9 @@ class ResourcesPage(private val pageViewModel: PageViewModel) : Page() {
     private val groupTable = TableView(delegate = tableViewDelegate(ID_GROUPS_TABLE, this::onGroupSelected))
     private val itemsTable = TableView(delegate = tableViewDelegate(ID_ITEMS_TABLE, this::onItemSelected))
     private val contentContainer by lazyLifecycled { element.ref.requireElementById<HTMLElement>(ID_CONTENT_CONTAINER) }
-    private val resources = Observable<Map<String, List<ResourceDTO>>>()
+    private val resources = Observable<Map<String, List<IResourceDTO>>>()
     private val resourcesContentPage = ResourcesContentGenerator()
-    private var idNamesToResIds = mutableMapOf<String, ResourceDTO>()
+    private var idNamesToResIds = mutableMapOf<String, IResourceDTO>()
 
     init {
         launchWithProgressBar {

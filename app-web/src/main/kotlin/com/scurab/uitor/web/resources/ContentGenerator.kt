@@ -23,7 +23,7 @@ class ResourcesContentGenerator {
         return document.create.div(classes = CSS_RESOURCES) {
             div { text("ID:${item.id}") }
             div { text("Name:${item.name}") }
-            div { text("Source:${item.source}") }
+            div { text("Context:${item.source}") }
             div { text("_______________________________________________________") }
             div { text("Data:") }
             buildDataContent(item)
