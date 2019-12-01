@@ -91,19 +91,28 @@ object Navigation {
             "LayoutInspectorPage" -> LayoutInspectorPage(pageViewModel)
             "ThreeDPage" -> ThreeDPage(pageViewModel)
             "ResourcesPage" -> ResourcesPage(pageViewModel)
-            "FileBrowserPage" -> FileBrowserPage(pageViewModel)
+            "FileBrowserPage" -> {
+                ensureNotDemo()
+                FileBrowserPage(pageViewModel)
+            }
             "ScreenComponentsPage" -> ScreenComponentsPage(pageViewModel)
             "ViewPropertyPage" -> {
-                if (DEMO) {
-                    window.alert("Sorry ViewPropertyPage is not supported in demo!")
-                    return null
-                }
+                ensureNotDemo()
                 val position = token.arguments["position"]?.toIntOrNull() ?: iae("Missing 'position' arg")
                 val property = token.arguments["property"] ?: iae("Missing 'property' arg")
                 ViewPropertyPage(position, property, InspectorViewModel(pageViewModel))
             }
-            "GroovyPage" -> GroovyPage(PageViewModel(0), token.arguments["position"]?.toIntOrNull())
+            "GroovyPage" -> {
+                ensureNotDemo()
+                GroovyPage(PageViewModel(0), token.arguments["position"]?.toIntOrNull())
+            }
             else -> MainPage(App.clientConfig)
+        }
+    }
+
+    private fun ensureNotDemo() {
+        if (DEMO) {
+            throw IllegalStateException("Sorry this page is not supported in demo")
         }
     }
 }
