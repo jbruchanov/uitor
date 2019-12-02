@@ -39,6 +39,7 @@ class MapDelegate<T>(
         return if (!map.containsKey(key)) {
             default(key)
         } else {
+            @Suppress("UNCHECKED_CAST")
             map[key] as T
         }
     }
