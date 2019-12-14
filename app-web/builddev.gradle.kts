@@ -5,6 +5,9 @@ val resFolder = file("${project.projectDir}/src/main/resources")
 val releaseFileName = "uitor.js"
 val releaseMinFileName = "uitor.min.js"
 
+/**
+ * Generate html list of dependencies from res folder into html header.
+ */
 fun generateHtmlDeps() : String {
     return resFolder
         .listFiles()

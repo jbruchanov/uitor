@@ -15,8 +15,6 @@ repositories {
 }
 
 dependencies {
-    //TODO something better
-
     implementation(project(":common"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-js")
     implementation("org.jetbrains.kotlinx:kotlinx-html-js:${Versions.kotlinHtmlJs}")
