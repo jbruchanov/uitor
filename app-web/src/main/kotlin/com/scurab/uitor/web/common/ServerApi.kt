@@ -32,7 +32,7 @@ import kotlin.js.Json
 
 interface IServerApi {
 
-    suspend fun snapshot(screenIndex: Int): Snapshot
+    suspend fun snapshot(screenIndex: Int, clientConfig: IClientConfig): Snapshot
     suspend fun viewHierarchy(screenIndex: Int): ViewNode
     suspend fun clientConfiguration(): IClientConfig
     suspend fun activeScreens(): Array<String>
@@ -58,7 +58,7 @@ class ServerApi : IServerApi {
     private suspend fun rawResourceItem(screenIndex: Int, resId: Int): Json = loadText("resources/$screenIndex/$resId").parseJson()
     private suspend fun rawScreenComponents(): Json = loadText("screencomponents").parseJson()
 
-    override suspend fun snapshot(screenIndex: Int) : Snapshot = coroutineScope {
+    override suspend fun snapshot(screenIndex: Int, clientConfig: IClientConfig) : Snapshot = coroutineScope {
         val taken = Date().toYMHhms()
         val imageTask = async { loadImage(screenShotUrl(screenIndex)) }
         val viewHierarchyTask = async { rawViewHierarchy(screenIndex) }
@@ -76,17 +76,11 @@ class ServerApi : IServerApi {
             if (snapshotResources) {
                 resourcesTask = async { loadText(URL_RESOURCES_ALL).parseJson<Json>() }
             }
-            this[ClientConfig.PAGES] = arrayOf(
-                Pages.LayoutInspector,
-                Pages.ThreeD,
-                Pages.TidyTree,
-                Pages.Screenshot,
-                Pages.Windows,
-                Pages.WindowsDetailed,
-                Pages.LogCat,
-                if (snapshotResources) Pages.Resources else "!${Pages.Resources}"//just keeping it for debug
-            )
+
+            //take same pages as we have supported by client
+            this[ClientConfig.PAGES] = clientConfig.pages
         }
+
         val screenshot = imageTask.await()
         val screenStructure = screenStructureTask.await()
         val screenComponents = screenComponentsTask.await()

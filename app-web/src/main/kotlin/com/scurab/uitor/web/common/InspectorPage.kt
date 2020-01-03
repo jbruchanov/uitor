@@ -31,7 +31,7 @@ abstract class InspectorPage(protected val viewModel: InspectorViewModel) : Page
             if (it.altKey) {
                 when (it.keyCode) {
                     //hard to find something what works in chrome/FF
-                    83/*s*/ -> Browser.saveButtonHandler(viewModel.serverApi) { viewModel.screenIndex }(null)
+                    83/*s*/ -> Browser.saveButtonHandler(viewModel.clientConfig, viewModel.serverApi) { viewModel.screenIndex }(null)
                 }
             }
         }

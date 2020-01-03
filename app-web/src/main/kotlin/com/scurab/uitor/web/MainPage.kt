@@ -113,7 +113,7 @@ class MainPage(private var clientConfig: IClientConfig) : Page() {
                             button {
                                 id = "Save"
                                 text("Save")
-                                onClickFunction = Browser.saveButtonHandler(serverApi) { screenIndex }
+                                onClickFunction = Browser.saveButtonHandler(clientConfig, serverApi) { screenIndex }
                             }
                             div {}
                             createLoadButton()

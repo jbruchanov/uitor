@@ -18,7 +18,7 @@ import kotlin.js.Json
 
 class SnapshotServerApi(private val snapshot: Snapshot) : IServerApi {
 
-    override suspend fun snapshot(screenIndex: Int): Snapshot = snapshot
+    override suspend fun snapshot(screenIndex: Int, clientConfig: IClientConfig): Snapshot = snapshot
 
     override val supportsViewPropertyDetails: Boolean = false
 

@@ -2,6 +2,7 @@ package com.scurab.uitor.web.util
 
 import com.scurab.uitor.common.util.npe
 import com.scurab.uitor.web.common.IServerApi
+import com.scurab.uitor.web.model.IClientConfig
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -69,14 +70,18 @@ object Browser {
         }
     }
 
-    fun saveButtonHandler(serverApi: IServerApi, screenIndex: () -> Int): (Event?) -> Unit {
+    fun saveButtonHandler(
+        clientConfig: IClientConfig,
+        serverApi: IServerApi,
+        screenIndex: () -> Int
+    ): (Event?) -> Unit {
         return { ev ->
             val button = ev?.target as? HTMLButtonElement
             button?.disabled = true
             GlobalScope.launch {
                 launchWithProgressBar {
                     try {
-                        val obj = serverApi.snapshot(screenIndex())
+                        val obj = serverApi.snapshot(screenIndex(), clientConfig)
                         val filename = "snapshot-${Date().toYMHhms(false, "_")}.json"
                         download(JSON.stringify(obj), filename, Browser.CONTENT_JSON)
                     } catch (e: Exception) {
