@@ -35,7 +35,7 @@ fun Date.toYMHhms(useSeparators: Boolean = true, dateTimeSeparator: String = " "
     val d = fun Int.(): String { return toString().padStart(2, '0') }
     val dateSep = if (useSeparators) "-" else ""
     val timeSep = if (useSeparators) ":" else ""
-    val date = getFullYear().d() + dateSep + getMonth().d() + dateSep + getDay().d()
+    val date = getFullYear().d() + dateSep + (getMonth() + 1).d() + dateSep + getDay().d()
     val time = getHours().d() + timeSep + getMinutes().d() + timeSep + getSeconds().d()
     return date + dateTimeSeparator + time
 }
