@@ -4,8 +4,7 @@ import com.scurab.uitor.common.model.IViewNode
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.web.App
-import com.scurab.uitor.web.common.ServerApi
-import com.scurab.uitor.web.model.ClientConfig
+import com.scurab.uitor.web.model.IClientConfig
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.util.obj
 import js.threejs.BackSide
@@ -97,7 +96,7 @@ class ViewNode3D(val context: ViewNode3DContext) : IViewNode by context.viewNode
         }).withTexture(viewNode, side, context.screenIndex, textureLoader)
     }
 
-    private fun ViewNode.edgeColor(selected: Boolean, clientConfig: ClientConfig): JsColor {
+    private fun ViewNode.edgeColor(selected: Boolean, clientConfig: IClientConfig): JsColor {
         return (clientConfig.typeHighlights[type] ?: colorMatcher[StateMatcher(isLeaf, hasCustomRenderArea)])
             ?.let { if (!selected) it.halfLightness() else it }?.threeColor
             ?: ise(
@@ -176,5 +175,5 @@ class ViewNode3DContext(
     val viewNode: ViewNode,
     val screenIndex: Int,
     val textureLoader: TextureLoader,
-    val clientConfig: ClientConfig
+    val clientConfig: IClientConfig
 )

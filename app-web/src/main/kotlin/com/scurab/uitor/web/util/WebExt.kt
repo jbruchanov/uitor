@@ -3,15 +3,10 @@ package com.scurab.uitor.web.util
 import com.scurab.uitor.common.render.Color
 import com.scurab.uitor.common.util.npe
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.html.DIV
-import kotlinx.html.FlowOrInteractiveOrPhrasingContent
-import kotlinx.html.HtmlTagMarker
 import kotlinx.html.Tag
-import kotlinx.html.attributesMapOf
 import kotlinx.html.dom.create
 import kotlinx.html.js.canvas
 import kotlinx.html.js.img
-import kotlinx.html.visit
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.Document
 import org.w3c.dom.Element

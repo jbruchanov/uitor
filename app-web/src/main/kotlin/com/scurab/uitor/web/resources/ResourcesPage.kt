@@ -7,7 +7,6 @@ import com.scurab.uitor.common.util.ref
 import com.scurab.uitor.web.common.Page
 import com.scurab.uitor.web.model.IResourceDTO
 import com.scurab.uitor.web.model.PageViewModel
-import com.scurab.uitor.web.model.ResourceDTO
 import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.ui.table.IRenderingContext
 import com.scurab.uitor.web.ui.table.ITableDataItem

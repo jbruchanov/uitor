@@ -3,7 +3,6 @@ package com.scurab.uitor.web.util
 import com.scurab.uitor.common.util.dlog
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.html.InputType
 import org.w3c.dom.Image
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.EventListener

@@ -2,6 +2,7 @@ package com.scurab.uitor.web.common
 
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.FSItem
+import com.scurab.uitor.web.model.IClientConfig
 import com.scurab.uitor.web.model.IResourceDTO
 import com.scurab.uitor.web.model.Pages
 import com.scurab.uitor.web.model.ResourceDTO
@@ -33,7 +34,7 @@ interface IServerApi {
 
     suspend fun snapshot(screenIndex: Int): Snapshot
     suspend fun viewHierarchy(screenIndex: Int): ViewNode
-    suspend fun clientConfiguration(): ClientConfig
+    suspend fun clientConfiguration(): IClientConfig
     suspend fun activeScreens(): Array<String>
     suspend fun loadResourceItem(): Map<String, List<IResourceDTO>>
     suspend fun loadResourceItem(screenIndex: Int, resId: Int): ResourceItem

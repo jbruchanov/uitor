@@ -4,6 +4,7 @@ import com.scurab.uitor.common.util.iae
 import com.scurab.uitor.common.util.npe
 import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.FSItem
+import com.scurab.uitor.web.model.IClientConfig
 import com.scurab.uitor.web.model.IResourceDTO
 import com.scurab.uitor.web.model.ResourceDTO
 import com.scurab.uitor.web.model.ResourceItem
@@ -46,7 +47,7 @@ class SnapshotServerApi(private val snapshot: Snapshot) : IServerApi {
         return ViewNode(snapshot.viewHierarchy)
     }
 
-    override suspend fun clientConfiguration(): ClientConfig {
+    override suspend fun clientConfiguration(): IClientConfig {
         return ClientConfig(snapshot.clientConfiguration)
     }
 

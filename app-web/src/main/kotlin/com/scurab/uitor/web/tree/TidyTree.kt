@@ -2,7 +2,7 @@ package com.scurab.uitor.web.tree
 
 import com.scurab.uitor.common.util.dlog
 import com.scurab.uitor.common.util.ellipsizeMid
-import com.scurab.uitor.web.model.ClientConfig
+import com.scurab.uitor.web.model.IClientConfig
 import com.scurab.uitor.web.model.ViewNode
 import js.d3.Node
 import js.d3.classes
@@ -42,7 +42,7 @@ class TidyTree {
     fun generateSvg(data: ViewNode,
                     preSelectedNode: ViewNode? = null,
                     config: TreeConfig = TreeConfig.shortTypesTidyTree,
-                    clientConfig: ClientConfig,
+                    clientConfig: IClientConfig,
                     nodeClickListener: (ViewNode) -> Unit
     ): SVGElement {
         val (root, width, height, x0) = config.layout(data, config)
@@ -125,7 +125,7 @@ class TidyTree {
     }
 }
 
-private fun ViewNode.highlightedStyle(clientConfig: ClientConfig) : String {
+private fun ViewNode.highlightedStyle(clientConfig: IClientConfig) : String {
     return clientConfig.typeHighlights[type]?.let {
         "stroke:${it.htmlRGBA}"
     } ?: ""

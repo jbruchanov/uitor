@@ -8,6 +8,7 @@ import com.scurab.uitor.web.filebrowser.FileBrowserPage
 import com.scurab.uitor.web.groovy.GroovyPage
 import com.scurab.uitor.web.inspector.LayoutInspectorPage
 import com.scurab.uitor.web.model.ClientConfig
+import com.scurab.uitor.web.model.IClientConfig
 import com.scurab.uitor.web.model.PageViewModel
 import com.scurab.uitor.web.model.Pages
 import com.scurab.uitor.web.model.Snapshot
@@ -51,7 +52,7 @@ import kotlin.dom.clear
 private const val ID_SCREEN_INDEX = "main-screen-index"
 private const val DEVICE_INFO = "main-screen-device-info"
 
-class MainPage(private var clientConfig: ClientConfig) : Page() {
+class MainPage(private var clientConfig: IClientConfig) : Page() {
 
     override var element: HTMLElement? = null
         private set
@@ -110,6 +111,7 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
                         div {
                             style = "display: grid;grid-template-columns: 1fr 5.6px 1fr;"
                             button {
+                                id = "Save"
                                 text("Save")
                                 onClickFunction = Browser.saveButtonHandler(serverApi) { screenIndex }
                             }
@@ -149,6 +151,14 @@ class MainPage(private var clientConfig: ClientConfig) : Page() {
     override fun stateDescription(): String? = null
 
     private fun reloadScreens() {
+        if (clientConfig == ClientConfig.FallBackConfig) {
+            //failcase, just keep showing Load
+            val elems = arrayOf(screensSelect, (document.getElementById("Save") as? HTMLElement))
+            elems.forEach {
+                it?.style?.visibility = "hidden"
+            }
+            return
+        }
         launchWithProgressBar {
             screensSelect.disabled = true
             screensSelect.options.removeAll()

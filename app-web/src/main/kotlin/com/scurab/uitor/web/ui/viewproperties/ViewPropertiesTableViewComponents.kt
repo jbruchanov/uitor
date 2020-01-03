@@ -6,7 +6,7 @@ import com.scurab.uitor.common.util.ise
 import com.scurab.uitor.common.util.matchingIndexes
 import com.scurab.uitor.common.util.npe
 import com.scurab.uitor.web.Navigation
-import com.scurab.uitor.web.model.ClientConfig
+import com.scurab.uitor.web.model.IClientConfig
 import com.scurab.uitor.web.ui.table.IRenderingContext
 import com.scurab.uitor.web.ui.table.ITableDataItem
 import com.scurab.uitor.web.ui.table.ITableViewRenderer
@@ -56,12 +56,12 @@ object ViewPropertiesTableViewComponents {
 
     val sortingMapper: (column: Int, value: Any) -> String = { _, v -> v.toString().toLowerCase() }
 
-    fun columnRenderer(clientConfig: ClientConfig, considerLinks: Boolean): ITableViewRenderer<IViewPropertyTableItem> {
+    fun columnRenderer(clientConfig: IClientConfig, considerLinks: Boolean): ITableViewRenderer<IViewPropertyTableItem> {
         return ViewPropertiesTableViewRenderer(clientConfig, considerLinks)
     }
 
     fun defaultViewProperties(
-        clientConfig: ClientConfig,
+        clientConfig: IClientConfig,
         considerLinks: Boolean
     ) = TableViewDelegate(
         columnRenderer(clientConfig, considerLinks)
@@ -93,7 +93,7 @@ class ViewNodePropertyTableItem(
     }
 }
 
-private class ViewPropertiesTableViewRenderer(clientConfig: ClientConfig, private val considerLinks: Boolean) :
+private class ViewPropertiesTableViewRenderer(clientConfig: IClientConfig, private val considerLinks: Boolean) :
     ITableViewRenderer<IViewPropertyTableItem> {
     private val propertyHighlights = clientConfig.propertyHighlights
     private val valueRender = ViewPropertiesValueCellRenderer()

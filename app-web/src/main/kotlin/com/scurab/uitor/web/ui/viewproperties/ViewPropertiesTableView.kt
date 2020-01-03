@@ -1,6 +1,6 @@
 package com.scurab.uitor.web.ui.viewproperties
 
-import com.scurab.uitor.web.model.ClientConfig
+import com.scurab.uitor.web.model.IClientConfig
 import com.scurab.uitor.web.model.ViewNode
 import com.scurab.uitor.web.ui.table.IRenderingContext
 import com.scurab.uitor.web.ui.table.ITableViewDelegate
@@ -19,7 +19,7 @@ class PropertiesViewRenderingContext : IRenderingContext<IViewPropertyTableItem>
 }
 
 class ViewPropertiesTableView(
-    private val clientConfig: ClientConfig,
+    private val clientConfig: IClientConfig,
     private val delegate: ITableViewDelegate<IViewPropertyTableItem>,
     private val screenIndex: Int
 ) : TableView<IViewPropertyTableItem>(TableData.empty(), delegate) {
