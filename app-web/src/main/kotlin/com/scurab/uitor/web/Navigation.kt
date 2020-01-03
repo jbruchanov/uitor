@@ -111,8 +111,6 @@ object Navigation {
     }
 
     private fun ensureNotDemo() {
-        if (DEMO) {
-            throw IllegalStateException("Sorry this page is not supported in demo")
-        }
+        check(!DEMO) { "Sorry this page is not supported in demo" }
     }
 }
