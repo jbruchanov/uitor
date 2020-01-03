@@ -6,6 +6,8 @@ import js.d3.Node
 import js.d3.translate
 import kotlin.math.max
 
+//just safety gap if the tree is too small in some size
+const val SAFETY_GAP = 20
 interface LayoutRenderDelegate {
     fun translateNode(d: Node<*>): String
     fun drawingPath(): Link
@@ -68,7 +70,7 @@ class HorizontalDelegate(private val denseFirstNColumns: Int = 0) : LayoutRender
         //.viewBox(Rect(0, 0, width, (x1 - x0 + root.dx * 2).roundToInt()))
         return LayoutResult(
             r,
-            ((r.height + 1 + (if (config.viewGroupAnchorEnd) 1 else 0)) * r.dy) - (denseFirstNColumns * 65),
+            SAFETY_GAP + ((r.height + 1 + (if (config.viewGroupAnchorEnd) 1 else 0)) * r.dy) - (denseFirstNColumns * 65),
             (x1 - x0 + r.dx * 2),
             x0
         )
