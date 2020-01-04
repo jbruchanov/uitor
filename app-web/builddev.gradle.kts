@@ -22,6 +22,17 @@ fun generateHtmlDeps() : String {
             }
         }
 }
+
+fun generateBuildMeta() : String {
+    val dateFormat = java.text.SimpleDateFormat("YYYY-MM-DD HH:mm:ss")
+    val items = mapOf(
+        "Build" to dateFormat.format(java.util.Date()),
+        "Version" to project.version
+    )
+    return items.entries.joinToString("\n    ") { (k, v) ->
+        "<meta name=\"$k\" content=\"$v\" />"
+    }
+}
 /**
  * Task to go through all javascript files generated in DCE
  * And order them to load them based on dependencies between them and update the index_template.html
@@ -35,6 +46,7 @@ val createDevIndexHtmlTask = task("createDevIndexHtml") {
         val exclude = "uitor-app-web.js"
         var text = indexHtmlTemplate.readText()
         text = text.replace("<!--%HEADER_DEPS%-->", generateHtmlDeps())
+        text = text.replace("<!--%BUILD%-->", generateBuildMeta())
         text = text.replace("<!--%SCRIPTS%-->",
             depsOrdered
                 .filter { it.name != exclude }
@@ -142,6 +154,7 @@ val createReleaseIndexHtmlTask = task("createReleaseIndexHtml") {
         val outputMinFile = File(artifactOutputDir, releaseMinFileName)
         var text = indexHtmlTemplate.readText()
         text = text.replace("<!--%HEADER_DEPS%-->", generateHtmlDeps())
+        text = text.replace("<!--%BUILD%-->", generateBuildMeta())
         text = text.replace("<!--%SCRIPTS%-->", "")
         text += """
             <script>
@@ -162,7 +175,7 @@ val createReleaseIndexHtmlTask = task("createReleaseIndexHtml") {
 
 val assembleReleaseZipArtifactTask = tasks.create<Zip>("assembleReleaseZipArtifact") {
     group = "custom build"
-    archiveFileName.set("anuitor.zip")
+    archiveFileName.set("uitor_webapp.zip")
     destinationDirectory.set(zipArtifactOutputDir)
     from(resFolder.absolutePath)
     from(artifactOutputDir.absolutePath) {
