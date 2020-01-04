@@ -51,7 +51,7 @@ class GroovyPage(private val viewModel: PageViewModel, private val position: Int
                     
                     
                     def G = groovy.lang.GroovyHelper
-                    def rootView = G.getRootView(0)
+                    def rootView = G.getRootView(${viewModel.screenIndex})
                     def app = G.getApplication()
                     def activities = G.getActivities()
                     $view

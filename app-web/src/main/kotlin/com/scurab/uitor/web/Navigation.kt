@@ -104,7 +104,7 @@ object Navigation {
             }
             "GroovyPage" -> {
                 ensureNotDemo()
-                GroovyPage(PageViewModel(0), token.arguments["position"]?.toIntOrNull())
+                GroovyPage(PageViewModel(screenIndex), token.arguments["position"]?.toIntOrNull())
             }
             else -> MainPage(App.clientConfig)
         }
