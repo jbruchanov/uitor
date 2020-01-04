@@ -182,7 +182,7 @@ class ServerApi : IServerApi {
     suspend fun loadText(url: String, timeOut: Long = 10000): String {
         return withTimeout(timeOut) {
             val response = window.fetch(url).asDeferred().await()
-            check(response.status == 200.toShort()) { "[${response.status}]${response.statusText}" }
+            check(response.status == 200.toShort()) { "[${response.status}]${response.statusText}\nURL:'$url'" }
             val text = response
                 .text()
                 .asDeferred()
