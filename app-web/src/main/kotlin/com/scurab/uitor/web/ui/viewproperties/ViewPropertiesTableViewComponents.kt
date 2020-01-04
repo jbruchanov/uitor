@@ -115,7 +115,9 @@ private class ViewPropertiesTableViewRenderer(clientConfig: IClientConfig, priva
                     }
                 }
             INDEX_KEY -> {
-                val link = keyRaw.endsWith(":")
+                //links clickable even if value is null, property details are not part of snapshot => can be updated
+                //w/o UITor web knowing it
+                val link = keyRaw.endsWith(":") //&& item.value != "null"
                 val matchingIndexes = key.matchingIndexes(filter)
                 if (considerLinks && link) {
                     val context =
