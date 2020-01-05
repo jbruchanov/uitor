@@ -1,7 +1,7 @@
 import java.net.URI
 
 group = "com.scurab"
-version = "1.0-SNAPSHOT"
+version = "2.0.0"
 
 subprojects.forEach {
     it.repositories {

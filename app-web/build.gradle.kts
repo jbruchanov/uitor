@@ -8,7 +8,7 @@ project.apply {
 project.apply("builddev.gradle.kts")
 
 group = "com.scurab"
-version = "1.0-SNAPSHOT"
+version = "2.0.0"
 
 repositories {
     mavenCentral()
