@@ -3,6 +3,18 @@ import java.net.URI
 group = "com.scurab"
 version = "2.0.0"
 
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath("com.android.tools.build:gradle:3.5.3")
+    }
+}
+
 subprojects.forEach {
     it.repositories {
         mavenCentral()
@@ -16,6 +28,7 @@ subprojects.forEach {
     it.buildscript {
         repositories {
             mavenCentral()
+            google()
             jcenter()
         }
     }
