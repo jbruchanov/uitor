@@ -43,9 +43,9 @@ project.afterEvaluate {
                         }
                     }
                     scm {
-                        connection.set("scm:git:https://github.com/jbruchanov/AnUitor")
-                        developerConnection.set("scm:git:https://github.com/jbruchanov/AnUitor")
-                        url.set("https://github.com/jbruchanov/anuitor")
+                        connection.set("scm:git:https://github.com/jbruchanov/uitor")
+                        developerConnection.set("scm:git:https://github.com/jbruchanov/uitor")
+                        url.set("https://github.com/jbruchanov/uitor")
                     }
                 }
             }
