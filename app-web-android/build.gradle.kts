@@ -54,6 +54,7 @@ project.afterEvaluate {
 }
 
 val buildAppWebTask = task("buildAppWeb") {
+    group = "build"
     doLast {
         copy {
             from(file("${rootProject.childProjects.getValue("app-web").buildDir}/artifact/uitor_webapp.zip"))
