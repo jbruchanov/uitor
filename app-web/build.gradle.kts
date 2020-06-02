@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.js") version Versions.kotlin
+    id("org.jetbrains.kotlin.js") /*version Versions.kotlin*/
 }
 
 project.apply {
@@ -8,7 +8,7 @@ project.apply {
 project.apply("builddev.gradle.kts")
 
 group = "com.scurab"
-version = "2.0.0"
+version = project.ext.get("releaseVersion") ?: throw NullPointerException("Undefined 'releaseVersion'")
 
 repositories {
     mavenCentral()

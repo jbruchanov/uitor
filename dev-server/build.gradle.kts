@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version Versions.kotlin
+    id("org.jetbrains.kotlin.jvm") /*version Versions.kotlin*/
 }
 
 repositories {

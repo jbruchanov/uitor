@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.multiplatform") version Versions.kotlin
+    id("org.jetbrains.kotlin.multiplatform") /*version Versions.kotlin*/
 }
 
 //group = "com.scurab"
