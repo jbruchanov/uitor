@@ -45,7 +45,7 @@ val assembleRawArtifact = task<Zip>("assembleRawArtifact") {
     destinationDirectory.set(file("${buildDir}/res/raw"))
 
     android {
-        sourceSets["main"].resources.apply {
+        sourceSets["main"].res.apply {
             srcDirs(srcDirs + file("${buildDir}/res"))
         }
     }
