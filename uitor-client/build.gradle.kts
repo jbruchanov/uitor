@@ -8,19 +8,20 @@ plugins {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.10")
 }
 
 android {
-    compileSdkVersion(29)
-    buildToolsVersion("29.0.3")
+    compileSdkVersion(30)
 
     defaultConfig {
         minSdkVersion(1)
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         versionCode = 1
         versionName = "1.0"
     }
+
+
 }
 
 project.afterEvaluate {
