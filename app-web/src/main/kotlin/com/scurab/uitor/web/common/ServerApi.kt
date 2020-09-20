@@ -163,7 +163,7 @@ class ServerApi : IServerApi {
     override val supportsViewPropertyDetails: Boolean = true
 
     override suspend fun executeGroovyCode(code: String): String {
-        return withTimeout(15000) {
+        return withTimeout(DEFAULT_TIMEOUT) {
             val response = window.fetch(
                 "groovy", RequestInit(
                     method = "POST",
@@ -179,7 +179,7 @@ class ServerApi : IServerApi {
         }
     }
 
-    suspend fun loadText(url: String, timeOut: Long = 10000): String {
+    suspend fun loadText(url: String, timeOut: Long = DEFAULT_TIMEOUT): String {
         return withTimeout(timeOut) {
             val response = window.fetch(url).asDeferred().await()
             check(response.status == 200.toShort()) { "[${response.status}]${response.statusText}\nURL:'$url'" }
@@ -200,6 +200,7 @@ class ServerApi : IServerApi {
     }
 
     companion object {
+        const val DEFAULT_TIMEOUT = 30000L
         const val URL_RESOURCES_ALL = "resources/all"
         const val URL_RESOURCES_LIST = "resources/list"
 
