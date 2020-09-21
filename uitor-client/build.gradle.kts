@@ -39,6 +39,7 @@ val assembleRawArtifact = task<Zip>("assembleRawArtifact") {
     group = "custombuild"
     from(file("${project.rootDir}/app-web/src/main/resources"))
     from(file("${project.rootDir}/app-web/build/out/uitor.min.js"))
+    from(file("${project.rootDir}/app-web/build/out/index.html"))
     include("*")
     include("*/*")
     archiveFileName.set("uitor_webapp.zip")
@@ -49,7 +50,7 @@ val assembleRawArtifact = task<Zip>("assembleRawArtifact") {
             srcDirs(srcDirs + file("${buildDir}/res"))
         }
     }
-    dependsOn(":app-web:uglifyjsReleaseArtifact")
+    dependsOn(":app-web:createReleaseIndexHtml")
 }
 
 tasks["preBuild"].dependsOn(assembleRawArtifact)
