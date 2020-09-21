@@ -138,7 +138,7 @@ class DevServer(
                 }
                 call.respond(result)
             } catch (e: ResponseException) {
-                call.respond(e.response.status, e.response)
+                call.respond(e.response?.status ?: HttpStatusCode.InternalServerError, e.response ?: "null")
             } catch (e: Throwable) {
                 call.respond(HttpStatusCode.InternalServerError, e.message ?: "Null exception message")
             }
