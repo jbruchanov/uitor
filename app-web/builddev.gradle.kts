@@ -24,7 +24,7 @@ fun generateHtmlDeps() : String {
 }
 
 fun generateBuildMeta() : String {
-    val dateFormat = java.text.SimpleDateFormat("YYYY-MM-DD HH:mm:ss")
+    val dateFormat = java.text.SimpleDateFormat("YYYY-MM-dd HH:mm:ss")
     val items = mapOf(
         "Build" to dateFormat.format(java.util.Date()),
         "Version" to project.version
