@@ -4,7 +4,7 @@ import com.scurab.uitor.web.model.ViewNode
 import js.d3.Node
 import org.w3c.dom.get
 import org.w3c.dom.svg.SVGCircleElement
-import kotlin.browser.document
+import kotlinx.browser.document
 
 internal val Node<*>.item get() = data as? ViewNode ?: throw NullPointerException("Field: data is not ViewNode")
 internal val Node<*>.groupId get() = "ViewNode:${item.position}"

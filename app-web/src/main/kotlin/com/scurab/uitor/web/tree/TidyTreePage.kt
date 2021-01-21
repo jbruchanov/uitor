@@ -13,7 +13,7 @@ import kotlinx.html.id
 import kotlinx.html.js.div
 import kotlinx.html.js.onClickFunction
 import org.w3c.dom.HTMLElement
-import kotlin.browser.window
+import kotlinx.browser.window
 import kotlin.dom.clear
 
 private const val CSS_BUTTONS = "ui-tree-buttons"

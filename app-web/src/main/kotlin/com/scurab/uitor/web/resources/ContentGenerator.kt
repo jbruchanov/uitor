@@ -11,7 +11,7 @@ import kotlinx.html.js.div
 import kotlinx.html.pre
 import kotlinx.html.style
 import org.w3c.dom.HTMLElement
-import kotlin.browser.document
+import kotlinx.browser.document
 
 private const val CSS_RESOURCES = "resources-item-content"
 private const val CSS_PRETTY_PRINT = "prettyprint"

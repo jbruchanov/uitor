@@ -5,7 +5,7 @@ import com.scurab.uitor.common.util.elog
 import com.scurab.uitor.common.util.messageSafe
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlin.browser.window
+import kotlinx.browser.window
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 

@@ -29,7 +29,7 @@ import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.HTMLTableElement
 import org.w3c.dom.get
-import kotlin.browser.window
+import kotlinx.browser.window
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt

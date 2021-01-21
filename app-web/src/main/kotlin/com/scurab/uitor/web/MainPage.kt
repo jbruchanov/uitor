@@ -46,7 +46,7 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSelectElement
 import org.w3c.dom.get
-import kotlin.browser.window
+import kotlinx.browser.window
 import kotlin.dom.clear
 
 private const val ID_SCREEN_INDEX = "main-screen-index"

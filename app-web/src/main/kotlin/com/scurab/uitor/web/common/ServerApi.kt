@@ -26,7 +26,7 @@ import org.w3c.fetch.Headers
 import org.w3c.fetch.NO_CACHE
 import org.w3c.fetch.RequestCache
 import org.w3c.fetch.RequestInit
-import kotlin.browser.window
+import kotlinx.browser.window
 import kotlin.js.Date
 import kotlin.js.Json
 

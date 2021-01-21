@@ -18,8 +18,8 @@ import com.scurab.uitor.web.util.HashToken
 import com.scurab.uitor.web.util.requireElementById
 import org.w3c.dom.HashChangeEvent
 import org.w3c.dom.events.Event
-import kotlin.browser.document
-import kotlin.browser.window
+import kotlinx.browser.document
+import kotlinx.browser.window
 
 object Navigation {
     private const val TAG = "Navigation"

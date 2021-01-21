@@ -25,7 +25,7 @@ import kotlinx.html.span
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSpanElement
-import kotlin.browser.window
+import kotlinx.browser.window
 
 private const val ID_FILE_BROWSER_CONTAINER = "file-browser-container"
 private const val ID_FILE_BROWSER_CURRENT_FOLDER = "file-browser-current-folder"
