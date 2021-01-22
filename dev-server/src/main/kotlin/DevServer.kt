@@ -146,22 +146,22 @@ class DevServer(
 
         //takes everything, even source code :(
         //get("/{...}", response)
-        get("/screens", response)
-        get("/screencomponents", response)
-        get("/screenstructure", response)
-        get("/config", response)
-        get("/logcat/{type?}", response)
-        get("/screen/{index}", response)
-        get("/resources/all", response)
-        get("/resources/list", response)
-        get("/resources/{screenIndex?}/{resId?}", response)
-        get("/storage", response)
-        get("/storage?path={path}", response)
-        get("/view/{screen}/{id}", response)
-        get("/viewhierarchy/{screenIndex}", response)
-        get("/view/{screen}/{id}/{property}/{reflection?}/{maxDepth?}/", response)
+        get("/api/screens", response)
+        get("/api/api/screencomponents", response)
+        get("/api/screenstructure", response)
+        get("/api/config", response)
+        get("/api/logcat/{type?}", response)
+        get("/api/screen/{index}", response)
+        get("/api/resources/all", response)
+        get("/api/resources/list", response)
+        get("/api/resources/{screenIndex?}/{resId?}", response)
+        get("/api/storage", response)
+        get("/api/storage?path={path}", response)
+        get("/api/view/{screen}/{id}", response)
+        get("/api/viewhierarchy/{screenIndex}", response)
+        get("/api/view/{screen}/{id}/{property}/{reflection?}/{maxDepth?}/", response)
 
-        post("/groovy") {
+        post("/api/groovy") {
             val requestText = call.receiveText()
             val result = httpClient.post<String>("http://$localDeviceIp/groovy") {
                 body = requestText
