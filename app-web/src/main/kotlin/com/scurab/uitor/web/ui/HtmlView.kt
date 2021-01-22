@@ -13,7 +13,7 @@ import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import kotlinx.browser.window
 import kotlin.coroutines.CoroutineContext
-import kotlin.dom.clear
+import kotlinx.dom.clear
 
 abstract class HtmlView : HasLifecycle, CoroutineScope {
     abstract val element: HTMLElement?

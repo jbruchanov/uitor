@@ -14,7 +14,7 @@ import kotlinx.html.span
 import kotlinx.html.style
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
-import kotlin.dom.clear
+import kotlinx.dom.clear
 
 private const val ID_CONTAINER = "screen-components-container"
 private const val CSS_TYPE_NAME = "screen-components-type-name"
