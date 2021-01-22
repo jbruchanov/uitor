@@ -78,8 +78,9 @@ class ServerApi : IServerApi {
                 resourcesTask = async { loadTextApi(URL_RESOURCES_ALL).parseJson<Json>() }
             }
 
-            //take same pages as we have supported by client
-            this[ClientConfig.PAGES] = clientConfig.pages
+            //take same pages as we have supported by client, excluding fileBrowser and groovy
+            val pages = clientConfig.pages.toList() - listOf("FileBrowserPage", "GroovyPage")
+            this[ClientConfig.PAGES] = pages
         }
 
         val screenshot = imageTask.await()
