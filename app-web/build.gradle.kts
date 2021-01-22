@@ -2,7 +2,7 @@ plugins {
     kotlin("js")
 }
 
-//project.apply("builddev.gradle.kts")
+project.apply("builddev.gradle.kts")
 
 group = "com.scurab"
 version = project.ext.get("releaseVersion") ?: throw NullPointerException("Undefined 'releaseVersion'")
@@ -39,4 +39,8 @@ kotlin {
             }
         }
     }
+
+    //setup stuff from builddev.gradle.kts
+    tasks["processDceDevKotlinJs"].dependsOn("createIndexHtml")
+    tasks["processDceKotlinJs"].dependsOn("createIndexHtml")
 }
