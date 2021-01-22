@@ -30,14 +30,20 @@ import io.ktor.util.pipeline.PipelineInterceptor
 import io.ktor.websocket.WebSocketServerSession
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
 import org.slf4j.event.Level
 import java.io.File
 import java.nio.charset.Charset
+import java.nio.file.Path
 
 
+/**
+ * Naive implementation for of dev server to provide proxy and notify client
+ * if something change with potential rebuild on demand from "js"
+ * Doesn't handle case of hammering of build
+ */
 class DevServer(
     private val watchingDirectories: Array<File>,
     private val rebuildCommand: String,
@@ -45,18 +51,28 @@ class DevServer(
 ) {
     fun start() {
         val sockets = mutableSetOf<WebSocketServerSession>()
+        val channel = Channel<Path>()
         FileWatcher().start(watchingDirectories) { path ->
-            GlobalScope.launch {
-                sockets.forEach {
-                    println("Notify socket:${it.isActive}")
-                    try {
-                        it.send(Frame.Text("reload:${path.fileName}"))
-                    } catch (e: Exception) {
-                        println(e.message)
+            channel.offer(path)
+        }
+        channel
+            .receiveAsFlow()
+            .debounce(500)
+            .let {
+                GlobalScope.launch {
+                    it.collect { latestPath ->
+                        println("FileWatcher change $latestPath sockets:${sockets.size}")
+                        sockets.forEach {
+                            try {
+                                it.send(Frame.Text("reload:${latestPath.fileName}"))
+                            } catch (e: Exception) {
+                                println(e.message)
+                            }
+                        }
                     }
                 }
             }
-        }
+
 
         val port = 8080
         embeddedServer(Netty, port) {
@@ -70,7 +86,7 @@ class DevServer(
 
             routing {
                 get("/") {
-                    var file = File("app-web/index.html").readText()
+                    var file = File("app-web/build/distributions/index.html").readText()
                     val reloadScript = File("dev-server/src/main/resources/websockets.js")
                         .readText()
                         .replace("%PORT%", port.toString())
@@ -94,6 +110,7 @@ class DevServer(
                     files(File("app-web/src/test/resources/v1"))
                     files(File("app-web/src/main/resources"))
                     files(File("app-web"))
+                    files(File("app-web/build/distributions/"))
                 }
 
                 webSocket("/wss/files") {
@@ -130,7 +147,7 @@ class DevServer(
             val uri = call.request.uri.substringAfter("/")
             try {
                 val result = httpClient.get<ByteArray>("http://$localDeviceIp/${uri}")
-                if(savingForDemo) {
+                if (savingForDemo) {
                     val folder = File("c:/Temp/anuitor/${uri.substringBeforeLast("/", "")}")
                     folder.mkdirs()
                     val f = File("c:/Temp/anuitor/$uri")
@@ -138,30 +155,36 @@ class DevServer(
                 }
                 call.respond(result)
             } catch (e: ResponseException) {
-                call.respond(e.response?.status ?: HttpStatusCode.InternalServerError, e.response ?: "null")
+                call.respond(
+                    e.response?.status ?: HttpStatusCode.InternalServerError,
+                    e.response ?: "null"
+                )
             } catch (e: Throwable) {
-                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Null exception message")
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    e.message ?: "Null exception message"
+                )
             }
         }
 
         //takes everything, even source code :(
         //get("/{...}", response)
-        get("/screens", response)
-        get("/screencomponents", response)
-        get("/screenstructure", response)
-        get("/config", response)
-        get("/logcat/{type?}", response)
-        get("/screen/{index}", response)
-        get("/resources/all", response)
-        get("/resources/list", response)
-        get("/resources/{screenIndex?}/{resId?}", response)
-        get("/storage", response)
-        get("/storage?path={path}", response)
-        get("/view/{screen}/{id}", response)
-        get("/viewhierarchy/{screenIndex}", response)
-        get("/view/{screen}/{id}/{property}/{reflection?}/{maxDepth?}/", response)
+        get("/api/screens", response)
+        get("/api/api/screencomponents", response)
+        get("/api/screenstructure", response)
+        get("/api/config", response)
+        get("/api/logcat/{type?}", response)
+        get("/api/screen/{index}", response)
+        get("/api/resources/all", response)
+        get("/api/resources/list", response)
+        get("/api/resources/{screenIndex?}/{resId?}", response)
+        get("/api/storage", response)
+        get("/api/storage?path={path}", response)
+        get("/api/view/{screen}/{id}", response)
+        get("/api/viewhierarchy/{screenIndex}", response)
+        get("/api/view/{screen}/{id}/{property}/{reflection?}/{maxDepth?}/", response)
 
-        post("/groovy") {
+        post("/api/groovy") {
             val requestText = call.receiveText()
             val result = httpClient.post<String>("http://$localDeviceIp/groovy") {
                 body = requestText
@@ -171,6 +194,7 @@ class DevServer(
     }
 
     private fun executeRebuildCommand(): Boolean {
+        println("Rebuild started")
         val p = ProcessBuilder(rebuildCommand.split(" "))
             .directory(File(File("").absolutePath))
             .start()
@@ -178,6 +202,7 @@ class DevServer(
         val resultOutput = p.inputStream.readBytes().toString(Charset.defaultCharset())
         p.waitFor()
         val result = p.exitValue() == 0
+        println("Rebuild finished with result:$result")
         if (!result) {
             println(resultOutput)
         }

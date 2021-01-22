@@ -16,8 +16,8 @@ import org.w3c.dom.events.Event
 import org.w3c.dom.url.URL
 import org.w3c.files.Blob
 import org.w3c.files.BlobPropertyBag
-import kotlin.browser.document
-import kotlin.browser.window
+import kotlinx.browser.document
+import kotlinx.browser.window
 import kotlin.js.Date
 
 object Browser {

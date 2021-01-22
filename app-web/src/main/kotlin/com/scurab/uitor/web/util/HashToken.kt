@@ -1,7 +1,7 @@
 package com.scurab.uitor.web.util
 
 import com.scurab.uitor.common.util.usingKey
-import kotlin.browser.window
+import kotlinx.browser.window
 
 class HashToken(private val token: String = window.location.hash) {
     val pageId: String

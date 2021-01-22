@@ -28,9 +28,9 @@ import kotlinx.html.thead
 import kotlinx.html.tr
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
-import kotlin.dom.addClass
-import kotlin.dom.clear
-import kotlin.dom.removeClass
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
+import kotlinx.dom.removeClass
 
 open class TableView<T : ITableDataItem>(
     data: ITableData<T> = TableData.empty(),

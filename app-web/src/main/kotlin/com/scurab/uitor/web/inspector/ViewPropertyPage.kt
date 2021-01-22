@@ -23,7 +23,7 @@ import kotlinx.html.js.onClickFunction
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
-import kotlin.browser.window
+import kotlinx.browser.window
 
 private const val ID_PROPERTIES_CONTAINER = "view-property-container"
 private const val ID_PROPERTIES_TABLE_CONTAINER = "view-property-properties-container"

@@ -28,7 +28,7 @@ import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Image
 import org.w3c.dom.events.MouseEvent
-import kotlin.browser.window
+import kotlinx.browser.window
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt

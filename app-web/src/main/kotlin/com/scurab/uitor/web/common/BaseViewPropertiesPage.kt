@@ -8,7 +8,7 @@ import com.scurab.uitor.web.ui.SEPARATOR_WIDTH
 import com.scurab.uitor.web.ui.viewproperties.ViewPropsStatsView
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
-import kotlin.browser.window
+import kotlinx.browser.window
 import kotlin.math.max
 
 private const val COLUMN_COUNT = 2

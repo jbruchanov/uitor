@@ -13,7 +13,7 @@ fun main() {
             File("app-web/src"),
             File("common/src/commonMain")
         ),
-        "$gradle app-web:createDevIndexHtml",
+        "$gradle app-web:browserDevelopmentWebpack",
         "127.0.0.1:8081"
     ).start()
 }

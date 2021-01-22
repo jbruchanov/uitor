@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.multiplatform") /*version Versions.kotlin*/
+    kotlin("multiplatform")
 }
 
 //group = "com.scurab"
@@ -19,7 +19,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${Versions.kotlinCoroutinesCommon}")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutinesCommon}")
             }
         }
         commonTest {

@@ -27,7 +27,7 @@ import kotlinx.html.style
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSpanElement
-import kotlin.dom.clear
+import kotlinx.dom.clear
 
 private const val ID_GROUPS_CONTAINER = "resources-groups-container"
 private const val ID_GROUPS_TABLE = "resources-groups-table"

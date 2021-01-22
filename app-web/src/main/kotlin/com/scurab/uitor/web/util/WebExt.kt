@@ -15,7 +15,7 @@ import org.w3c.dom.HTMLOptionsCollection
 import org.w3c.dom.get
 import org.w3c.files.Blob
 import org.w3c.files.FileReader
-import kotlin.browser.document
+import kotlinx.browser.document
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.js.Date

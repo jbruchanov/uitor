@@ -14,8 +14,8 @@ import com.scurab.uitor.web.ui.launchWithProgressBar
 import com.scurab.uitor.web.util.DocumentWrapper
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlin.browser.document
-import kotlin.browser.window
+import kotlinx.browser.document
+import kotlinx.browser.window
 
 fun main() {
     App.start()

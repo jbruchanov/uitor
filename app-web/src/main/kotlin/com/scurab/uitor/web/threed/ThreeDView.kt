@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.MouseEvent
-import kotlin.browser.window
+import kotlinx.browser.window
 
 //stop rendering with no events in n secs
 private const val RENDER_PAUSE_TIMEOUT = 2000L

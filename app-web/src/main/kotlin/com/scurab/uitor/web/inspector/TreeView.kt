@@ -30,9 +30,9 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.MouseEvent
-import kotlin.dom.addClass
-import kotlin.dom.clear
-import kotlin.dom.removeClass
+import kotlinx.dom.addClass
+import kotlinx.dom.clear
+import kotlinx.dom.removeClass
 
 const val CSS_TREE = "tree"
 const val CSS_ROW_EVEN = "tree-even"

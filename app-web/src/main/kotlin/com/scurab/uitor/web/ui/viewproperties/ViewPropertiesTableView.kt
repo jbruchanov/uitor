@@ -7,7 +7,7 @@ import com.scurab.uitor.web.ui.table.ITableViewDelegate
 import com.scurab.uitor.web.ui.table.TableData
 import com.scurab.uitor.web.ui.table.TableView
 import com.scurab.uitor.web.util.toPropertyHighlightColor
-import kotlin.dom.clear
+import kotlinx.dom.clear
 
 class PropertiesViewRenderingContext : IRenderingContext<IViewPropertyTableItem> {
     override var item: IViewPropertyTableItem? = null

@@ -4,7 +4,6 @@ import com.scurab.uitor.web.model.ClientConfig
 import com.scurab.uitor.web.model.FSItem
 import com.scurab.uitor.web.model.IClientConfig
 import com.scurab.uitor.web.model.IResourceDTO
-import com.scurab.uitor.web.model.Pages
 import com.scurab.uitor.web.model.ResourceDTO
 import com.scurab.uitor.web.model.ResourceItem
 import com.scurab.uitor.web.model.ScreenNode
@@ -26,7 +25,7 @@ import org.w3c.fetch.Headers
 import org.w3c.fetch.NO_CACHE
 import org.w3c.fetch.RequestCache
 import org.w3c.fetch.RequestInit
-import kotlin.browser.window
+import kotlinx.browser.window
 import kotlin.js.Date
 import kotlin.js.Json
 
@@ -48,15 +47,17 @@ interface IServerApi {
     fun screenStructureUrl(): String
 
     val supportsViewPropertyDetails : Boolean
+
+    fun IServerApi.api(url: String) = "/api/$url"
 }
 
 class ServerApi : IServerApi {
 
-    private suspend fun rawViewHierarchy(screenIndex: Int): Json = loadText("viewhierarchy/$screenIndex").parseJson()
-    private suspend fun rawClientConfiguration(): Json = loadText("config").parseJson()
-    private suspend fun rawActiveScreens(): Json = loadText("screens").parseJson()
-    private suspend fun rawResourceItem(screenIndex: Int, resId: Int): Json = loadText("resources/$screenIndex/$resId").parseJson()
-    private suspend fun rawScreenComponents(): Json = loadText("screencomponents").parseJson()
+    private suspend fun rawViewHierarchy(screenIndex: Int): Json = loadTextApi(api("viewhierarchy/$screenIndex")).parseJson()
+    private suspend fun rawClientConfiguration(): Json = loadTextApi(api("config")).parseJson()
+    private suspend fun rawActiveScreens(): Json = loadTextApi(api("screens")).parseJson()
+    private suspend fun rawResourceItem(screenIndex: Int, resId: Int): Json = loadTextApi(api("resources/$screenIndex/$resId")).parseJson()
+    private suspend fun rawScreenComponents(): Json = loadTextApi(api("screencomponents")).parseJson()
 
     override suspend fun snapshot(screenIndex: Int, clientConfig: IClientConfig) : Snapshot = coroutineScope {
         val taken = Date().toYMHhms()
@@ -64,8 +65,8 @@ class ServerApi : IServerApi {
         val viewHierarchyTask = async { rawViewHierarchy(screenIndex) }
         val clientConfigTask = async { rawClientConfiguration() }
         val screenComponentsTask = async { rawScreenComponents() }
-        val logcatTask = async { loadText(logCatUrl()) }
-        val screenStructureTask = async { loadText(screenStructureUrl()) }
+        val logcatTask = async { loadTextApi(logCatUrl()) }
+        val screenStructureTask = async { loadTextApi(screenStructureUrl()) }
         var resourcesTask: Deferred<Json>? = null
 
         val screenName = activeScreens()[screenIndex]
@@ -74,11 +75,12 @@ class ServerApi : IServerApi {
             this[ClientConfig.DETAIL] = "Snapshot: $taken"
             val snapshotResources = (this[ClientConfig.SNAPSHOT_RESOURCES] as? Boolean) ?: false
             if (snapshotResources) {
-                resourcesTask = async { loadText(URL_RESOURCES_ALL).parseJson<Json>() }
+                resourcesTask = async { loadTextApi(URL_RESOURCES_ALL).parseJson<Json>() }
             }
 
-            //take same pages as we have supported by client
-            this[ClientConfig.PAGES] = clientConfig.pages
+            //take same pages as we have supported by client, excluding fileBrowser and groovy
+            val pages = clientConfig.pages.toList() - listOf("FileBrowserPage", "GroovyPage")
+            this[ClientConfig.PAGES] = pages
         }
 
         val screenshot = imageTask.await()
@@ -151,21 +153,21 @@ class ServerApi : IServerApi {
     }
 
     override fun screenShotUrl(screenIndex: Int): String {
-        return "screen/$screenIndex"
+        return "/api/screen/$screenIndex"
     }
 
-    override fun viewShotUrl(screenIndex: Int, viewIndex: Int): String = "view/$screenIndex/$viewIndex"
+    override fun viewShotUrl(screenIndex: Int, viewIndex: Int): String = "/api/view/$screenIndex/$viewIndex"
 
-    override fun logCatUrl(): String = "logcat"
+    override fun logCatUrl(): String = "/api/logcat"
 
-    override fun screenStructureUrl(): String = "screenstructure"
+    override fun screenStructureUrl(): String = "/api/screenstructure"
 
     override val supportsViewPropertyDetails: Boolean = true
 
     override suspend fun executeGroovyCode(code: String): String {
         return withTimeout(DEFAULT_TIMEOUT) {
             val response = window.fetch(
-                "groovy", RequestInit(
+                URL_GROOVY, RequestInit(
                     method = "POST",
                     cache = RequestCache.NO_CACHE,
                     headers = Headers().apply {
@@ -179,7 +181,7 @@ class ServerApi : IServerApi {
         }
     }
 
-    suspend fun loadText(url: String, timeOut: Long = DEFAULT_TIMEOUT): String {
+    suspend fun loadTextApi(url: String, timeOut: Long = DEFAULT_TIMEOUT): String {
         return withTimeout(timeOut) {
             val response = window.fetch(url).asDeferred().await()
             check(response.status == 200.toShort()) { "[${response.status}]${response.statusText}\nURL:'$url'" }
@@ -192,7 +194,7 @@ class ServerApi : IServerApi {
     }
 
     private suspend fun <T> load(url: String, timeOut: Long = 10000): T {
-        return JSON.parse(loadText(url, timeOut))
+        return JSON.parse(loadTextApi(url, timeOut))
     }
 
     private fun <T> String.parseJson() : T {
@@ -201,15 +203,16 @@ class ServerApi : IServerApi {
 
     companion object {
         const val DEFAULT_TIMEOUT = 30000L
-        const val URL_RESOURCES_ALL = "resources/all"
-        const val URL_RESOURCES_LIST = "resources/list"
+        const val URL_RESOURCES_ALL = "/api/resources/all"
+        const val URL_RESOURCES_LIST = "/api/resources/list"
+        const val URL_GROOVY = "/api/groovy"
 
         fun storageUrl(path: String = ""): String {
-            return "storage?path=$path"
+            return "/api/storage?path=$path"
         }
 
         fun viewPropertyUrl(screenIndex: Int, position: Int, property: String, maxDepth: Int = 0): String {
-            return "view/$screenIndex/$position/$property/false/$maxDepth/"
+            return "/api/view/$screenIndex/$position/$property/false/$maxDepth/"
         }
     }
 }

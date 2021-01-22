@@ -37,140 +37,32 @@ fun generateBuildMeta() : String {
  * Task to go through all javascript files generated in DCE
  * And order them to load them based on dependencies between them and update the index_template.html
  */
-val createDevIndexHtmlTask = task("createDevIndexHtml") {
+val createDevIndexHtmlTask = task("createIndexHtml") {
     group = "custom build"
     doLast {
         val indexHtmlTemplate = file("index_template.html")
-
-        val depsOrdered = getOrderedDeps()
-        val exclude = "uitor-app-web.js"
+        //looks like webTask { outputFileName = "" } works only for distro, but development
+        //doesn't care about this value and it's still named as project-module
+        val exclude = "app-web.js"
         var text = indexHtmlTemplate.readText()
         text = text.replace("<!--%HEADER_DEPS%-->", generateHtmlDeps())
         text = text.replace("<!--%BUILD%-->", generateBuildMeta())
-        text = text.replace("<!--%SCRIPTS%-->",
-            depsOrdered
-                .filter { it.name != exclude }
-                .joinToString("\n") {
-                    val n = it.relativeTo(project.projectDir).toString().replace("\\", "/")
-                    "<script src=\"$n\"></script>"
-                }
-        )
-        val app = depsOrdered.last().relativeTo(project.projectDir).toString().replace("\\", "/")
-        text += """
-            <script>
-                window.onload = function() {
-                    let script = document.createElement('script');
-                    script.src = "$app";
-                    document.head.appendChild(script)
-                };
-            </script>
-        """.trimIndent()
-        file("index.html").apply {
-            delete()
-            writeText(text)
-        }
-    }
-    dependsOn("runDceKotlin")
-}
-
-val generateSingleArtifact = task("createSingleArtifact") {
-    group = "custom build"
-    doLast {
-        artifactOutputDir.mkdirs()
-        val outputFile = File(artifactOutputDir, releaseFileName)
-        if (outputFile.exists()) {
-            check(outputFile.delete()) { "Unable to delete release file:${outputFile}" }
-        }
-
-        getOrderedDeps().forEach { f ->
-            println(f.absolutePath)
-            outputFile.appendText(f.readText())
-        }
-    }
-    dependsOn(createDevIndexHtmlTask)
-}
-
-fun getOrderedDeps(): List<File> {
-    val depRegEx = "require\\('(\\S*)'\\)".toRegex()
-    val deps = mutableMapOf<File, MutableSet<String>>()
-    val baseDir = file(kotlinDceOutputDir)
-    if (!baseDir.exists()) {
-        throw StopExecutionException("$baseDir doesn't exist!")
-    }
-
-    fileTree(baseDir).toList()
-        .filter { it.name.endsWith(".js") }
-        .forEach { f ->
-            val content = f.readText().substringBefore("}")
-            val list = mutableSetOf<String>()
-            deps[f] = list
-            depRegEx
-                .findAll(content)
-                .toList()
-                .takeIf { it.isNotEmpty() }
-                ?.forEach {
-                    list.add(it.groupValues[1])
-                }
-        }
-
-    val depsOrdered = mutableListOf<File>()
-    while (deps.isNotEmpty()) {
-        val (file, fileDeps) = deps.entries.first {
-            it.value.isEmpty()
-        }
-
-        val moduleName = file.nameWithoutExtension
-        depsOrdered.add(file)
-        deps.remove(file)
-        deps.forEach { (_, d) -> d.remove(moduleName) }
-    }
-    return depsOrdered
-}
-
-val installNpmTask = tasks.register<Exec>("installNpm") {
-    group = "custom build"
-    workingDir = project.projectDir
-    commandLine = "npm install".osCommandLineArgs()
-}
-
-//FIXME: uglifyjs needs to be installed global
-val uglifyjsReleaseArtifactTask = tasks.create<Exec>("uglifyjsReleaseArtifact") {
-    group = "custom build"
-    workingDir = project.projectDir
-    val outputFile = File(artifactOutputDir, releaseFileName)
-    val outputMinFile = File(artifactOutputDir, releaseMinFileName)
-    //having "$outputMinFile" (qouted) full path doesn't work with npx (on mac)
-    //will have probably issues with spaces in file
-    val cmd = "npx uglifyjs -m -c -o $outputMinFile $outputFile"
-    commandLine = cmd.osCommandLineArgs()
-    dependsOn(installNpmTask, generateSingleArtifact)
-}
-
-//release html
-val createReleaseIndexHtmlTask = task("createReleaseIndexHtml") {
-    group = "custom build"
-    doLast {
-        val indexHtmlTemplate = file("index_template.html")
-        val outputMinFile = File(artifactOutputDir, releaseMinFileName)
-        var text = indexHtmlTemplate.readText()
-        text = text.replace("<!--%HEADER_DEPS%-->", generateHtmlDeps())
-        text = text.replace("<!--%BUILD%-->", generateBuildMeta())
+        //not used anymore, some additional stuff to load
         text = text.replace("<!--%SCRIPTS%-->", "")
         text += """
             <script>
                 window.onload = function() {
                     let script = document.createElement('script');
-                    script.src = "$releaseMinFileName";
+                    script.src = "$exclude";
                     document.head.appendChild(script)
                 };
             </script>
         """.trimIndent()
-        File(artifactOutputDir, "index.html").apply {
+        file(resFolder.resolve("index.html")).apply {
             delete()
             writeText(text)
         }
     }
-    dependsOn(uglifyjsReleaseArtifactTask)
 }
 
 val assembleReleaseZipArtifactTask = tasks.create<Zip>("assembleReleaseZipArtifact") {
@@ -181,7 +73,7 @@ val assembleReleaseZipArtifactTask = tasks.create<Zip>("assembleReleaseZipArtifa
     from(artifactOutputDir.absolutePath) {
         exclude(releaseFileName)
     }
-    dependsOn(createReleaseIndexHtmlTask)
+    dependsOn("browserProductionWebpack")
 }
 
 fun String.osCommandLineArgs(): List<String> {

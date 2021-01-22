@@ -8,7 +8,7 @@ plugins {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21")
 }
 
 android {
@@ -23,7 +23,7 @@ android {
 }
 
 project.afterEvaluate {
-    extensions.getByType(PublishingExtension::class.java).apply {
+    extensions.getByType(PublishingExtension::class).apply {
         publications {
             getByName<MavenPublication>("maven") {
                 artifactId = "anuitor-client"
@@ -35,11 +35,10 @@ project.afterEvaluate {
 
 val assembleRawArtifact = task<Zip>("assembleRawArtifact") {
     group = "custombuild"
-    from(file("${project.rootDir}/app-web/src/main/resources"))
-    from(file("${project.rootDir}/app-web/build/out/uitor.min.js"))
-    from(file("${project.rootDir}/app-web/build/out/index.html"))
+    from(file("${project.rootDir}/app-web/build/distributions"))
     include("*")
     include("*/*")
+    exclude("*.map")
     archiveFileName.set("uitor_webapp.zip")
     destinationDirectory.set(file("${buildDir}/res/raw"))
 
@@ -48,7 +47,7 @@ val assembleRawArtifact = task<Zip>("assembleRawArtifact") {
             srcDirs(srcDirs + file("${buildDir}/res"))
         }
     }
-    dependsOn(":app-web:createReleaseIndexHtml")
+    dependsOn(":app-web:browserProductionWebpack")
 }
 
 tasks["preBuild"].dependsOn(assembleRawArtifact)
