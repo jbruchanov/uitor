@@ -105,7 +105,7 @@ open class TableView<T : ITableDataItem>(
     }
 
     protected open fun onFilterKeyUp(filter: String) {
-        filterChannel.offer(filter.trim())
+        filterChannel.trySend(filter.trim())
     }
 
     private fun FlowOrInteractiveOrPhrasingContent.filterInput() {

@@ -8,17 +8,15 @@ plugins {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10")
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 31
 
     defaultConfig {
         minSdkVersion(1)
-        targetSdkVersion(30)
-        versionCode = 1
-        versionName = "1.0"
+        targetSdkVersion(31)
     }
 }
 
