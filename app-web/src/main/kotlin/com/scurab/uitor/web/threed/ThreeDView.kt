@@ -101,7 +101,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
 
         resizeWindowChannel = Channel<Unit>().also { channel ->
             document.addWindowResizeListener {
-                channel.offer(Unit)
+                channel.trySend(Unit)
             }
 
             launch {
@@ -134,7 +134,7 @@ class ThreeDView(private val viewModel: InspectorViewModel) : HtmlView() {
             requestAnimationFrameAction()
         }
         pausedRendering = false
-        pauseRenderingChannel.offer(true)
+        pauseRenderingChannel.trySend(true)
     }
 
     override fun onDetached() {
